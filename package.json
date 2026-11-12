@@ -1,0 +1,54 @@
+{
+  "name": "frame-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "npm@11.20.0",
+  "engines": {
+    "node": "26.13.x",
+    "npm": "11.20.x"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && vite build --ssr src/entry-server.tsx --outDir .cache/prerender && node scripts/finalize-static.mjs",
+    "preview": "node scripts/serve.mjs",
+    "lint": "oxlint --deny-warnings --report-unused-disable-directives",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:browser": "playwright test",
+    "test:artifact": "playwright test --grep @artifact",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test",
+    "ci:gate": "node scripts/wait-for-ci.ts"
+  },
+  "dependencies": {
+    "@base-ui/react": "1.9.0",
+    "@fontsource-variable/geist": "5.3.0",
+    "@tailwindcss/vite": "4.3.3",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "1.61.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tailwind-merge": "3.5.0",
+    "tailwindcss": "4.3.3",
+    "tw-animate-css": "1.4.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.64.1",
+    "@shadcn/lint": "0.2.5",
+    "@types/node": "26.6.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "oxfmt": "0.77.0",
+    "oxlint": "1.89.0",
+    "shadcn": "4.22.1",
+    "sharp": "0.35.5",
+    "typescript": "7.0.2",
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
+  }
+}
