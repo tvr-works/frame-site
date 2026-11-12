@@ -293,6 +293,7 @@ export default function App() {
             <KeyboardControls
               mode={heldMode ?? shownMode}
               held={held}
+              heldMode={heldMode}
               state={state}
               onMode={chooseMode}
               onCommand={act}

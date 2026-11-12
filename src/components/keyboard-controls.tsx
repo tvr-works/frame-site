@@ -27,6 +27,7 @@ export function KeyboardControls({
   onCommand,
   illustrated,
   held,
+  heldMode,
 }: {
   mode: ActionMode;
   state: DemoState;
@@ -34,6 +35,7 @@ export function KeyboardControls({
   onCommand: (command: Command) => void;
   illustrated?: Command;
   held: HeldKeys;
+  heldMode?: ActionMode;
 }) {
   const workspaceAction = mode === "focus" ? "workspace" : mode === "move" ? "send" : null;
   function bank(names: readonly string[]) {
@@ -103,12 +105,7 @@ export function KeyboardControls({
               <span className="mode-label">{item.label}</span>
               <span className="modifier-chord" aria-hidden="true">
                 {item.keys.map((key) => (
-                  <kbd
-                    key={key}
-                    data-held={
-                      (key === "⌥" ? held.alt : key === "⌃" ? held.ctrl : held.shift) || undefined
-                    }
-                  >
+                  <kbd key={key} data-held={item.value === heldMode || undefined}>
                     {key}
                   </kbd>
                 ))}

@@ -301,16 +301,23 @@ test("held modifiers compose progressively and direction lights release independ
   const geometry = await windows(page).evaluateAll((nodes) =>
     nodes.map((node) => node.getAttribute("style")),
   );
+  await demo.dispatchEvent("keydown", { key: "Control", code: "ControlLeft", ctrlKey: true });
+  await expect(caps).toHaveCount(0);
+  await demo.dispatchEvent("keydown", { key: "Alt", code: "AltLeft", ctrlKey: true, altKey: true });
+  await expect(caps).toHaveCount(0);
+  await demo.dispatchEvent("keyup", { key: "Alt", code: "AltLeft", ctrlKey: true });
+  await demo.dispatchEvent("keyup", { key: "Control", code: "ControlLeft" });
   await demo.dispatchEvent("keydown", { key: "Alt", code: "AltLeft", altKey: true });
-  await expect(caps).toHaveCount(3);
-  await expect(caps).toHaveText(["⌥", "⌥", "⌥"]);
+  await expect(caps).toHaveCount(1);
+  await expect(caps).toHaveText(["⌥"]);
   await demo.dispatchEvent("keydown", {
     key: "Shift",
     code: "ShiftLeft",
     altKey: true,
     shiftKey: true,
   });
-  await expect(caps).toHaveCount(5);
+  await expect(caps).toHaveCount(2);
+  await expect(caps).toHaveText(["⌥", "⇧"]);
   await expect(
     page.getByRole("button", { name: "Move · Option Shift", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
@@ -324,7 +331,8 @@ test("held modifiers compose progressively and direction lights release independ
     shiftKey: true,
     ctrlKey: true,
   });
-  await expect(caps).toHaveCount(6);
+  await expect(caps).toHaveCount(3);
+  await expect(caps).toHaveText(["⌃", "⇧", "⌥"]);
   await expect(
     page.getByRole("button", { name: "Resize · Control Shift Option", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
@@ -355,19 +363,21 @@ test("held modifiers compose progressively and direction lights release independ
     ctrlKey: true,
   });
   await expect(home).toHaveCount(0);
-  await expect(caps).toHaveCount(6);
+  await expect(caps).toHaveCount(3);
+  await expect(caps).toHaveText(["⌃", "⇧", "⌥"]);
   await demo.dispatchEvent("keyup", {
     key: "Control",
     code: "ControlLeft",
     altKey: true,
     shiftKey: true,
   });
-  await expect(caps).toHaveCount(5);
+  await expect(caps).toHaveCount(2);
+  await expect(caps).toHaveText(["⌥", "⇧"]);
   await expect(
     page.getByRole("button", { name: "Move · Option Shift", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await demo.dispatchEvent("keyup", { key: "Shift", code: "ShiftLeft", altKey: true });
-  await expect(caps).toHaveCount(3);
+  await expect(caps).toHaveCount(1);
   await demo.dispatchEvent("keyup", { key: "Alt", code: "AltLeft" });
   await expect(caps).toHaveCount(0);
   await expect(home).toHaveCount(0);
@@ -400,7 +410,7 @@ test("plain held keys light together and clear on Escape, focus loss or window s
   await page.keyboard.up("k");
   await demo.focus();
   await demo.dispatchEvent("keydown", { key: "Alt", code: "AltLeft", altKey: true });
-  await expect(lights).toHaveCount(3);
+  await expect(lights).toHaveCount(1);
   await page.getByRole("link", { name: "Guide", exact: true }).click();
   await expect(lights).toHaveCount(0);
   await page.keyboard.press("Escape");
