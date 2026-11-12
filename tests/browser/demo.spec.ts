@@ -93,6 +93,11 @@ test("script cues the matching row before actions and composes L for focus, move
     await advance(page, i + 1);
     if (beat.command?.type === "close") remaining--;
     await expect(windows(page)).toHaveCount(remaining);
+    const closeDot = page.locator('.window-close[data-cued="true"]');
+    await expect(closeDot).toHaveCount(beat.closeCue ? 1 : 0);
+    if (beat.closeCue) {
+      await expect(focused(page).locator(".window-close")).toHaveAttribute("data-cued", "true");
+    }
     if (beat.shortcut) {
       const row = page.locator(`.shortcut-row[data-mode="${beat.shortcut.mode}"]`);
       await expect(page.locator('.shortcut-row[data-active="true"]')).toHaveCount(1);
@@ -159,12 +164,26 @@ test("closing empties the monitors one window at a time and loops; Pause also ho
   page,
 }) => {
   await start(page);
-  const firstClose = story.findIndex((beat) => beat.command?.type === "close");
-  await advance(page, firstClose);
+  const firstCue = story.findIndex((beat) => beat.closeCue);
+  await advance(page, firstCue);
   await expect(windows(page)).toHaveCount(3);
   for (let i = 0; i < 3; i++) {
-    await advance(page, firstClose + i + 1);
+    await advance(page, firstCue + i * 2 + 1);
+    const id = await focused(page).getAttribute("data-window-id");
+    const dot = page.locator('.window-close[data-cued="true"]');
+    await expect(dot).toHaveCount(1);
+    await expect(focused(page).locator(".window-close")).toHaveAttribute("data-cued", "true");
+    if (i === 0) {
+      await page.getByRole("button", { name: "Pause", exact: true }).click();
+      await page.clock.runFor(10000);
+      await expect(dot).toHaveCount(1);
+      await expect(windows(page)).toHaveCount(3);
+      await page.getByRole("button", { name: "Play", exact: true }).click();
+    }
+    await advance(page, firstCue + i * 2 + 2);
+    await expect(page.locator(`[data-window-id="${id}"]`)).toHaveCount(0);
     await expect(windows(page)).toHaveCount(2 - i);
+    await expect(dot).toHaveCount(0);
     await expect(page.locator('[data-lit="true"]')).toHaveCount(0);
   }
   await advance(page, story.length);
@@ -185,6 +204,17 @@ test("closing empties the monitors one window at a time and loops; Pause also ho
   await page.getByRole("button", { name: "Replay", exact: true }).click();
   await expect(windows(page)).toHaveCount(0);
   await expect(scene(page)).toHaveAttribute("data-step", "0");
+});
+
+test("Replay clears a held close-dot cue", async ({ page }) => {
+  await start(page);
+  const firstCue = story.findIndex((beat) => beat.closeCue);
+  await advance(page, firstCue + 1);
+  await expect(page.locator('.window-close[data-cued="true"]')).toHaveCount(1);
+  await page.getByRole("button", { name: "Replay", exact: true }).click();
+  await expect(windows(page)).toHaveCount(0);
+  await advance(page, 1);
+  await expect(page.locator('.window-close[data-cued="true"]')).toHaveCount(0);
 });
 
 test("reduced motion disables autoplay but allows explicit playback without transitions", async ({

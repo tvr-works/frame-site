@@ -4,7 +4,15 @@ import { cn } from "@/lib/utils";
 import { layout, surface, windowTitles, type DemoState } from "@/demo/model";
 import { WindowContent } from "./window-content";
 const icons = { browser: Globe, notes: NotebookPen, editor: Code2, terminal: Terminal };
-export function Monitor({ index, state }: { index: number; state: DemoState }) {
+export function Monitor({
+  index,
+  state,
+  closingWindow,
+}: {
+  index: number;
+  state: DemoState;
+  closingWindow?: number;
+}) {
   const ws = state.workspaces.find((w) => w.name === state.visible[index])!;
   const active = state.workspace === ws.name;
   return (
@@ -48,7 +56,10 @@ export function Monitor({ index, state }: { index: number; state: DemoState }) {
                 >
                   <div className="window-titlebar">
                     <div className="traffic-lights">
-                      <span className="window-close" />
+                      <span
+                        className="window-close"
+                        data-cued={closingWindow === win.id || undefined}
+                      />
                       <i />
                       <i />
                     </div>

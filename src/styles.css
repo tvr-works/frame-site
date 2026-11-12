@@ -357,6 +357,17 @@ a:hover {
   height: 8px;
   border-radius: 50%;
   background: #f56f70;
+  transition:
+    background 120ms,
+    box-shadow 120ms,
+    transform 120ms;
+}
+.window-close[data-cued="true"]::before {
+  background: #ff8b83;
+  box-shadow:
+    0 0 0 3px #ff6b6140,
+    0 0 13px #ff514eaa;
+  transform: scale(1.25);
 }
 .window-body {
   display: block;

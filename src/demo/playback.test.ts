@@ -35,6 +35,24 @@ describe("scripted playback", () => {
         expect(s.state).toBe(before.state);
         expect(s.shortcut?.key).toBeUndefined();
       }
+      if (beat.closeCue) {
+        expect(s.closingWindow).toBe(before.state.focused);
+        expect(s.state).toBe(before.state);
+        expect(s.shortcut).toBeUndefined();
+        const paused = sessionTransition(s, { type: "pause" });
+        expect(paused.closingWindow).toBe(s.closingWindow);
+        expect(sessionTransition(paused, { type: "tick" })).toBe(paused);
+        expect(sessionTransition(paused, { type: "replay" }).closingWindow).toBeUndefined();
+      }
+      if (beat.command?.type === "close") {
+        expect(before.closingWindow).toBe(before.state.focused);
+        expect(
+          s.state.workspaces
+            .flatMap((w) => w.columns.flatMap((c) => c.windows))
+            .some((win) => win.id === before.closingWindow),
+        ).toBe(false);
+        expect(s.closingWindow).toBeUndefined();
+      }
       if (beat.command?.type === "focus") {
         expect(geometry(s.state)).toEqual(geometry(before.state));
         expect(s.state.focused).not.toBe(before.state.focused);

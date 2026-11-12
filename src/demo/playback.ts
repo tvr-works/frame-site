@@ -11,6 +11,7 @@ interface Beat {
   command?: Command;
   caption: string;
   shortcut?: ShortcutCue;
+  closeCue?: boolean;
 }
 function shortcut(
   command: Extract<Command, { direction: unknown } | { name: string }>,
@@ -22,6 +23,16 @@ function shortcut(
   return [
     { delay, caption, shortcut: { mode } },
     { delay: 650, command, caption, shortcut: { mode, key } },
+  ];
+}
+function closeWindow(delay: number, caption: string): Beat[] {
+  return [
+    {
+      delay: delay - 450,
+      caption: "The red dot highlights the next window to close.",
+      closeCue: true,
+    },
+    { delay: 450, command: { type: "close" }, caption },
   ];
 }
 export const story: Beat[] = [
@@ -138,14 +149,15 @@ export const story: Beat[] = [
     "Option Shift 1 brings the same window back to workspace 1 on the left display. Focus follows back.",
     1800,
   ),
-  { delay: 1800, command: { type: "close" }, caption: "Close one window. The others retile." },
-  { delay: 600, command: { type: "close" }, caption: "Close the next window." },
-  { delay: 600, command: { type: "close" }, caption: "Back to empty monitors." },
+  ...closeWindow(1800, "Close one window. The others retile."),
+  ...closeWindow(600, "Close the next window."),
+  ...closeWindow(600, "Back to empty monitors."),
   { delay: 1200, caption: "An empty desktop, ready to begin again." },
 ];
 export type PlaybackMode = "playing" | "paused";
 export interface DemoSession {
   state: DemoState;
+  closingWindow?: number;
   step: number;
   mode: PlaybackMode;
   caption: string;
@@ -178,6 +190,7 @@ export function sessionTransition(s: DemoSession, event: SessionEvent): DemoSess
         step: s.step + 1,
         caption: next.caption,
         shortcut: next.shortcut,
+        closingWindow: next.closeCue ? (s.state.focused ?? undefined) : undefined,
       };
     }
     case "pause":
