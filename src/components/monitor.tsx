@@ -34,9 +34,9 @@ export function Monitor({
               aria-label={`Focus display ${index + 1}, workspace ${ws.name}`}
             >
               <MonitorIcon /> <span>Display {index + 1}</span>
+              <span aria-hidden="true">·</span>
+              <span>Workspace {ws.name}</span>
             </button>
-            <span>Workspace {ws.name}</span>
-            <img src="/icon.png" width="16" height="16" alt="Frame" />
           </div>
           <div
             className="desktop-workarea"

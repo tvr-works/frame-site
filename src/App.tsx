@@ -1,7 +1,6 @@
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import {
   ArrowUpRight,
-  BookOpen,
   Monitor as MonitorIcon,
   PanelsTopLeft,
   Pause,
@@ -14,7 +13,6 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Panel } from "@/components/panel";
 import { Monitor } from "@/components/monitor";
 import { Guide } from "@/components/guide";
-import { Learn } from "@/components/learn";
 import { KeyboardControls, directions, type ActionMode } from "@/components/keyboard-controls";
 import { useDemo } from "@/demo/use-demo";
 import { describe, workspaceNames, type Command } from "@/demo/model";
@@ -23,12 +21,8 @@ import { cn } from "@/lib/utils";
 export default function App() {
   const { session, dispatch, region, reduced } = useDemo();
   const { state } = session;
-  const [panel, setPanel] = useState<"learn" | "guide" | "install" | null>(null);
-  const [lesson, setLesson] = useState(0),
-    [mode, setMode] = useState<ActionMode>("focus"),
-    [keyboard, setKeyboard] = useState(false);
-  const practice = useRef<HTMLTextAreaElement>(null),
-    learnTrigger = useRef<HTMLButtonElement>(null);
+  const [panel, setPanel] = useState<"guide" | "install" | null>(null);
+  const [mode, setMode] = useState<ActionMode>("focus");
   const illustrated = session.mode === "playing" ? story[session.step - 1]?.command : undefined;
   const shownMode =
     illustrated &&
@@ -51,14 +45,11 @@ export default function App() {
   }
   function openPanel(value: typeof panel) {
     dispatch({ type: "user" });
-    setKeyboard(false);
     setPanel(value);
   }
   function reset() {
     dispatch({ type: "reset" });
-    setLesson(0);
     setMode("focus");
-    setKeyboard(false);
   }
   function playback() {
     if (session.mode === "playing") dispatch({ type: "pause" });
@@ -68,32 +59,58 @@ export default function App() {
       dispatch({ type: "replay" });
     }
   }
-  function onKey(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (!keyboard || event.target !== event.currentTarget) return;
+  const onKey = useEffectEvent((event: KeyboardEvent) => {
+    if (
+      !region.current?.contains(event.target as Node) ||
+      panel !== null ||
+      event.defaultPrevented ||
+      event.isComposing ||
+      (event.target instanceof HTMLElement &&
+        event.target.closest(
+          'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]',
+        ))
+    )
+      return;
     if (event.key === "Escape") {
-      setKeyboard(false);
-      learnTrigger.current?.focus();
+      (document.activeElement as HTMLElement | null)?.blur();
       event.preventDefault();
       return;
     }
-    // Global native/OS shortcuts must never become demo keyboard bindings.
-    if (event.altKey || event.ctrlKey || event.metaKey) return;
-    const key = event.key.toLowerCase(),
-      direction = directions.find((item) => item.key.toLowerCase() === key)?.direction;
+    if (event.metaKey) return;
+    // macOS Option changes event.key (e.g. H becomes ˙); code preserves the shortcut key.
+    const key = event.altKey
+      ? event.code.replace(/^(Key|Digit)/, "").toLowerCase()
+      : event.key.toLowerCase();
+    let action = shownMode;
+    if (event.altKey) {
+      if (event.ctrlKey && !event.shiftKey) return;
+      action = event.ctrlKey ? "resize" : event.shiftKey ? "move" : "focus";
+    } else if (event.ctrlKey) return;
+    const direction = directions.find((item) => item.key.toLowerCase() === key)?.direction;
     if (direction) {
       event.preventDefault();
-      act({ type: mode, direction });
-    } else if (key === "f" || key === "m" || key === "r") {
-      event.preventDefault();
-      chooseMode(key === "f" ? "focus" : key === "m" ? "move" : "resize");
-    } else if (key === "n" || key === "x") {
-      event.preventDefault();
-      act({ type: key === "n" ? "create" : "close" });
+      region.current?.focus({ preventScroll: true });
+      act({ type: action, direction });
     } else if (workspaceNames.some((name) => name === key)) {
+      if (action === "resize") return;
       event.preventDefault();
-      if (mode !== "resize") act({ type: mode === "move" ? "send" : "workspace", name: key });
+      region.current?.focus({ preventScroll: true });
+      act({ type: action === "move" ? "send" : "workspace", name: key });
+      setMode(action);
+    } else if (!event.altKey && (key === "f" || key === "m" || key === "r")) {
+      event.preventDefault();
+      region.current?.focus({ preventScroll: true });
+      chooseMode(key === "f" ? "focus" : key === "m" ? "move" : "resize");
+    } else if (!event.altKey && (key === "n" || key === "x")) {
+      event.preventDefault();
+      region.current?.focus({ preventScroll: true });
+      act({ type: key === "n" ? "create" : "close" });
     }
-  }
+  });
+  useEffect(() => {
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   return (
     <>
       <a className="skip-link" href="#demo-controls">
@@ -110,6 +127,7 @@ export default function App() {
               href="/guide.html"
               onClick={(event) => {
                 event.preventDefault();
+                event.currentTarget.focus();
                 openPanel("guide");
               }}
             >
@@ -125,7 +143,26 @@ export default function App() {
           <div className="intro">
             <h1>Intuitive, keyboard-first window management for macOS.</h1>
           </div>
-          <section className="demo" ref={region} aria-label="Interactive Frame demo">
+          <section
+            role="application"
+            className="demo"
+            ref={region}
+            aria-label="Interactive Frame demo"
+            aria-describedby="demo-keyboard-help"
+            tabIndex={-1}
+            onPointerUpCapture={(event) => {
+              if (
+                event.button === 0 &&
+                !(
+                  event.target instanceof HTMLElement &&
+                  event.target.closest(
+                    'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]',
+                  )
+                )
+              )
+                event.currentTarget.focus({ preventScroll: true });
+            }}
+          >
             <div className="demo-top-row">
               <div className="open-control">
                 <Button variant="outline" onClick={() => act({ type: "create" })}>
@@ -160,16 +197,6 @@ export default function App() {
                       ? "Play"
                       : "Replay"}
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  ref={learnTrigger}
-                  aria-haspopup="dialog"
-                  onClick={() => openPanel("learn")}
-                >
-                  <BookOpen />
-                  Learn
-                </Button>
                 <Button variant="ghost" size="sm" onClick={reset}>
                   <RotateCcw />
                   Reset
@@ -193,29 +220,13 @@ export default function App() {
               onCommand={act}
               illustrated={illustrated}
             />
-            {keyboard ? (
-              <div className="keyboard-help">
-                <p id="browser-practice-help">
-                  <strong>Browser practice · {mode} mode.</strong> Plain F/M/R chooses the action;
-                  H/J/K/L applies a direction. N opens, X closes. Numbers switch in Focus mode and
-                  send in Move mode. Escape exits; Tab leaves normally.
-                </p>
-                <label className="keyboard-practice-label">
-                  Practice uses plain keys, separately from Frame’s native Option shortcuts.
-                  <textarea
-                    ref={practice}
-                    className="keyboard-surface"
-                    aria-label="Keyboard practice area"
-                    aria-describedby="browser-practice-help"
-                    onKeyDown={onKey}
-                    onBlur={() => setKeyboard(false)}
-                    readOnly
-                    rows={1}
-                    value="F / M / R · H / J / K / L · N / X · Escape exits"
-                  />
-                </label>
-              </div>
-            ) : null}
+            <p id="demo-keyboard-help" className="sr-only">
+              Click or tab into the demo to use its keyboard controls. Option H/J/K/L focuses; add
+              Shift to move or Control and Shift to resize. Option 1–0 switches workspace; add Shift
+              to send. Plain H/J/K/L and numbers use the selected action, F/M/R selects
+              Focus/Move/Resize, N opens and X closes. Escape releases keyboard focus. Tab moves
+              normally.
+            </p>
             <p className="sr-only" aria-live="polite" aria-atomic="true">
               {panel === null && session.mode === "manual"
                 ? `${mode} mode. ${state.message} ${describe(state)}`
@@ -238,36 +249,12 @@ export default function App() {
         onOpenChange={(open) => {
           if (!open) setPanel(null);
         }}
-        finalFocus={keyboard ? practice : undefined}
         title={
-          panel === "install"
-            ? "Meet your new workspace."
-            : panel === "guide"
-              ? "A clear path to getting started."
-              : "Keep your hands in the flow."
+          panel === "install" ? "Meet your new workspace." : "A clear path to getting started."
         }
-        description={
-          panel === "learn"
-            ? "One home row. Add modifiers to change what it does."
-            : panel === "install"
-              ? "Frame for macOS"
-              : "A quick guide to Frame."
-        }
+        description={panel === "install" ? "Frame for macOS" : "A quick guide to Frame."}
       >
-        {panel === "learn" ? (
-          <Learn
-            lesson={lesson}
-            onLesson={setLesson}
-            onCommand={act}
-            onPractice={() => {
-              setKeyboard(true);
-              setPanel(null);
-            }}
-            message={state.message}
-          />
-        ) : (
-          <Guide install={panel === "install"} />
-        )}
+        <Guide install={panel === "install"} />
       </Panel>
     </>
   );

@@ -82,7 +82,7 @@ export function KeyboardControls({
           value={[mode]}
           orientation="vertical"
           onValueChange={(value) => {
-            if (value[0]) onMode(value[0] as ActionMode);
+            onMode((value[0] ?? mode) as ActionMode);
           }}
           aria-label="Window action"
         >

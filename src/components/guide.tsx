@@ -47,6 +47,16 @@ export function Guide({ install = false }: { install?: boolean }) {
             workspace starts on your main display. In this demo, workspaces 1–5 are pinned to the
             left display and 6–0 to the right.
           </p>
+          <h3>Try the keyboard in this demo</h3>
+          <p>
+            Click or tab into the demo to use the displayed shortcuts. You can also use plain
+            H/J/K/L and number keys with the selected action. F/M/R selects Focus/Move/Resize; N
+            opens a window and X closes it. Escape releases keyboard focus; Tab moves normally.
+          </p>
+          <p className="small-copy">
+            Frame’s global Option shortcuts may reach the native app before the browser. The
+            plain-key controls let you explore without using those system-wide bindings.
+          </p>
           <h3>Make it yours</h3>
           <p>
             Create <code>~/.frame.toml</code> to customize gaps, shortcuts and startup. You can also
