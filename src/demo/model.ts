@@ -90,9 +90,9 @@ function focus(s: DemoState, w: Workspace, window?: DemoWindow) {
     if (column) column.recent = s.clock;
   }
 }
-function activate(s: DemoState, w: Workspace) {
+function activate(s: DemoState, w: Workspace, window = recentWorkspaceWindow(w)) {
   s.visible[w.monitor] = w.name;
-  focus(s, w, recentWorkspaceWindow(w));
+  focus(s, w, window);
 }
 function average(items: { weight: number }[]) {
   return items.length ? items.reduce((a, b) => a + b.weight, 0) / items.length : 1;
@@ -148,8 +148,7 @@ export function transition(input: DemoState, command: Command): DemoState {
       const ws = s.workspaces.find((x) => allWindows(x).some((y) => y.id === command.id));
       const target = ws && allWindows(ws).find((x) => x.id === command.id);
       if (ws && target) {
-        activate(s, ws);
-        focus(s, ws, target);
+        activate(s, ws, target);
         s.message = `Focused ${windowTitles[target.kind]}. Layout unchanged.`;
       }
       break;
@@ -196,12 +195,9 @@ export function transition(input: DemoState, command: Command): DemoState {
       const target = ws.columns.at(-1) ?? column(s, ws);
       c.windows = c.windows.filter((x) => x !== win);
       win.weight = average(target.windows);
-      win.recent = ++s.clock;
-      target.recent = s.clock;
       target.windows.push(win);
-      s.focused = null;
-      focus(s, w, recentWorkspaceWindow(w));
-      s.message = `Sent ${windowTitles[win.kind]} to workspace ${ws.name}. Focus stays on workspace ${w.name}.`;
+      activate(s, ws, win);
+      s.message = `Moved ${windowTitles[win.kind]} to workspace ${ws.name}, display ${ws.monitor + 1}. Focus follows the window.`;
       break;
     }
     case "close": {

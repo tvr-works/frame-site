@@ -69,26 +69,36 @@ test("loads a meaningful empty desktop; create, focus, move, resize, close and r
   expect(errors).toEqual([]);
 });
 
-test("workspace transfers retain focus and display affinity; display changes preserve windows", async ({
+test("workspace transfers follow the moved window across hidden workspaces and displays", async ({
   page,
 }) => {
   await page.goto("/");
   await open(page);
+  const id = await focused(page).getAttribute("data-window-id");
   await workspace(page, "6", true);
-  await expect(focused(page)).toHaveCount(0);
+  await expect(page.getByTestId("monitor-1").locator("[data-focused=true]")).toHaveAttribute(
+    "data-window-id",
+    id!,
+  );
   await expect(page.getByTestId("monitor-0")).toContainText("Workspace 1");
-  await expect(windows(page)).toHaveCount(1);
-  await workspace(page, "6");
-  await expect(focused(page)).toHaveCount(1);
-  await expect(page.getByTestId("monitor-1").locator("[data-focused=true]")).toHaveCount(1);
-  await workspace(page, "3");
+  await workspace(page, "0", true);
+  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 0");
+  await expect(focused(page)).toHaveAttribute("data-window-id", id!);
+  await workspace(page, "3", true);
   await expect(page.getByTestId("monitor-0")).toContainText("Workspace 3");
-  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 6");
+  await expect(page.getByTestId("monitor-0").locator("[data-focused=true]")).toHaveAttribute(
+    "data-window-id",
+    id!,
+  );
   await page.getByRole("button", { name: "Single monitor", exact: true }).click();
-  await expect(windows(page)).toHaveCount(0);
-  await workspace(page, "6");
-  await expect(windows(page)).toHaveCount(1);
+  await workspace(page, "8", true);
+  await expect(page.getByTestId("monitor-0")).toContainText("Workspace 8");
+  await expect(focused(page)).toHaveAttribute("data-window-id", id!);
   await page.getByRole("button", { name: "Dual monitors", exact: true }).click();
+  await expect(page.getByTestId("monitor-1").locator("[data-focused=true]")).toHaveAttribute(
+    "data-window-id",
+    id!,
+  );
   await expect(windows(page)).toHaveCount(1);
 });
 
@@ -216,7 +226,7 @@ test("keyboard controls work directly after a demo click and release with Escape
   await page.keyboard.press("m");
   await page.keyboard.press("6");
   await expect(page.getByTestId("monitor-1").locator("[data-window-id]")).toHaveCount(1);
-  await expect(focused(page)).not.toHaveAttribute("data-window-id", id!);
+  await expect(focused(page)).toHaveAttribute("data-window-id", id!);
   await page.keyboard.press("r");
   await page.keyboard.press("3");
   await expect(page.getByTestId("monitor-0")).toContainText("Workspace 1");
@@ -271,7 +281,8 @@ test("displayed Option chords handle macOS key characters without sending native
     page.getByRole("button", { name: "Resize · Control Shift Option", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await demo.dispatchEvent("keydown", { key: "‚", code: "Digit0", altKey: true, shiftKey: true });
-  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 6");
+  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 0");
+  await expect(focused(page)).toHaveAttribute("data-window-id", id!);
   await demo.dispatchEvent("keydown", { key: "º", code: "Digit0", altKey: true });
   await expect(page.getByTestId("monitor-1")).toContainText("Workspace 0");
   await expect(focused(page)).toHaveAttribute("data-window-id", id!);

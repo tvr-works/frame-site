@@ -103,12 +103,6 @@ describe("FrameEngine fixture parity — source commit 88c47e8", () => {
       transition(s, { type: "resize", direction: "right" }).workspaces[0].columns[0].weight,
     ).toBe(1424);
   });
-  it("MoveNodeToWorkspaceCommandTest.testAnotherWindowSubject: stays on source and focuses remaining MRU", () => {
-    const s = transition(seed([[1, 2]], 2), { type: "send", name: "2" });
-    expect(s.workspace).toBe("1");
-    expect(s.focused).toBe(1);
-    expect(s.workspaces[1].columns[0].windows[0].id).toBe(2);
-  });
   it("transfers append to last column, independently of automatic new-window placement", () => {
     const s = seed([[1]], 1);
     s.workspaces[1].columns = seed([[2], [3]]).workspaces[0].columns;
@@ -148,17 +142,53 @@ describe("browser demo bounds and state invariants", () => {
       expect(s.focused).toBe(focused);
     }
   });
-  it("sending to a hidden locked workspace keeps source focus until activation", () => {
-    const source = run(initialState(), { type: "create" }, { type: "create" });
-    const sent = source.focused;
-    let s = transition(source, { type: "send", name: "0" });
-    expect(s.visible).toEqual(["1", "6"]);
-    expect(s.workspace).toBe("1");
-    expect(s.focused).not.toBe(sent);
-    s = transition(s, { type: "workspace", name: "0" });
-    expect(s.visible).toEqual(["1", "0"]);
-    expect(s.workspace).toBe("0");
-    expect(s.focused).toBe(sent);
+  it.each([
+    { count: 1, name: "2", visible: ["2"] },
+    { count: 2, name: "3", visible: ["3", "6"] },
+    { count: 2, name: "6", visible: ["1", "6"] },
+    { count: 2, name: "0", visible: ["1", "0"] },
+  ] as const)(
+    "follows a transferred window to workspace $name with $count display(s)",
+    ({ count, name, visible }) => {
+      const source = run(initialState(count), { type: "create" }, { type: "create" });
+      const sent = source.focused;
+      const s = transition(source, { type: "send", name });
+      expect(s.visible).toEqual(visible);
+      expect(s.workspace).toBe(name);
+      expect(s.focused).toBe(sent);
+      expect(
+        currentWorkspace(s)
+          .columns.flatMap((c) => c.windows)
+          .map((w) => w.id),
+      ).toContain(sent);
+      expect(s.workspaces[0].columns.flatMap((c) => c.windows).map((w) => w.id)).not.toContain(
+        sent,
+      );
+      const returned = transition(s, { type: "workspace", name: "1" });
+      expect(returned.focused).toBe(2);
+    },
+  );
+  it("keeps the moved window focused instead of the destination's previously active window", () => {
+    let s = run(initialState(), { type: "create" });
+    const moved = s.focused;
+    s = run(s, { type: "workspace", name: "6" }, { type: "create" }, { type: "create" });
+    const previousDestination = s.focused;
+    s = run(s, { type: "workspace", name: "1" }, { type: "send", name: "6" });
+    expect(s.workspace).toBe("6");
+    expect(s.focused).toBe(moved);
+    expect(s.focused).not.toBe(previousDestination);
+    expect(currentWorkspace(s).columns.at(-1)?.windows.at(-1)?.id).toBe(moved);
+  });
+  it("rejected transfers preserve source focus, visibility and all windows", () => {
+    let source = run(initialState(), { type: "create" }, { type: "workspace", name: "6" });
+    for (let i = 0; i < 6; i++) source = transition(source, { type: "create" });
+    source = transition(source, { type: "workspace", name: "1" });
+    for (const name of ["1", "6", "missing"]) {
+      const s = transition(source, { type: "send", name });
+      expect({ ...s, message: source.message }).toEqual(source);
+    }
+    const empty = initialState();
+    expect(transition(empty, { type: "send", name: "0" }).focused).toBeNull();
   });
   it.each(["3", "8"])("restores both banks after using workspace %s on one monitor", (name) => {
     let s = run(

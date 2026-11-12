@@ -42,10 +42,10 @@ export function Guide({ install = false }: { install?: boolean }) {
           </p>
           <h3>Workspaces that remember</h3>
           <p>
-            Option + 1–0 switches workspaces. Add Shift to send the focused window there while
-            staying in your current workspace. Workspaces remember their display; an unused
-            workspace starts on your main display. In this demo, workspaces 1–5 are pinned to the
-            left display and 6–0 to the right.
+            Option + 1–0 switches workspaces. Add Shift to send the focused window. This demo
+            follows the moved window, showing its destination workspace and keeping it focused.
+            Workspaces 1–5 are pinned to the left display and 6–0 to the right. Frame’s native
+            defaults keep focus on the source workspace; native workspaces remember their display.
           </p>
           <h3>Try the keyboard in this demo</h3>
           <p>

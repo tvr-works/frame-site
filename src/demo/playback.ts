@@ -26,13 +26,8 @@ export const story: { command: Command; caption: string; keys?: string }[] = [
   },
   {
     command: { type: "send", name: "6" },
-    caption: "Send a window to another workspace. Stay where you are.",
+    caption: "Move a window to another workspace. Focus follows it across displays.",
     keys: "⌥ ⇧ 6",
-  },
-  {
-    command: { type: "workspace", name: "6" },
-    caption: "Switch workspace to pick up where you left off.",
-    keys: "⌥ 6",
   },
   {
     command: { type: "create", kind: "terminal" },
