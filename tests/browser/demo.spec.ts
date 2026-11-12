@@ -4,6 +4,10 @@ import { story } from "../../src/demo/playback";
 const windows = (page: Page) => page.locator("[data-window-id]");
 const focused = (page: Page) => page.locator('[data-focused="true"]');
 const scene = (page: Page) => page.getByRole("region", { name: "Frame shortcut demonstration" });
+const headerGuide = (page: Page) =>
+  page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Guide", exact: true });
 async function advance(page: Page, step: number) {
   const current = Number(await scene(page).getAttribute("data-step"));
   for (let i = current; i < step; i++) {
@@ -298,12 +302,12 @@ test("Guide pauses playback, preserves the scene and requires explicit Play on r
 }) => {
   await start(page);
   await advance(page, 3);
-  await page.getByRole("link", { name: "Guide", exact: true }).click();
+  await headerGuide(page).click();
   await expect(page.getByRole("heading", { name: "Watch the shortcuts compose" })).toBeVisible();
   await page.clock.runFor(10000);
   await expect(scene(page)).toHaveAttribute("data-step", "3");
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("link", { name: "Guide", exact: true })).toBeFocused();
+  await expect(headerGuide(page)).toBeFocused();
   await expect(scene(page)).toHaveAttribute("data-playback", "paused");
   await page.getByRole("button", { name: "Play", exact: true }).click();
   await advance(page, 4);
@@ -356,12 +360,48 @@ for (const viewport of [
     await advance(page, story.findIndex((beat) => beat.command?.type === "move") + 1);
     await page.getByRole("button", { name: "Pause", exact: true }).click();
     await noOverflow(page);
-    await page.getByRole("link", { name: "Guide", exact: true }).click();
+    await headerGuide(page).click();
     await expect(page.getByRole("dialog")).toBeVisible();
     await noOverflow(page);
     await page.getByRole("button", { name: "Close panel" }).click();
+    await page
+      .getByRole("heading", { name: "Simple composable movements" })
+      .scrollIntoViewIfNeeded();
     await noOverflow(page);
   });
+
+test("structure and movements explain the model; footer Guide opens and restores focus", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const structure = page.getByRole("region", { name: "Workspaces, columns, and rows." });
+  await structure.scrollIntoViewIfNeeded();
+  await expect(structure.getByText("One workspace. Two columns. Three windows.")).toBeVisible();
+  const movements = page.getByRole("region", { name: "Simple composable movements" });
+  await movements.scrollIntoViewIfNeeded();
+  await expect(movements.getByRole("article")).toHaveCount(3);
+  await expect(movements.getByRole("heading", { level: 3 })).toHaveText([
+    "Focus",
+    "Move",
+    "Resize",
+  ]);
+  for (const image of await page.locator(".explanation img").all()) {
+    await image.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        image.evaluate((node: HTMLImageElement) => node.complete && node.naturalWidth > 0),
+      )
+      .toBe(true);
+  }
+  await noOverflow(page);
+  const footerGuide = page
+    .getByRole("navigation", { name: "Footer navigation" })
+    .getByRole("link", { name: "Guide", exact: true });
+  await footerGuide.click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(footerGuide).toBeFocused();
+});
 
 test("touch playback starts, pauses and replays without interactive windows", async ({
   browser,
@@ -430,7 +470,7 @@ test("automated accessibility: scripted scene, guide and install", async ({ page
         .analyze()
     ).violations,
   ).toEqual([]);
-  await page.getByRole("link", { name: "Guide", exact: true }).click();
+  await headerGuide(page).click();
   expect(
     (await new AxeBuilder({ page }).exclude("[data-base-ui-focus-guard]").analyze()).violations,
   ).toEqual([]);
@@ -492,7 +532,9 @@ test("@artifact no-JavaScript visitors can read the guide and install", async ({
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Intuitive, keyboard-first window management for macOS.",
   );
-  await page.getByRole("link", { name: "Guide", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Simple composable movements" })).toBeVisible();
+  await expect(page.getByText("One workspace. Two columns. Three windows.")).toBeVisible();
+  await headerGuide(page).click();
   await expect(page).toHaveURL(/\/guide.html$/);
   await expect(page.getByRole("heading", { name: "Install", exact: true })).toBeVisible();
   await expect(page.locator("pre")).toContainText("brew install --cask tvr-works/tap/frame");

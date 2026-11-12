@@ -36,6 +36,7 @@ Return to `npm run build` afterward for preview indexing. Builds include an exac
 - `src/demo/playback.ts`: the repeating story, shortcut cues and playback state.
 - `src/demo/use-demo.ts`: timers, reduced motion, visibility and background suspension.
 - `src/components/monitor.tsx`: geometry and presentation; it never owns layout state.
+- `src/components/below-fold.tsx`: static workspace structure and composable movement explanations.
 
 The current design uses one headline, matte monitor hardware with a blue stage glow, quiet translucent windows, workspace number keys locked 1–5 to the left display and 6–0 to the right and a modifier ladder feeding one shared H/J/K/L row. The keys are a read-only visualization. Play/Pause and Replay are the only demo controls, above the displays. A larger action label stays centered between the monitor feet.
 
@@ -44,3 +45,9 @@ The script holds empty monitors for 1.2 seconds, opens three windows 1.2 seconds
 Background/offscreen suspension and opening Guide/Install pause playback and require explicit Play to continue. Reduced motion starts empty with autoplay off and visual transitions disabled; visitors can explicitly play. The stage and keys are decorative, with a screen-reader summary and polite pause status. There is no keyboard capture or hands-on window/workspace/display control. Existing model transitions and native parity fixtures remain the source of layout behavior. The follow-focus transfer and fixed workspace banks are deliberate demo policies documented below.
 
 [Action wording and pacing](docs/demo-script.md) · [Simulator evidence and limits](docs/simulator.md) · [CI and future publication](docs/ci-deployment.md) · [Design verification](design-qa.md)
+
+## Below the fold
+
+The page continues from the scripted demonstration into two static sections: “Workspaces, columns, and rows.” explains the layout hierarchy, then “Simple composable movements” shows Focus, Move and Resize with the same H/J/K/L directions and progressively added modifiers. The resize illustration includes both column width and row height. Whitespace separates the major sections; thin dividers separate only the three movement rows. The footer reuses the existing Guide panel and source link.
+
+Five generated WebP illustrations live in `public/illustrations/`: desktop/mobile workspace diagrams and the three movement diagrams. Text outside those illustrations and keycaps remain semantic HTML. Mobile uses a separate, larger-label structure image; all illustrations load lazily, with explicit intrinsic dimensions. The page content is prerendered and remains readable without JavaScript. The approved target and browser comparisons are recorded in [design-qa.md](design-qa.md).

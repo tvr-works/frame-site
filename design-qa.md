@@ -2,6 +2,8 @@
 
 final result: passed
 
+The latest below-the-fold build is reviewed in “Structure and composable movements” at the end of this document. Earlier review entries preserve the design history.
+
 ## Current visual target
 
 The owner selected `option-3-matte-monitor-frames.png` in `/Users/tim.vanreenen/.codex/visualizations/2026/11/12/01a1ce07-209a-7793-9b40-7d0f587d4fd7/keyboard-control-concepts/`. This supersedes the original heading, flat CSS hardware, toolbar, workspace selectors and in-screen workspace strips. The original monitor/glow reference is retained there as `monitor-glow-reference.png`.
@@ -170,3 +172,54 @@ All 65 unit tests, 42 Chromium/WebKit browser checks, formatting, lint, TypeScri
 Final visual evidence in the existing keyboard-build directory: feet-label-1488.png, feet-label-1286.png, feet-label-768.png, feet-label-390.png and feet-label-row-resize.png. Desktop, mobile and row-resize captures were opened and inspected: the label is central, the longest phrase clears both feet, and the row changes height within its column. Earlier labelled-* captures record the superseded below-controls position. The social card was refreshed to the final placement. No console/page errors were observed in the scripted capture.
 
 The final timing review removes the separate leading text/modifier phase. Each shortcut now changes its label, full key chord and model state in the same beat, then holds that result before the next action. Command intervals and the 42.95-second cycle stay unchanged. Close-dot previews remain intentionally anticipatory; their text holds the previous action until the actual close. A new frozen-clock browser case verifies immediately before and after focus and resize boundaries that text/keys stay unchanged until the command, then update together. All 42 browser cases pass. Final synchronized row-resize capture: sync-feet-label-row.png; no page/console errors were observed.
+
+## Structure and composable movements
+
+final result: passed
+
+### Target and captured state
+
+Source visual truth: `/Users/tim.vanreenen/.codex/generated_images/01a1ce07-209a-7793-9b40-7d0f587d4fd7/exec-f275d786-7097-4ed8-8441-05bfb58dc697.png` (770 × 2043 pixels). This is the selected structure/movements reference with the final “Simple composable movements” heading. The owner's subsequent instruction removes dividers between major sections; whitespace replaces them. The three internal movement dividers remain. Existing hero behavior and assets are retained.
+
+Implementation: `http://127.0.0.1:4177/`, dark theme, static explanation with all lazy images decoded, no dialog. Evidence directory: `/Users/tim.vanreenen/.codex/visualizations/2026/11/12/01a1ce07-209a-7793-9b40-7d0f587d4fd7/below-fold-build/`.
+
+- `final-770.png`: 770 × 1100 CSS viewport, deviceScaleFactor 1; explanation element capture 710 × 2063 pixels.
+- `final-desktop.png`: 1488 × 1058 CSS viewport, deviceScaleFactor 1; explanation element 1200 × 2897 pixels.
+- `final-mobile.png`: 390 × 844 CSS viewport, deviceScaleFactor 1; explanation element 342 × 2227 pixels.
+- `movements-desktop.png`: desktop viewport capture including heading, keycaps and diagrams.
+- `reference-content.png`: source content crop at x47/y170, 680 × 1720 pixels, excluding the hero tail and footer.
+- `comparison-final-770.png`: source crop on the left, implementation on the right; both content regions normalized to 680 pixels wide with preserved aspect ratios, 24-pixel gutter, overall 1384 × 1976 pixels. The implementation is proportionally reduced from 710 pixels; source is at its native crop scale. This is a content-region comparison, not a claim of identical pixel positions or section height. The larger section gaps and absence of major dividers are intentional.
+- `comparison-movements-detail.png`: 1384 × 680 focused crop from the combined comparison, inspected for type, modifiers, skeleton treatment, arrows and captions. Differing vertical positions reflect the intentional whitespace; the actual Focus/Move examples are compared by their headings and assets.
+
+The combined comparisons and final mobile capture were opened and inspected. IAB also rendered the new content at 1286 × 1309, opened the footer Guide, closed it with Escape and restored focus to that footer link. Warning/error logs were empty. The preview is kept open. No framework error overlay or blank page was observed.
+
+### Findings and comparison history
+
+1. [P2, fixed] Structure label transparency produced halos in the initial raster. Regenerated the structure artwork on opaque navy, with readable native image labels. A separate mobile variant increases label size. The final diagrams retain exactly one tall left window and two right-hand rows.
+2. [P2, fixed] The opaque structure canvas was slightly darker than the page, leaving a visible rectangular patch. Scoped lighten blending inside an isolated, page-colored picture container removes the dark canvas boundary while preserving the image content. Final desktop/tablet/mobile captures show no hard background rectangle.
+3. [P2, fixed] The first 770-pixel comparison (`comparison-770.png`) showed undersized structure type, lead text, action headings and keycaps relative to the reference. Increased the structure heading's responsive scale, lead/caption scale, action heading scale and keycap dimensions. The final comparison restores the intended strong structure heading and clear modifier progression.
+4. [P2, fixed] The first full browser run found a five-pixel horizontal overflow with doubled text: the word “Workspaces,” could not break. Added emergency wrapping to explanation headings. Both engines now pass the enlarged-text case and the 320/390/768/1488-pixel reflow checks.
+
+No actionable P0/P1/P2 findings remain after the revised capture and combined comparison.
+
+### Required fidelity surfaces
+
+| Surface                          | Final review                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fonts and typography             | Reused the existing self-hosted Geist family. Large, tightly tracked headings preserve the selected hierarchy; leads/captions use quieter optical weights. Keycaps use the existing font and native modifier glyphs. At tablet width the structure heading retains its two-line shape; mobile wraps the movement title without truncation. Emergency wrapping handles enlarged text. Raster labels are intentionally part of the diagram; the structural alt text carries their meaning. |
+| Spacing and layout rhythm        | One wide annotated diagram followed by three editorial action rows. Desktop pairs commands with compact diagrams; mobile stacks them. Major boundaries use generous whitespace (190 px from the hero and 200 px before movements on desktop; 112/120 px on mobile). Only movement rows receive thin dividers. Content stays within the established page margins and 1200-pixel explanation width.                                                                                        |
+| Colors and tokens                | Existing near-black navy, white/muted text and icy-blue accent are reused. Option has a quiet blue outline; Shift and Control fill progressively. Miniatures match the subdued translucent skeleton language. The below-fold canvas stays quiet rather than repeating the hero's monitor glow.                                                                                                                                                                                           |
+| Image quality and asset fidelity | Five generated WebP assets, not CSS/SVG illustration substitutes. The annotated diagram correctly shows workspace → columns → rows; Focus highlights one window, Move shows a horizontal transfer, Resize marks both axes. Desktop/mobile structure variants avoid label halos. Transparent movement images have matched framing and no visible edge seams. Images use intrinsic dimensions, async decoding and lazy loading.                                                            |
+| Copy and content                 | Exact approved hierarchy and movement title. Structural language describes containment and commands, without prescribing task organization. Captions read “Choose a window.”, “Move between columns or rows.” and “Resize a column or row.” Shortcuts keep Option, then Shift, then Control to show composition. No new marketing claims, installation block or hands-on controls were introduced.                                                                                       |
+
+### Verification and implementation checklist
+
+- [x] Static semantic sections, heading hierarchy, image description and spoken shortcut names.
+- [x] Mobile structure asset and responsive editorial rows.
+- [x] Footer reuses the Guide dialog and restores its own opener focus. Static Guide works without JavaScript.
+- [x] Full `npm run check`: formatting, lint, TypeScript and all 65 unit tests.
+- [x] Preview build and all 44 Chromium/WebKit browser cases, including the new content/image/footer path, existing scripted playback, axe scans, responsive layouts and enlarged text.
+- [x] Production build plus all four artifact checks; restored preview indexing afterward. No publication.
+- [x] Final visual comparison and IAB navigation check; no captured page/console errors.
+
+Follow-up polish: generated raster illustrations are interpretations of the selected mock rather than extracted source pixels. Manual VoiceOver testing and a user study are not claimed. No further visual blocker remains.

@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { ArrowUpRight, Pause, Play, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/panel";
 import { Monitor } from "@/components/monitor";
 import { Guide } from "@/components/guide";
+import { BelowFold } from "@/components/below-fold";
 import { KeyboardShortcuts } from "@/components/keyboard-controls";
 import { useDemo } from "@/demo/use-demo";
 import { describe } from "@/demo/model";
@@ -14,6 +15,11 @@ export default function App() {
   function openPanel(value: typeof panel) {
     dispatch({ type: "pause" });
     setPanel(value);
+  }
+  function openGuide(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    event.currentTarget.focus();
+    openPanel("guide");
   }
   function playback() {
     dispatch({ type: session.mode === "playing" ? "pause" : "resume" });
@@ -30,14 +36,7 @@ export default function App() {
             <span>Frame</span>
           </a>
           <nav aria-label="Main navigation">
-            <a
-              href="/guide.html"
-              onClick={(event) => {
-                event.preventDefault();
-                event.currentTarget.focus();
-                openPanel("guide");
-              }}
-            >
+            <a href="/guide.html" onClick={openGuide}>
               Guide
             </a>
             <a href="https://github.com/tvr-works/frame">
@@ -104,7 +103,18 @@ export default function App() {
               </span>
             ) : null}
           </section>
+          <BelowFold />
         </main>
+        <footer className="site-footer">
+          <nav aria-label="Footer navigation">
+            <a href="/guide.html" onClick={openGuide}>
+              Guide
+            </a>
+            <a href="https://github.com/tvr-works/frame">
+              GitHub <ArrowUpRight />
+            </a>
+          </nav>
+        </footer>
       </div>
       <Panel
         open={panel !== null}
