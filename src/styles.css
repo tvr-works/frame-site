@@ -994,7 +994,7 @@ a:hover {
   .utility-controls {
     gap: 3px;
   }
-  .utility-controls .ui-button {
+  .demo-top-row .ui-button {
     padding-inline: 8px;
   }
   .ui-toggle {
@@ -1099,15 +1099,10 @@ a:hover {
     gap: 16px;
     margin-bottom: 24px;
   }
-  .utility-controls .ui-button {
+  .demo-top-row .ui-button {
     font-size: 12px;
     min-height: 40px;
     padding-inline: 6px;
-  }
-  .open-control .ui-button {
-    font-size: 12px;
-    min-height: 40px;
-    padding-inline: 10px;
   }
   .demo-stage {
     margin: 0 -8px;
@@ -1232,14 +1227,10 @@ a:hover {
   .utility-controls {
     gap: 1px;
   }
-  .utility-controls .ui-button {
+  .demo-top-row .ui-button {
     font-size: 11px;
     gap: 4px;
     padding-inline: 5px;
-  }
-  .open-control .ui-button {
-    padding-inline: 8px;
-    font-size: 11px;
   }
   .window-focus > svg {
     display: none;

@@ -110,3 +110,7 @@ All 64 unit tests, 48 Chromium/WebKit browser cases, formatting, lint, TypeScrip
 ## Review update: remove the workspace hint
 
 Removed the visible “Workspaces · Option switch · Option Shift send” hint, its resize note, dangling description reference and unused styles. All ten workspace controls retain their accessible names and hidden fieldset legend. The tablet row reserved for the removed hint was also removed; desktop banks and mobile stacking remain aligned. Inspected `no-workspace-hint.png` and `no-workspace-hint-mobile.png`; full desktop evidence is `no-workspace-hint-desktop.png`. The social card was refreshed. All 64 unit tests, 48 Chromium/WebKit browser checks, formatting, lint, TypeScript and static build pass, with no page errors in the final capture.
+
+## Review update: match the top-row action styles
+
+Open window now uses the same small, quiet icon-and-text button treatment as Replay and Reset. Shared responsive sizing applies across all three actions, replacing the former outlined-button padding overrides. Inspected `quiet-open-window.png` and `quiet-open-window-mobile.png`; full desktop evidence is `quiet-open-window-desktop.png`. The social card was refreshed. All 64 unit tests, 48 Chromium/WebKit checks, formatting, lint, TypeScript and static build pass. Window creation, keyboard focus, hover and touch behavior remain verified; final capture had no page errors.

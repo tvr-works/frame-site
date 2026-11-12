@@ -242,7 +242,7 @@ export default function App() {
           >
             <div className="demo-top-row">
               <div className="open-control">
-                <Button variant="outline" onClick={() => act({ type: "create" })}>
+                <Button variant="ghost" size="sm" onClick={() => act({ type: "create" })}>
                   <Plus />
                   Open window
                 </Button>
