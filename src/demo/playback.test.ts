@@ -49,9 +49,15 @@ describe("scripted playback", () => {
       if (beat.command?.type === "send") {
         expect(s.state.focused).toBe(before.state.focused);
         expect(s.state.visible).toEqual(["1", "7"]);
-        expect(s.state.workspace).toBe("7");
+        expect(s.state.workspace).toBe(beat.command.name);
+        expect(s.shortcut?.key).toBe(beat.command.name);
       }
     }
+    expect(s.state.workspace).toBe("1");
+    expect(
+      s.state.workspaces.find((w) => w.name === "1")!.columns.flatMap((c) => c.windows),
+    ).toHaveLength(3);
+    expect(s.state.workspaces.find((w) => w.name === "7")!.columns).toHaveLength(0);
     expect(s.mode).toBe("complete");
     expect(s.shortcut).toBeUndefined();
     expect(s.state.workspaces.flatMap((w) => w.columns.flatMap((c) => c.windows))).toHaveLength(3);

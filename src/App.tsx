@@ -64,8 +64,9 @@ export default function App() {
               A scripted demonstration opens three windows on the left display. Option H, J, K and L
               change focus without moving windows. Adding Shift to Option L moves the focused window
               right; adding Control resizes it in steps. Option Shift 7 sends it to workspace 7 on
-              the right display, keeping it focused. The illustrated keys light up before each
-              action. Use Play or Pause to control playback, or Replay to start again.
+              the right display, then Option Shift 1 brings it back to the left, keeping it focused
+              both ways. The illustrated keys light up before each action. Use Play or Pause to
+              control playback, or Replay to start again.
             </p>
             <div id="demo-controls" className="demo-top-row" tabIndex={-1}>
               <div className="utility-controls">

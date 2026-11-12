@@ -131,6 +131,13 @@ export const story: Beat[] = [
     "Option Shift 7 sends the window to workspace 7 on the right display. Focus follows.",
     1800,
   ),
+  ...shortcut(
+    { type: "send", name: "1" },
+    "move",
+    "1",
+    "Option Shift 1 brings the same window back to workspace 1 on the left display. Focus follows back.",
+    1800,
+  ),
   { delay: 2400, caption: "Learn the directions once. Add modifiers to focus, move and resize." },
 ];
 export type PlaybackMode = "playing" | "paused" | "complete";

@@ -54,7 +54,10 @@ test("loads empty with only playback controls and no application keyboard captur
 
 test("opening builds three windows steadily before the shortcut sequence", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.clock.install();
+  const startTime = new Date();
+  await page.clock.install({ time: startTime });
+  // Freeze before navigation so loading/locator time cannot consume the empty opening.
+  await page.clock.pauseAt(new Date(startTime.getTime() + 1000));
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Pause", exact: true })).toBeVisible();
   await page.clock.runFor(500);
@@ -103,10 +106,21 @@ test("script cues the matching row before actions and composes L for focus, move
       await expect(focused(page)).toHaveAttribute("data-window-id", id!);
       await expect(page.locator('.home-row [data-lit="true"]')).toHaveText(beat.shortcut!.key!);
     }
+    if (beat.command?.type === "send") {
+      const display = beat.command.name === "7" ? 1 : 0;
+      await expect(
+        page.getByTestId(`monitor-${display}`).locator('[data-focused="true"]'),
+      ).toHaveAttribute("data-window-id", id!);
+      await expect(page.getByTestId(`monitor-${display}`)).toContainText(
+        `Workspace ${beat.command.name}`,
+      );
+      await expect(page.locator('.number-bank [data-lit="true"]')).toHaveText(beat.command.name);
+    }
     previous = await geometry();
   }
-  await expect(page.getByTestId("monitor-0").locator("[data-window-id]")).toHaveCount(2);
-  await expect(page.getByTestId("monitor-1").locator('[data-focused="true"]')).toHaveAttribute(
+  await expect(page.getByTestId("monitor-0").locator("[data-window-id]")).toHaveCount(3);
+  await expect(page.getByTestId("monitor-1").locator("[data-window-id]")).toHaveCount(0);
+  await expect(page.getByTestId("monitor-0").locator('[data-focused="true"]')).toHaveAttribute(
     "data-window-id",
     id!,
   );
