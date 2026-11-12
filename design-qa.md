@@ -257,3 +257,17 @@ Typography and section hierarchy now match by construction and by rendered measu
 Formatting, lint, TypeScript, all 65 unit tests and all 44 Chromium/WebKit browser cases pass on the combined changes, including icon-only accessible naming, touch controls, Tab order, modal focus, axe scans, doubled text and responsive layouts. The initial browser assertion now checks the two named controls rather than requiring visible text. Static production-artifact verification and preview restoration are completed before commit. Manual VoiceOver testing is not claimed.
 
 final result: passed
+
+## Review update: centered category title and quiet eyebrow
+
+The owner requested centering the hero and proposed the shorter category title. The hero now reads “Tiling Window Manager for macOS”, centered under the eyebrow “Keyboard-first · Vim-inspired”. The eyebrow keeps two concrete descriptors rather than repeating “tiling” from the title; “Vim-inspired” describes the directional shortcuts without implying a Vim dependency. The existing type scale and generous hero margins remain. The shorter heading fits on one line at 1047/1488 pixels and wraps naturally on mobile.
+
+Updated the document/Open Graph title and descriptions, prerender acceptance assertion, browser heading/title expectations and 1200 × 630 social screenshot to match. No new interactive behavior or diagram assets.
+
+Evidence in the existing below-fold-build directory: centered-title-1047.png, centered-title-1488.png, centered-title-390.png and centered-title-320.png, all deviceScaleFactor 1. Opened and inspected the owner-width and smallest mobile captures plus the refreshed social card. The title/eyebrow are centered, readable and unclipped; controls remain beside the right monitor foot. Geometry probes confirm text-align center, correct document/visible titles and no horizontal overflow at all four sizes. No page errors were captured. Existing Geist, navy/white/muted palette, image quality and below-fold layout are preserved. The copy and heading placement are an explicit owner-requested change to the prior target. No actionable P0/P1/P2 findings remain.
+
+Terminology was checked against the primary AeroSpace guide (https://nikitabobko.github.io/AeroSpace/guide.html), which describes the same macOS software category as a “tiling window manager”. This is evidence for the category wording, not a claim that Frame is built on AeroSpace or Vim.
+
+Formatting, lint, TypeScript, all 65 unit tests and all 44 Chromium/WebKit browser cases pass, including heading/title/static HTML assertions, enlarged text and axe scans. Production-artifact checks and preview restoration are completed before commit. The site remains local-only.
+
+final result: passed

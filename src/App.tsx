@@ -47,7 +47,8 @@ export default function App() {
         </header>
         <main>
           <div className="intro">
-            <h1>Intuitive, keyboard-first window management for macOS.</h1>
+            <p className="intro-eyebrow">Keyboard-first · Vim-inspired</p>
+            <h1>Tiling Window Manager for macOS</h1>
           </div>
           <section
             className="demo"

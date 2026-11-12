@@ -36,9 +36,9 @@ test("loads empty with only playback controls and no application keyboard captur
   page.on("pageerror", (error) => errors.push(error.message));
   const response = await page.goto("/");
   expect(response?.status()).toBe(200);
-  await expect(page).toHaveTitle("Frame — Intuitive, keyboard-first window management for macOS.");
+  await expect(page).toHaveTitle("Frame — Tiling Window Manager for macOS");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Intuitive, keyboard-first window management for macOS.",
+    "Tiling Window Manager for macOS",
   );
   await expect(windows(page)).toHaveCount(0);
   await expect(scene(page).getByRole("button")).toHaveCount(2);
@@ -489,7 +489,7 @@ test("@artifact static HTML, security, indexing, identity, assets and honest 404
 }) => {
   const home = await request.get("/");
   const html = await home.text();
-  expect(html).toContain("Intuitive, keyboard-first window management for macOS.");
+  expect(html).toContain("Tiling Window Manager for macOS");
   expect(html).toContain("https://frame.tvr.works/");
   expect(html).not.toContain('<div id="root"></div>');
   expect(home.headers()["content-security-policy"]).toContain("script-src 'self'");
@@ -532,7 +532,7 @@ test("@artifact no-JavaScript visitors can read the guide and install", async ({
   const page = await context.newPage();
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Intuitive, keyboard-first window management for macOS.",
+    "Tiling Window Manager for macOS",
   );
   await expect(page.getByRole("heading", { name: "Simple composable movements" })).toBeVisible();
   await expect(page.getByText("One workspace. Two columns. Three windows.")).toBeVisible();
