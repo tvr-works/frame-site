@@ -382,7 +382,7 @@ a:hover {
   padding: 0 8px;
   color: #e2e9f1;
 }
-.window-focus > span:not(.traffic-lights) {
+.window-focus > span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -392,20 +392,18 @@ a:hover {
 }
 .traffic-lights {
   display: flex;
-  gap: 4px;
-  margin-right: 4px;
+  align-items: center;
+  gap: 0;
   flex: none;
 }
 .traffic-lights i {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #f56f70;
-}
-.traffic-lights i:nth-child(2) {
   background: #eac45d;
 }
 .traffic-lights i:nth-child(3) {
+  margin-left: 8px;
   background: #61c88c;
 }
 .focused-label {
@@ -416,21 +414,29 @@ a:hover {
   color: var(--accent);
 }
 .window-close {
-  width: 26px;
+  width: 24px;
+  height: 24px;
   background: transparent;
   border: 0;
+  border-radius: 50%;
   display: grid;
   place-items: center;
-  color: #acb9c6;
   padding: 0;
   flex: none;
 }
-.window-close svg {
-  width: 12px;
-  height: 12px;
+.window-close::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f56f70;
 }
-.window-close:hover {
-  background: #ffffff10;
+.window-close:hover::before {
+  background: #ff8586;
+  box-shadow: 0 0 0 2px #f56f7033;
+}
+.window-close:focus-visible {
+  outline-offset: -2px;
 }
 .window-body {
   display: block;
@@ -1049,10 +1055,7 @@ a:hover {
     gap: 5px;
     padding: 0 6px;
   }
-  .traffic-lights {
-    gap: 3px;
-    margin-right: 1px;
-  }
+  .window-close::before,
   .traffic-lights i {
     width: 6px;
     height: 6px;
@@ -1060,9 +1063,6 @@ a:hover {
   .window-focus svg {
     width: 11px;
     height: 11px;
-  }
-  .window-close {
-    width: 22px;
   }
 }
 @media (max-width: 760px) {
@@ -1138,9 +1138,7 @@ a:hover {
   .window-focus {
     font-size: 10px;
   }
-  .window-close {
-    width: 23px;
-  }
+  .window-close::before,
   .traffic-lights i {
     width: 6px;
     height: 6px;
@@ -1235,7 +1233,7 @@ a:hover {
   .window-focus > svg {
     display: none;
   }
-  .traffic-lights {
+  .traffic-lights i {
     display: none;
   }
 }

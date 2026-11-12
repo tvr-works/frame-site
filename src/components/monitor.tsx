@@ -1,4 +1,4 @@
-import { Monitor as MonitorIcon, Globe, NotebookPen, Code2, Terminal, X } from "lucide-react";
+import { Monitor as MonitorIcon, Globe, NotebookPen, Code2, Terminal } from "lucide-react";
 import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import { layout, surface, windowTitles, type DemoState, type Command } from "@/demo/model";
@@ -76,29 +76,29 @@ export function Monitor({
                   }
                 >
                   <div className="window-titlebar">
+                    <div className="traffic-lights">
+                      <button
+                        className="window-close"
+                        aria-label={`Close ${windowTitles[win.kind]} window ${win.id}`}
+                        onClick={(event) => {
+                          event.currentTarget
+                            .closest<HTMLElement>('[role="application"]')
+                            ?.focus({ preventScroll: true });
+                          act({ type: "select", id: win.id });
+                          act({ type: "close" });
+                        }}
+                      />
+                      <i aria-hidden="true" />
+                      <i aria-hidden="true" />
+                    </div>
                     <button
                       className="window-focus"
                       onClick={() => act({ type: "select", id: win.id })}
                       aria-label={`Focus ${windowTitles[win.kind]} window ${win.id}`}
                       aria-pressed={focused}
                     >
-                      <span className="traffic-lights" aria-hidden="true">
-                        <i />
-                        <i />
-                        <i />
-                      </span>
                       <Icon />
                       <span>{windowTitles[win.kind]}</span>
-                    </button>
-                    <button
-                      className="window-close"
-                      aria-label={`Close ${windowTitles[win.kind]} window ${win.id}`}
-                      onClick={() => {
-                        act({ type: "select", id: win.id });
-                        act({ type: "close" });
-                      }}
-                    >
-                      <X />
                     </button>
                   </div>
                   <div className="window-body">

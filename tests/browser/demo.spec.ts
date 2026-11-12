@@ -70,6 +70,24 @@ test("loads a meaningful empty desktop; create, focus, move, resize, close and r
   expect(errors).toEqual([]);
 });
 
+test("red-dot close targets its own window and preserves keyboard control after closing", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await open(page);
+  await open(page);
+  const remaining = await focused(page).getAttribute("data-window-id");
+  await page.getByRole("button", { name: /^Close Reading window/ }).click();
+  await expect(windows(page)).toHaveCount(1);
+  await expect(focused(page)).toHaveAttribute("data-window-id", remaining!);
+  const close = page.getByRole("button", { name: /^Close Notes window/ });
+  await close.focus();
+  await close.press("Enter");
+  await expect(windows(page)).toHaveCount(0);
+  await page.keyboard.press("n");
+  await expect(windows(page)).toHaveCount(1);
+});
+
 test("workspace transfers follow the moved window across hidden workspaces and displays", async ({
   page,
 }) => {

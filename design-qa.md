@@ -118,3 +118,9 @@ Open window now uses the same small, quiet icon-and-text button treatment as Rep
 ## Review update: additive modifier order
 
 Resize now displays Option → Shift → Control, keeping its first two keycaps aligned with Move and its first keycap aligned with Focus. Accessible names, keyboard help, Guide and autoplay shortcut metadata use that same additive order. Shortcut behavior and matching-row illumination are unchanged. Inspected `composable-modifier-order.png`; desktop/mobile captures are also retained, and the social card was refreshed. All 64 unit tests, 48 Chromium/WebKit browser cases, formatting, lint, TypeScript, preview/production builds and four production-artifact cases pass. Preview indexing was restored; the final capture reported no page errors.
+
+## Review update: close windows with the red traffic light
+
+Removed the top-right X and moved close behavior to a named red traffic-light button at the left of each title bar. The red control is separate from the title/focus button, with a 24 × 24-pixel hit target, hover feedback and visible keyboard focus. Yellow/green dots remain decorative; the red close control remains available at narrow widths. Closing restores demo keyboard focus before the clicked window disappears, so keyboard commands still work after the last window closes.
+
+Inspected `red-dot-close-titlebars.png` and the mobile capture; full desktop evidence is `red-dot-close-desktop.png`. The social card was refreshed. All 64 unit tests and 50 Chromium/WebKit browser cases pass, along with formatting, lint, TypeScript and static build. New interaction coverage closes an unfocused window by its red dot, closes the last window with Enter, and opens another with N. A 320-pixel check confirmed the 24 × 24 target stays visible and works. The capture reported no page errors. Native source and hosting remain untouched.
