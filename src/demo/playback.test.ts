@@ -26,16 +26,19 @@ describe("scripted playback", () => {
     ]);
     expect(story[3].delay).toBeGreaterThan(story[2].delay);
   });
-  it("cues modifiers before each action, then demonstrates focus, move, resize and follow-focus transfer", () => {
+  it("updates the label and full chord with each focus, move, resize and transfer action", () => {
     let s = sessionTransition(initialSession(), { type: "resume" });
     for (const beat of story) {
       const before = s;
       s = sessionTransition(s, { type: "tick" });
-      if (beat.shortcut && !beat.command) {
-        expect(s.state).toBe(before.state);
-        expect(s.shortcut?.key).toBeUndefined();
+      if (beat.shortcut) {
+        expect(beat.command).toBeDefined();
+        expect(beat.shortcut.key).toBeDefined();
+        expect(s.caption).toBe(beat.caption);
+        expect(s.shortcut).toEqual(beat.shortcut);
       }
       if (beat.closeCue) {
+        expect(s.caption).toBe(before.caption);
         expect(s.closingWindow).toBe(before.state.focused);
         expect(s.state).toBe(before.state);
         expect(s.shortcut).toBeUndefined();
@@ -72,6 +75,33 @@ describe("scripted playback", () => {
       }
     }
     expect(s).toEqual({ ...initialSession(), mode: "playing" });
+  });
+  it("shows both column width and row height changes matching their structural labels", () => {
+    let s = sessionTransition(initialSession(), { type: "resume" });
+    const axes = new Set<string>();
+    for (const beat of story) {
+      const before = s;
+      s = sessionTransition(s, { type: "tick" });
+      if (beat.command?.type !== "resize") continue;
+      const rect = (state: DemoState) =>
+        layout(currentWorkspace(state)).find((tile) => tile.window.id === state.focused)!;
+      const oldRect = rect(before.state);
+      const newRect = rect(s.state);
+      if (beat.command.direction === "left" || beat.command.direction === "right") {
+        axes.add("column");
+        const change = beat.command.direction === "left" ? 50 : -50;
+        expect(newRect.width - oldRect.width).toBe(change);
+        expect(newRect.x - oldRect.x).toBe(-change);
+        expect(newRect.height).toBe(oldRect.height);
+      } else {
+        axes.add("row");
+        const change = beat.command.direction === "up" ? 50 : -50;
+        expect(newRect.height - oldRect.height).toBe(change);
+        expect(newRect.y - oldRect.y).toBe(-change);
+        expect(newRect.width).toBe(oldRect.width);
+      }
+    }
+    expect(axes).toEqual(new Set(["column", "row"]));
   });
   it("closes windows individually, holds empty, and starts a fresh cycle without accumulating state", () => {
     let s = sessionTransition(initialSession(), { type: "resume" });

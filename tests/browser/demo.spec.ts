@@ -73,7 +73,46 @@ test("opening builds three windows steadily before the shortcut sequence", async
   await expect(page.getByTestId("monitor-1").locator("[data-window-id]")).toHaveCount(0);
 });
 
-test("script cues the matching row before actions and composes L for focus, move and resize", async ({
+test("label, full chord and window changes land together, then hold before the next action", async ({
+  page,
+}) => {
+  const startTime = new Date();
+  await page.clock.install({ time: startTime });
+  await page.clock.pauseAt(new Date(startTime.getTime() + 1000));
+  await page.goto("/");
+  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await advance(page, 3);
+  const label = page.locator(".demo-action-label");
+  await page.clock.runFor(story[3].delay - 20);
+  await expect(label).toHaveText("Stack window below");
+  await expect(page.locator('[data-lit="true"]')).toHaveCount(0);
+  await expect(focused(page)).toHaveAttribute("data-kind", "editor");
+  await page.clock.runFor(21);
+  await expect(label).toHaveText("Focus window above");
+  await expect(page.locator('.home-row [data-lit="true"]')).toHaveText("K");
+  await expect(focused(page)).toHaveAttribute("data-kind", "notes");
+  await page.clock.runFor(story[4].delay - 20);
+  await expect(label).toHaveText("Focus window above");
+  await expect(page.locator('.home-row [data-lit="true"]')).toHaveText("K");
+  await expect(focused(page)).toHaveAttribute("data-kind", "notes");
+  await page.clock.runFor(21);
+  await expect(label).toHaveText("Focus window below");
+  await expect(page.locator('.home-row [data-lit="true"]')).toHaveText("J");
+  await expect(focused(page)).toHaveAttribute("data-kind", "editor");
+  const resize = story.findIndex((beat) => beat.command?.type === "resize");
+  await advance(page, resize);
+  const before = await focused(page).getAttribute("style");
+  await page.clock.runFor(story[resize].delay - 20);
+  await expect(label).toHaveText("Move window down within column");
+  await expect(focused(page)).toHaveAttribute("style", before!);
+  await page.clock.runFor(21);
+  await expect(label).toHaveText("Expand column left");
+  await expect(page.locator('.home-row [data-lit="true"]')).toHaveText("H");
+  await expect(page.locator('.modifier-chord [data-lit="true"]')).toHaveCount(3);
+  expect(await focused(page).getAttribute("style")).not.toBe(before);
+});
+
+test("script updates the label and full chord with focus, move, column and row resize actions", async ({
   page,
 }) => {
   await start(page);
@@ -88,10 +127,14 @@ test("script cues the matching row before actions and composes L for focus, move
   let previous = await geometry();
   let id: string | null = null;
   let remaining = 3;
+  let caption = await page.locator(".demo-action-label").textContent();
   for (let i = 3; i < story.length; i++) {
     const beat = story[i];
     await advance(page, i + 1);
     if (beat.command?.type === "close") remaining--;
+    if (i + 1 === story.length) caption = "Start with an empty workspace";
+    else if (beat.caption) caption = beat.caption;
+    await expect(page.locator(".demo-action-label")).toHaveText(caption!);
     await expect(windows(page)).toHaveCount(remaining);
     const closeDot = page.locator('.window-close[data-cued="true"]');
     await expect(closeDot).toHaveCount(beat.closeCue ? 1 : 0);
@@ -113,6 +156,17 @@ test("script cues the matching row before actions and composes L for focus, move
       id = await focused(page).getAttribute("data-window-id");
     if (beat.command?.type === "move" || beat.command?.type === "resize") {
       expect(await geometry()).not.toEqual(previous);
+      if (beat.command.type === "resize") {
+        const beforeStyle = previous.find((win) => win.id === id)!.style!;
+        const afterStyle = await focused(page).getAttribute("style");
+        const property =
+          beat.command.direction === "left" || beat.command.direction === "right" ? "--w" : "--h";
+        const value = (style: string) =>
+          Number(style.match(new RegExp(`${property}:\\s*([\\d.]+)`))![1]);
+        const expands = beat.command.direction === "left" || beat.command.direction === "up";
+        if (expands) expect(value(afterStyle!)).toBeGreaterThan(value(beforeStyle));
+        else expect(value(afterStyle!)).toBeLessThan(value(beforeStyle));
+      }
       await expect(focused(page)).toHaveAttribute("data-window-id", id!);
       await expect(page.locator('.home-row [data-lit="true"]')).toHaveText(beat.shortcut!.key!);
     }
@@ -299,7 +353,7 @@ for (const viewport of [
   test(`script and playback controls reflow at ${viewport.width}px`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await start(page);
-    await advance(page, 3);
+    await advance(page, story.findIndex((beat) => beat.command?.type === "move") + 1);
     await page.getByRole("button", { name: "Pause", exact: true }).click();
     await noOverflow(page);
     await page.getByRole("link", { name: "Guide", exact: true }).click();

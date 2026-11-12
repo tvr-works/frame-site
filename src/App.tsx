@@ -61,11 +61,12 @@ export default function App() {
             <p id="demo-description" className="sr-only">
               A scripted demonstration opens three windows on the left display. Option H, J, K and L
               change focus without moving windows. Adding Shift to Option L moves the focused window
-              right; adding Control resizes it in steps. Option Shift 7 sends it to workspace 7 on
-              the right display, then Option Shift 1 brings it back to the left, keeping it focused
-              both ways. The illustrated keys light up before each action. Each window’s red close
-              dot lights up before it closes, then the demo repeats from empty monitors. Use Play or
-              Pause to control playback, or Replay to start again.
+              right; adding Control resizes the column width or a row’s height in steps. Option
+              Shift 7 sends it to workspace 7 on the right display, then Option Shift 1 brings it
+              back to the left, keeping it focused both ways. The action label, illustrated keys and
+              window change appear together, then pause before the next step. Each window’s red
+              close dot lights up before it closes, then the demo repeats from empty monitors. Use
+              Play or Pause to control playback, or Replay to start again.
             </p>
             <div id="demo-controls" className="demo-top-row" tabIndex={-1}>
               <div className="utility-controls">
@@ -83,12 +84,13 @@ export default function App() {
                 </Button>
               </div>
             </div>
-            <div id="demo-stage" className="demo-stage" aria-hidden="true">
-              <div className="stage-radiance" />
-              <div className="monitors">
+            <div id="demo-stage" className="demo-stage">
+              <div className="stage-radiance" aria-hidden="true" />
+              <div className="monitors" aria-hidden="true">
                 <Monitor index={0} state={state} closingWindow={session.closingWindow} />
                 <Monitor index={1} state={state} closingWindow={session.closingWindow} />
               </div>
+              <p className="demo-action-label">{session.caption}</p>
             </div>
             <KeyboardShortcuts state={state} shortcut={session.shortcut} />
             <p className="sr-only" aria-live="polite" aria-atomic="true">
