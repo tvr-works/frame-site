@@ -717,22 +717,8 @@ a:hover {
 .skip-link:focus {
   transform: none;
 }
-
-.demo-caption {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 24px;
-  text-align: center;
-  font-size: 12px;
-  color: #b4cadb;
-  margin: 4px 0 12px;
-}
-.demo-caption p {
-  margin: 0;
-  line-height: 1.5;
-}
 .keyboard-controls {
+  margin-top: 24px;
   position: relative;
   min-width: 0;
 }
@@ -1022,10 +1008,6 @@ a:hover {
   .demo-top-row {
     margin-bottom: 24px;
   }
-  .demo-caption {
-    min-height: 24px;
-    margin-bottom: 8px;
-  }
   .keyboard-composition {
     margin-top: 22px;
   }
@@ -1104,9 +1086,6 @@ a:hover {
   }
   .keyboard-composition {
     gap: 28px;
-  }
-  .demo-caption {
-    min-height: 40px;
   }
   .desktop-menu {
     font-size: 9px;
@@ -1225,12 +1204,6 @@ a:hover {
   .traffic-lights i {
     width: 6px;
     height: 6px;
-  }
-  .demo-caption {
-    font-size: 12px;
-    margin-top: 10px;
-    padding: 0 4px;
-    min-height: 45px;
   }
   .workspace-keys {
     grid-template-columns: 1fr;

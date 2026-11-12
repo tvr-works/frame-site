@@ -42,6 +42,7 @@ test("loads a meaningful empty desktop; create, focus, move, resize, close and r
   await open(page);
   await open(page);
   await expect(windows(page)).toHaveCount(2);
+  await expect(page.locator("[aria-live=polite]")).toContainText("Opened Notes");
   const before = await windows(page).evaluateAll((nodes) =>
     nodes.map((node) => node.getAttribute("style")),
   );
@@ -191,7 +192,7 @@ test("workspace hover leaves empty and populated monitor backgrounds unchanged",
     await page.mouse.move(0, 0);
     const screens = await page.locator(".monitor-screen").all();
     const before = await Promise.all(screens.map((screen) => screen.screenshot()));
-    const caption = await page.locator(".demo-caption").innerText();
+    const announcement = await page.locator("[aria-live=polite]").textContent();
     for (const name of ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]) {
       await page
         .getByRole("button", { name: `Switch to workspace ${name} · Option ${name}`, exact: true })
@@ -203,7 +204,7 @@ test("workspace hover leaves empty and populated monitor backgrounds unchanged",
           `Hovering workspace ${name} repainted ${populated ? "populated" : "empty"} display ${index + 1}`,
         ).toBe(true);
       }
-      await expect(page.locator(".demo-caption")).toHaveText(caption);
+      await expect(page.locator("[aria-live=polite]")).toHaveText(announcement ?? "");
     }
   }
 });
@@ -521,10 +522,13 @@ test("autoplay completes once and hands off four windows", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Pause", exact: true })).toBeVisible();
   for (let i = 0; i < story.length; i++) {
     await page.clock.runFor(i === 0 ? 1550 : 2450);
-    await expect(page.locator(".demo-caption")).toContainText(story[i].caption);
+    await expect(windows(page)).toHaveCount(
+      story.slice(0, i + 1).filter((step) => step.command.type === "create").length,
+    );
   }
   await expect(page.getByRole("button", { name: "Replay", exact: true })).toBeVisible();
   await expect(windows(page)).toHaveCount(4);
+  await expect(page.locator("[aria-live=polite]")).toContainText("Demo complete");
   const ids = await windows(page).evaluateAll((nodes) =>
     nodes.map((node) => node.getAttribute("data-window-id")),
   );

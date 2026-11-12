@@ -57,7 +57,7 @@ Escape releases keyboard focus; Tab leaves normally. Events outside the demo, ed
 
 Held-key feedback is transient UI state, separate from the layout model and selected action. Only the row exactly matching the held Option/Shift/Control combination fills; incomplete or unsupported combinations leave all modifier rows unlit. H/J/K/L fill independently until released. The modifier combination previews Focus, Move or Resize before a direction is pressed. Modifier-only interaction takes over autoplay without issuing a layout command. Auto-repeat does not toggle lights off. Escape, reset/replay, dialogs, focus leaving the demo, window blur and tab suspension clear feedback so a missed keyup cannot leave a key lit. Command/composition events remain excluded.
 
-Announcements describe manual state changes without narrating every autoplay step. Simulated app previews are decorative; actual actions remain named buttons. Automated WCAG checks supplement browser interaction checks; a full VoiceOver user study is not claimed.
+Screen-reader-only polite announcements describe manual state changes and playback pause/completion without narrating every autoplay step. The visible caption beneath the monitors was removed at the owner’s request; the existing hidden live region remains. Simulated app previews are decorative; actual actions remain named buttons. Automated WCAG checks supplement browser interaction checks; a full VoiceOver user study is not claimed.
 
 ## Accessibility tooling exception
 

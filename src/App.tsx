@@ -287,9 +287,6 @@ export default function App() {
                 {state.visible.length === 2 ? <Monitor index={1} state={state} act={act} /> : null}
               </div>
             </div>
-            <div className="demo-caption">
-              <p>{session.caption}</p>
-            </div>
             <KeyboardControls
               mode={heldMode ?? shownMode}
               held={held}

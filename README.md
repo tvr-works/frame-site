@@ -37,7 +37,7 @@ Return to `npm run build` afterward for preview indexing. Builds include an exac
 - `src/demo/use-demo.ts`: timers, reduced motion, visibility and background suspension.
 - `src/components/monitor.tsx`: geometry and presentation; it never owns layout state.
 
-The current design uses one headline, matte monitor hardware with a blue stage glow, quiet translucent windows, workspace number keys locked 1–5 to the left display and 6–0 to the right and a modifier ladder feeding one shared H/J/K/L row. Open/playback/Reset sit above the displays.
+The current design uses one headline, matte monitor hardware with a blue stage glow, quiet translucent windows, workspace number keys locked 1–5 to the left display and 6–0 to the right and a modifier ladder feeding one shared H/J/K/L row. Open/playback/Reset sit above the displays. Status updates are screen-reader-only; no visible caption sits between the monitors and keyboard controls.
 
 In Focus mode, selecting a workspace shows and focuses it on its assigned display, restoring its most recently focused window. In Move mode, selecting a workspace transfers the focused window, reveals that destination on its assigned display, and keeps the moved window focused. Single-display mode supports all ten workspaces; returning to dual displays restores the fixed banks.
 
