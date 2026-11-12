@@ -737,37 +737,6 @@ a:hover {
   gap: 10px;
   min-width: 0;
 }
-.workspace-hint {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  white-space: nowrap;
-  font-size: 12px;
-  color: #a9bdd0;
-}
-.workspace-hint > span:first-child {
-  font-weight: 560;
-  color: var(--foreground);
-}
-.workspace-hint span[data-active] {
-  color: var(--accent);
-}
-.workspace-hint kbd {
-  font-size: 14px;
-  margin-right: 4px;
-  font-family: inherit;
-}
-.workspace-hint-note {
-  position: absolute;
-  top: calc(100% + 6px);
-  font-size: 10px;
-  color: var(--muted);
-}
 .button-number,
 .button-home {
   border-color: #3b5064;
@@ -1037,10 +1006,6 @@ a:hover {
   .number-bank {
     gap: 8px;
   }
-  .workspace-hint {
-    gap: 9px;
-    font-size: 11px;
-  }
   .keyboard-composition {
     gap: 32px;
   }
@@ -1062,26 +1027,6 @@ a:hover {
   }
   .utility-controls {
     grid-column: 2;
-    grid-row: 2;
-  }
-  .workspace-keys {
-    row-gap: 14px;
-  }
-  .workspace-hint {
-    position: relative;
-    left: auto;
-    top: auto;
-    transform: none;
-    grid-row: 1;
-    grid-column: 1/-1;
-    font-size: 12px;
-  }
-  .workspace-hint-note {
-    position: static;
-    white-space: normal;
-    font-size: 10px;
-  }
-  .number-bank {
     grid-row: 2;
   }
   .keyboard-composition {
@@ -1208,16 +1153,6 @@ a:hover {
   .workspace-keys {
     grid-template-columns: 1fr;
     gap: 12px;
-  }
-  .workspace-hint {
-    grid-row: 1;
-    flex-wrap: wrap;
-    white-space: normal;
-    gap: 8px 14px;
-  }
-  .workspace-hint-note {
-    flex-basis: 100%;
-    text-align: center;
   }
   .number-bank {
     grid-row: auto;

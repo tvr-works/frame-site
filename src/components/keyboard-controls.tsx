@@ -69,21 +69,9 @@ export function KeyboardControls({
   return (
     <div id="demo-controls" className="keyboard-controls">
       <h2 className="sr-only">Try Frame’s keyboard shortcuts</h2>
-      <fieldset className="workspace-keys" aria-describedby="workspace-shortcut-hint">
+      <fieldset className="workspace-keys">
         <legend className="sr-only">Workspace shortcuts</legend>
         {bank(workspaceNames.slice(0, 5))}
-        <div className="workspace-hint" id="workspace-shortcut-hint">
-          <span>Workspaces</span>
-          <span data-active={mode === "focus" || undefined}>
-            <kbd>⌥</kbd> switch
-          </span>
-          <span data-active={mode === "move" || undefined}>
-            <kbd>⌥ ⇧</kbd> send
-          </span>
-          {mode === "resize" ? (
-            <span className="workspace-hint-note">Select Focus or Move for workspace keys.</span>
-          ) : null}
-        </div>
         {bank(workspaceNames.slice(5))}
       </fieldset>
       <div className="keyboard-composition">
