@@ -223,3 +223,15 @@ No actionable P0/P1/P2 findings remain after the revised capture and combined co
 - [x] Final visual comparison and IAB navigation check; no captured page/console errors.
 
 Follow-up polish: generated raster illustrations are interpretations of the selected mock rather than extracted source pixels. Manual VoiceOver testing and a user study are not claimed. No further visual blocker remains.
+
+## Review update: consistent modifiers and workspace composition
+
+The owner's three browser annotations supersede the previous structure heading, movement lead, and added-modifier-only highlights. The heading is now “Simple structure”, using the same heading style as the movement section. The lead reads “Choose your action with modifiers, then a direction or workspace number.” All modifier keys, including Option, share the icy-blue fill. Directions remain dark, so the action and target are visually distinct.
+
+Focus and Move show a second target line, “or 1–0 workspace”, aligned beneath H/J/K/L, sharing the same modifier group. Resize has only the directional target. Accessible prose spells out both shortcuts and the different results: switch workspace for Focus, send window for Move. No new interactive controls or native commands were added.
+
+Visual evidence is in the existing below-fold-build evidence directory: refined-1047.png (owner's 1047 × 1308 viewport), refined-mobile.png (390 × 844 viewport), and refined-320.png (320 × 800 viewport). Captured at deviceScaleFactor 1. Opened and inspected the annotated-width and 320-pixel captures: modifier fills match, workspace alternatives remain attached to the same chord, and all keys fit without overflow. The simpler structure heading removes redundant naming without reducing the diagram's annotations. Prior diagram assets and section spacing are unchanged. No page/console errors were captured.
+
+Typography, spacing, colors, image fidelity and copy were reviewed against the owner's annotated screenshots and the retained approved layout. The new content is an explicit requested revision to that target. No actionable P0/P1/P2 issue remains. Browser plugin not available; verification used the established pinned Playwright workflow. Formatting, lint, TypeScript, all 65 unit tests and all 44 Chromium/WebKit browser checks pass, including enlarged text and the renamed structure region. Production build and all four artifact checks pass; the final artifact is restored to preview mode.
+
+final result: passed

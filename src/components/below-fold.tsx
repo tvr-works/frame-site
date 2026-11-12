@@ -2,21 +2,26 @@ const movements = [
   {
     name: "Focus",
     modifiers: ["⌥"],
-    spoken: "Option H J K L",
+    spoken:
+      "Option with H, J, K or L focuses a window in that direction. Option with a number key (1 through 9, or 0) switches to that workspace.",
+    workspace: true,
     image: "focus",
     caption: "Choose a window.",
   },
   {
     name: "Move",
     modifiers: ["⌥", "⇧"],
-    spoken: "Option Shift H J K L",
+    spoken:
+      "Option Shift with H, J, K or L moves a window in that direction. Option Shift with a number key (1 through 9, or 0) sends the window to that workspace.",
+    workspace: true,
     image: "move",
     caption: "Move between columns or rows.",
   },
   {
     name: "Resize",
     modifiers: ["⌥", "⇧", "⌃"],
-    spoken: "Option Shift Control H J K L",
+    spoken: "Option Shift Control with H, J, K or L resizes a column or row in that direction.",
+    workspace: false,
     image: "resize",
     caption: "Resize a column or row.",
   },
@@ -27,8 +32,7 @@ export function BelowFold() {
     <div className="explanation">
       <section aria-labelledby="structure-title">
         <h2 id="structure-title" className="explanation-title">
-          Workspaces, columns, <br />
-          and rows.
+          Simple structure
         </h2>
         <p className="explanation-lead">
           A workspace contains columns. Windows stack as rows within each column.
@@ -57,7 +61,9 @@ export function BelowFold() {
         <h2 id="movements-title" className="explanation-title">
           Simple composable movements
         </h2>
-        <p className="explanation-lead">Keep the direction. Add a modifier.</p>
+        <p className="explanation-lead">
+          Choose your action with modifiers, then a direction or workspace number.
+        </p>
         <div className="movement-list">
           {movements.map((movement) => (
             <article
@@ -70,16 +76,31 @@ export function BelowFold() {
                 <p className="movement-shortcut">
                   <span className="sr-only">{movement.spoken}</span>
                   <span className="movement-keycaps" aria-hidden="true">
-                    {movement.modifiers.map((key) => (
-                      <kbd className="movement-key" data-added={key !== "⌥" || undefined} key={key}>
-                        {key}
-                      </kbd>
-                    ))}
-                    {["H", "J", "K", "L"].map((key) => (
-                      <kbd className="movement-key" key={key}>
-                        {key}
-                      </kbd>
-                    ))}
+                    <span className="movement-modifiers">
+                      {movement.modifiers.map((key) => (
+                        <kbd className="movement-key" data-modifier="true" key={key}>
+                          {key}
+                        </kbd>
+                      ))}
+                    </span>
+                    <span className="movement-targets">
+                      <span className="movement-directions">
+                        {["H", "J", "K", "L"].map((key) => (
+                          <kbd className="movement-key" key={key}>
+                            {key}
+                          </kbd>
+                        ))}
+                      </span>
+                      {movement.workspace ? (
+                        <span className="movement-workspace">
+                          <span>or</span>
+                          <kbd className="movement-key" data-workspace="true">
+                            1–0
+                          </kbd>
+                          <span>workspace</span>
+                        </span>
+                      ) : null}
+                    </span>
                   </span>
                 </p>
               </div>

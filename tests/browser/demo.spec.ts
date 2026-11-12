@@ -374,7 +374,7 @@ test("structure and movements explain the model; footer Guide opens and restores
   page,
 }) => {
   await page.goto("/");
-  const structure = page.getByRole("region", { name: "Workspaces, columns, and rows." });
+  const structure = page.getByRole("region", { name: "Simple structure" });
   await structure.scrollIntoViewIfNeeded();
   await expect(structure.getByText("One workspace. Two columns. Three windows.")).toBeVisible();
   const movements = page.getByRole("region", { name: "Simple composable movements" });

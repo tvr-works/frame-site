@@ -899,9 +899,6 @@ a:hover {
   font-weight: 650;
   letter-spacing: -0.045em;
 }
-#structure-title {
-  font-size: clamp(38px, 8vw, 72px);
-}
 .explanation-lead {
   max-width: 1040px;
   margin: 24px 0 0;
@@ -959,10 +956,31 @@ a:hover {
 .movement-shortcut {
   margin: 28px 0 0;
 }
+.movement-keycaps,
+.movement-modifiers,
+.movement-directions {
+  display: flex;
+  gap: clamp(6px, 0.6vw, 10px);
+}
 .movement-keycaps {
+  align-items: flex-start;
+}
+.movement-targets {
+  display: grid;
+  gap: 14px;
+}
+.movement-workspace {
   display: flex;
   align-items: center;
-  gap: clamp(6px, 0.6vw, 10px);
+  gap: 8px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.4;
+}
+.movement-key[data-workspace="true"] {
+  width: auto;
+  padding-inline: 10px;
+  font-size: 18px;
 }
 .movement-key {
   display: inline-flex;
@@ -983,10 +1001,7 @@ a:hover {
   line-height: 1;
   font-weight: 550;
 }
-.movement-key:first-child {
-  border-color: #97c7e6;
-}
-.movement-key[data-added="true"] {
+.movement-key[data-modifier="true"] {
   background: var(--accent);
   border-color: #d2efff;
   color: var(--background);
@@ -1311,8 +1326,7 @@ a:hover {
   .explanation {
     margin-top: 112px;
   }
-  .explanation-title,
-  #structure-title {
+  .explanation-title {
     font-size: clamp(34px, 7vw, 48px);
     line-height: 1.12;
   }
