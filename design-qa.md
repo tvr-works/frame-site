@@ -6,7 +6,7 @@ final result: passed
 
 The owner selected `option-3-matte-monitor-frames.png` in `/Users/tim.vanreenen/.codex/visualizations/2026/11/12/01a1ce07-209a-7793-9b40-7d0f587d4fd7/keyboard-control-concepts/`. This supersedes the original heading, flat CSS hardware, toolbar, workspace selectors and in-screen workspace strips. The original monitor/glow reference is retained there as `monitor-glow-reference.png`.
 
-Implemented: one headline, “Intuitive, keyboard-first window management for macOS.”; Open window, display setup and playback/Learn/Reset above the monitors; matte monitor hardware and blue upper/ground illumination; quiet translucent skeleton windows; global workspace keys split 1–5 / 6–0; modifier ladder feeding one H/J/K/L row. No default toolbar, tagline or utility buttons sit beneath the keyboard.
+Implemented: one headline, “Intuitive, keyboard-first window management for macOS.”; Open window, display setup and playback/Learn/Reset above the monitors; matte monitor hardware and blue upper/ground illumination; quiet translucent skeleton windows; workspace keys locked 1–5 left / 6–0 right; modifier ladder feeding one H/J/K/L row. No default toolbar, tagline or utility buttons sit beneath the keyboard.
 
 ## Rendered evidence
 
@@ -37,13 +37,13 @@ During this build, rendered checks caught obsolete layout rules causing horizont
 
 ## Behavior and verification
 
-All controls, autoplay and lessons still call the same immutable simulator transitions. The model and playback logic were not changed. Native evidence remains applicable: 44 original fixture tests and one exported native command-trace probe passed in a temporary copy; all ten trace snapshots match the browser model. See `docs/simulator.md` for inspected source, limits and refresh procedure.
+All controls, autoplay and lessons still call the same immutable simulator transitions. The layout and focus algorithms retain their native fixture/trace coverage. The owner-requested fixed monitor assignment is a demo policy; autoplay uses workspace 6 for the right display. Native evidence remains applicable: 44 original fixture tests and one exported native command-trace probe passed in a temporary copy; all ten trace snapshots match the browser model. See `docs/simulator.md` for inspected source, limits and refresh procedure.
 
 Final checks passed:
 
-- Runtime pins, formatting, Oxlint/shadcn lint, TypeScript and 57 unit/parity/playback/gate tests.
+- Runtime pins, formatting, Oxlint/shadcn lint, TypeScript and 60 unit/parity/playback/gate tests.
 - Static preview and production builds; JavaScript remains 108.2 KiB gzip, below the 150 KiB limit.
-- 38 Chromium/WebKit browser cases, including composition mode changes, workspace affinity/transfers, single/dual displays, pointer/touch, scoped plain-key practice, automatic focus handoff, Escape/Tab, modal containment, progressive help, reduced motion, one-shot autoplay and exact-state takeover.
+- 40 Chromium/WebKit browser cases, including composition mode changes, workspace affinity/transfers, single/dual displays, pointer/touch, scoped plain-key practice, automatic focus handoff, Escape/Tab, modal containment, progressive help, reduced motion, one-shot autoplay and exact-state takeover.
 - Four production artifact cases: real prerendered content, security/indexing headers, assets, source identity, honest 404 and no-JavaScript guide/install path. Preview indexing was restored afterward.
 - Automated accessibility scans across demo/help/install, with only Base UI's narrowly documented Safari focus-guard exception. Separate focus-containment tests remain enforced.
 
@@ -56,3 +56,11 @@ No full VoiceOver user study or real minimum-macOS runtime test is claimed. The 
 Everything remains local in the separate `frame-site` repository. The native repository, installed app, releases, taps, hosting and DNS were untouched. Nothing was pushed or deployed. GitHub CI and real hosting acceptance remain outside this milestone.
 
 Development preview: http://127.0.0.1:4177. Static artifact preview: http://127.0.0.1:4179.
+
+## Review update: fixed workspace banks and activation
+
+The owner requested fixed assignments after the initial modifier-ladder build. Workspaces 1–5 now belong to display 1 (left), and 6–0 to display 2 (right), with initial workspaces 1 and 6. Focus-mode workspace clicks reveal the selected workspace on its assigned display and restore its most recent focus, including activation of an empty workspace. The other display remains unchanged. Sending stays on the source workspace. Single-display mode accepts both banks; returning to dual displays restores the assignments and preserves active focus and all windows.
+
+Current evidence: `workspace-banks-desktop.png` supersedes the earlier desktop capture's workspace labels; `workspace-locks.png` shows workspace 5 active on the left while workspace 0 remains visible on the right. Both are in the evidence directory above. The social card now uses workspaces 1 and 6. This is a behavioral revision; visual spacing, assets and responsive layout remain unchanged.
+
+All 60 unit tests pass, including the unchanged native layout/focus trace and explicit coverage of all ten bank assignments, hidden-workspace transfers and single/dual restoration from either bank. The 40 Chromium/WebKit cases pass, with a corrected inner-text assertion rerun for the new all-workspaces case in both engines; the other 38 cases passed in the full run. Rendered verification selected 5 → 0 → 5, confirmed left/right headers and restored focus, and reported no page errors. The in-app preview exercised the same bank activation and was retained. Formatting, lint, TypeScript and static build also pass. The native repository remains unchanged.

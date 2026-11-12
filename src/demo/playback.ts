@@ -25,14 +25,14 @@ export const story: { command: Command; caption: string; keys?: string }[] = [
     keys: "⌃ ⇧ ⌥ L",
   },
   {
-    command: { type: "send", name: "2" },
+    command: { type: "send", name: "6" },
     caption: "Send a window to another workspace. Stay where you are.",
-    keys: "⌥ ⇧ 2",
+    keys: "⌥ ⇧ 6",
   },
   {
-    command: { type: "workspace", name: "2" },
+    command: { type: "workspace", name: "6" },
     caption: "Switch workspace to pick up where you left off.",
-    keys: "⌥ 2",
+    keys: "⌥ 6",
   },
   {
     command: { type: "create", kind: "terminal" },

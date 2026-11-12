@@ -4,6 +4,7 @@ import {
   transition,
   currentWorkspace,
   layout,
+  workspaceNames,
   type DemoState,
   type Command,
 } from "./model";
@@ -125,10 +126,55 @@ describe("browser demo bounds and state invariants", () => {
     transition(s, { type: "create" });
     expect(s).toEqual(before);
   });
-  it("retains workspace monitor affinity instead of binding workspace numbers to each monitor", () => {
-    const s = run(initialState(), { type: "monitor", index: 1 }, { type: "workspace", name: "3" });
-    expect(s.visible).toEqual(["3", "2"]);
-    expect(currentWorkspace(s).monitor).toBe(0);
+  it("locks every workspace to its number bank and activates its remembered focus", () => {
+    let s = initialState();
+    expect(s.visible).toEqual(["1", "6"]);
+    for (const [index, name] of workspaceNames.entries()) {
+      const monitor = index < 5 ? 0 : 1;
+      const other = s.visible[1 - monitor];
+      s = transition(s, { type: "workspace", name });
+      expect(s.workspace).toBe(name);
+      expect(s.visible[monitor]).toBe(name);
+      expect(s.visible[1 - monitor]).toBe(other);
+      expect(currentWorkspace(s).monitor).toBe(monitor);
+      expect(s.focused).toBeNull();
+      s = run(s, { type: "create" }, { type: "create" }, { type: "focus", direction: "left" });
+      const focused = s.focused;
+      s = run(
+        s,
+        { type: "workspace", name: monitor === 0 ? "6" : "1" },
+        { type: "workspace", name },
+      );
+      expect(s.focused).toBe(focused);
+    }
+  });
+  it("sending to a hidden locked workspace keeps source focus until activation", () => {
+    const source = run(initialState(), { type: "create" }, { type: "create" });
+    const sent = source.focused;
+    let s = transition(source, { type: "send", name: "0" });
+    expect(s.visible).toEqual(["1", "6"]);
+    expect(s.workspace).toBe("1");
+    expect(s.focused).not.toBe(sent);
+    s = transition(s, { type: "workspace", name: "0" });
+    expect(s.visible).toEqual(["1", "0"]);
+    expect(s.workspace).toBe("0");
+    expect(s.focused).toBe(sent);
+  });
+  it.each(["3", "8"])("restores both banks after using workspace %s on one monitor", (name) => {
+    let s = run(
+      initialState(),
+      { type: "workspace", name },
+      { type: "create" },
+      { type: "monitors", count: 1 },
+    );
+    const focused = s.focused;
+    expect(s.visible).toEqual([name]);
+    expect(s.workspaces.every((w) => w.monitor === 0)).toBe(true);
+    s = transition(s, { type: "monitors", count: 2 });
+    expect(s.visible).toEqual(name === "3" ? ["3", "6"] : ["1", "8"]);
+    expect(s.focused).toBe(focused);
+    expect(s.workspace).toBe(name);
+    expect(s.workspaces.map((w) => w.monitor)).toEqual([0, 0, 0, 0, 0, 1, 1, 1, 1, 1]);
   });
   it("preserves windows when changing monitor count and when closing the focused window", () => {
     const s = run(
@@ -137,7 +183,7 @@ describe("browser demo bounds and state invariants", () => {
       { type: "create" },
       { type: "monitors", count: 1 },
     );
-    expect(s.visible).toEqual(["2"]);
+    expect(s.visible).toEqual(["6"]);
     expect(currentWorkspace(s).columns[0].windows).toHaveLength(1);
     const two = transition(s, { type: "monitors", count: 2 });
     expect(two.workspaces.flatMap((w) => w.columns.flatMap((c) => c.windows))).toHaveLength(1);

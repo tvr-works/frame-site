@@ -35,9 +35,9 @@ const lessons = [
   },
   {
     title: "A different workspace, the same flow",
-    body: "Send the focused window to workspace 2. Your focus stays here. Switch workspace to follow it.",
-    command: { type: "send", name: "2" } as Command,
-    action: "Send to workspace 2 · ⌥ ⇧ 2",
+    body: "Send the focused window to workspace 6. Your focus stays here. Switch workspace to follow it.",
+    command: { type: "send", name: "6" } as Command,
+    action: "Send to workspace 6 · ⌥ ⇧ 6",
   },
 ];
 
@@ -100,8 +100,9 @@ export function Learn({
             </div>
           ))}
           <p className="small-copy">
-            Option + 1–0 switches workspaces. Option + Shift + 1–0 sends the focused window.
-            Workspaces remember their display; the split number row is a visual grouping.
+            Option + 1–0 switches workspaces. Option + Shift + 1–0 sends the focused window. In this
+            demo, workspaces 1–5 stay on the left display and 6–0 stay on the right. In Focus mode,
+            click a number to show and focus that workspace.
           </p>
         </div>
       </details>

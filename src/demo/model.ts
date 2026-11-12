@@ -44,14 +44,18 @@ export const windowTitles: Record<WindowKind, string> = {
   terminal: "Terminal",
 };
 const kinds: WindowKind[] = ["browser", "notes", "editor", "terminal"];
+// This demo pins the two number banks to their corresponding displays.
+function assignedMonitor(name: string, count: number) {
+  return count === 2 && workspaceNames.findIndex((workspace) => workspace === name) >= 5 ? 1 : 0;
+}
 export function initialState(count: 1 | 2 = 2): DemoState {
   return {
     workspaces: workspaceNames.map((name) => ({
       name,
-      monitor: name === "2" && count === 2 ? 1 : 0,
+      monitor: assignedMonitor(name, count),
       columns: [],
     })),
-    visible: count === 2 ? ["1", "2"] : ["1"],
+    visible: count === 2 ? ["1", "6"] : ["1"],
     workspace: "1",
     focused: null,
     nextId: 1,
@@ -160,16 +164,11 @@ export function transition(input: DemoState, command: Command): DemoState {
     }
     case "monitors": {
       if (command.count === s.visible.length) break;
-      if (command.count === 1) {
-        s.visible = [s.workspace];
-        for (const ws of s.workspaces) ws.monitor = 0;
-      } else {
-        const other =
-          s.workspaces.find((ws) => !s.visible.includes(ws.name) && !allWindows(ws).length) ??
-          s.workspaces.find((ws) => !s.visible.includes(ws.name))!;
-        other.monitor = 1;
-        s.visible.push(other.name);
-      }
+      for (const ws of s.workspaces) ws.monitor = assignedMonitor(ws.name, command.count);
+      // One display can show either bank. Restoring dual displays restores the locks,
+      // keeping the active workspace and its focused window on its assigned display.
+      s.visible = command.count === 1 ? [s.workspace] : ["1", "6"];
+      s.visible[w.monitor] = w.name;
       s.message = `${command.count === 1 ? "Single display" : "Two displays"}. Your windows are preserved.`;
       break;
     }

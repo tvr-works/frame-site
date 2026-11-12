@@ -37,7 +37,9 @@ Return to `npm run build` afterward for preview indexing. Builds include an exac
 - `src/demo/use-demo.ts`: timers, reduced motion, visibility and background suspension.
 - `src/components/monitor.tsx`: geometry and presentation; it never owns layout state.
 
-The current design uses one headline, matte monitor hardware with a blue stage glow, quiet translucent windows, split workspace number keys and a modifier ladder feeding one shared H/J/K/L row. Open/playback/Learn/Reset sit above the displays.
+The current design uses one headline, matte monitor hardware with a blue stage glow, quiet translucent windows, workspace number keys locked 1–5 to the left display and 6–0 to the right and a modifier ladder feeding one shared H/J/K/L row. Open/playback/Learn/Reset sit above the displays.
+
+In Focus mode, selecting a workspace shows and focuses it on its assigned display, restoring its most recently focused window. Single-display mode supports all ten workspaces; returning to dual displays restores the fixed banks.
 
 The demo begins with empty displays. Manual interaction takes over without a reset. Pause preserves the current step; replay explicitly restarts; reset clears to an empty manual desktop. Offscreen/background suspension never automatically resumes. Reduced motion starts stable with autoplay off. Keyboard practice is opt-in, scoped to a focusable practice field and remapped to plain keys. The visible Option shortcut labels are Frame's native defaults, not browser keyboard bindings.
 

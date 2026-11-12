@@ -82,22 +82,51 @@ test("workspace transfers retain focus and display affinity; display changes pre
 }) => {
   await page.goto("/");
   await open(page);
-  await workspace(page, "2", true);
+  await workspace(page, "6", true);
   await expect(focused(page)).toHaveCount(0);
   await expect(page.getByTestId("monitor-0")).toContainText("Workspace 1");
   await expect(windows(page)).toHaveCount(1);
-  await workspace(page, "2");
+  await workspace(page, "6");
   await expect(focused(page)).toHaveCount(1);
   await expect(page.getByTestId("monitor-1").locator("[data-focused=true]")).toHaveCount(1);
   await workspace(page, "3");
   await expect(page.getByTestId("monitor-0")).toContainText("Workspace 3");
-  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 2");
+  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 6");
   await page.getByRole("button", { name: "Single monitor", exact: true }).click();
   await expect(windows(page)).toHaveCount(0);
-  await workspace(page, "2");
+  await workspace(page, "6");
   await expect(windows(page)).toHaveCount(1);
   await page.getByRole("button", { name: "Dual monitors", exact: true }).click();
   await expect(windows(page)).toHaveCount(1);
+});
+
+test("Focus workspace clicks reveal and focus each bank on its locked display", async ({
+  page,
+}) => {
+  await page.goto("/");
+  for (const [index, names] of [
+    [0, ["1", "2", "3", "4", "5"]],
+    [1, ["6", "7", "8", "9", "0"]],
+  ] as const) {
+    for (const name of names) {
+      const other = page.getByTestId(`monitor-${1 - index}`);
+      const untouched = await other.innerText();
+      await workspace(page, name);
+      await expect(page.getByTestId(`monitor-${index}`)).toContainText(`Workspace ${name}`);
+      await expect(other).toHaveText(untouched, { useInnerText: true });
+      await expect(
+        page.getByRole("button", { name: new RegExp(`^Switch to workspace ${name} ·`) }),
+      ).toHaveAttribute("aria-pressed", "true");
+      await open(page);
+      const id = await focused(page).getAttribute("data-window-id");
+      await expect(page.getByTestId(`monitor-${index}`).locator("[data-focused=true]")).toHaveCount(
+        1,
+      );
+      await workspace(page, index === 0 ? "6" : "1");
+      await workspace(page, name);
+      await expect(focused(page)).toHaveAttribute("data-window-id", id!);
+    }
+  }
 });
 
 test("modifier composition shares directions and gates unsupported workspace combinations", async ({
@@ -126,7 +155,7 @@ test("modifier composition shares directions and gates unsupported workspace com
   await page.getByRole("button", { name: /^Send to workspace 6 ·/ }).click();
   await expect(page.getByTestId("monitor-0")).toContainText("Workspace 1");
   await workspace(page, "6");
-  await expect(page.getByTestId("monitor-0")).toContainText("Workspace 6");
+  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 6");
   await expect(focused(page)).toHaveAttribute("data-kind", "browser");
 });
 
@@ -144,14 +173,14 @@ test("keyboard practice is opt-in, explicitly remapped, scoped and escapable", a
   await area.dispatchEvent("keydown", { key: "l", altKey: true });
   await expect(focused(page)).toHaveAttribute("data-window-id", id!);
   await area.press("m");
-  await area.press("2");
+  await area.press("6");
   await expect(page.getByTestId("monitor-1").locator("[data-window-id]")).toHaveCount(1);
   await expect(focused(page)).not.toHaveAttribute("data-window-id", id!);
   await area.press("r");
   await area.press("3");
   await expect(page.getByTestId("monitor-0")).toContainText("Workspace 1");
   await area.press("f");
-  await area.press("2");
+  await area.press("6");
   await expect(focused(page)).toHaveAttribute("data-window-id", id!);
   await area.press("Escape");
   await expect(area).toHaveCount(0);

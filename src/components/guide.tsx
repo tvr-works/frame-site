@@ -44,7 +44,8 @@ export function Guide({ install = false }: { install?: boolean }) {
           <p>
             Option + 1–0 switches workspaces. Add Shift to send the focused window there while
             staying in your current workspace. Workspaces remember their display; an unused
-            workspace starts on your main display.
+            workspace starts on your main display. In this demo, workspaces 1–5 are pinned to the
+            left display and 6–0 to the right.
           </p>
           <h3>Make it yours</h3>
           <p>
