@@ -275,48 +275,6 @@ a:hover {
   aspect-ratio: 1.65;
   isolation: isolate;
 }
-.desktop-workspaces {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  min-height: 30px;
-  padding: 0 0 4px;
-}
-.desktop-workspaces button {
-  background: #091522b3;
-  border: 0;
-  font-size: 11px;
-  min-width: 26px;
-  min-height: 22px;
-  border-radius: 6px;
-  position: relative;
-}
-.desktop-workspaces button[aria-pressed="true"] {
-  background: var(--accent);
-  color: var(--background);
-  font-weight: 700;
-}
-.workspace-dot {
-  display: block;
-  width: 3px;
-  height: 3px;
-  background: transparent;
-  border-radius: 50%;
-  position: absolute;
-  bottom: 1px;
-  left: calc(50% - 1.5px);
-}
-.workspace-occupied {
-  background: currentColor;
-}
-.extra-workspace {
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 5px;
-  background: var(--accent);
-  color: var(--background);
-}
 .monitor-foot {
   height: 27px;
   width: 29%;

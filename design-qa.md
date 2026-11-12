@@ -57,3 +57,9 @@ Native evidence: 44 original fixture tests passed in a temporary copy, plus one 
 - CI workflow and publication gate are prepared and locally checked. GitHub CI, Cloudflare edge behavior and deployment acceptance remain unverified because this milestone is explicitly local-only.
 
 Implementation checklist: complete. Preview retained at http://127.0.0.1:4177; static artifact preview at http://127.0.0.1:4179.
+
+## Review update: remove in-screen workspace navigation
+
+At the owner's request, removed the four numbered workspace buttons and their entire strip from both virtual screens. The existing display-header workspace labels and the toolbar's full workspace/send selectors remain. Removed unused strip/dot CSS; no simulator or playback transitions changed. The screens now end directly after the tiled work area.
+
+Current evidence replaces the initial screen-strip design: `desktop-no-workspace-strip.png`, `mobile-no-workspace-strip.png`, and focused `workspace-strips-removed.png` in the evidence directory above. Inspected the updated in-app preview with both displays populated; the strips are absent and its console error/warning log is empty. Existing Chromium/WebKit workspace-switch and transfer coverage passes, as do the complete 36-case browser suite, 57 unit tests, TypeScript, lint and build. The social card was refreshed to match. This requested revision supersedes the original concept's numbered screen controls; final result remains passed.

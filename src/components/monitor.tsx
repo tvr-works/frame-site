@@ -108,28 +108,6 @@ export function Monitor({
               );
             })}
           </div>
-          <div className="desktop-workspaces" aria-label={`Display ${index + 1} workspaces`}>
-            {["1", "2", "3", "4"].map((name) => (
-              <button
-                key={name}
-                aria-label={`Switch to workspace ${name}`}
-                aria-pressed={ws.name === name}
-                onClick={() => act({ type: "workspace", name })}
-              >
-                {name}
-                <span
-                  className={cn(
-                    "workspace-dot",
-                    state.workspaces.find((w) => w.name === name)!.columns.length > 0 &&
-                      "workspace-occupied",
-                  )}
-                />
-              </button>
-            ))}
-            {!["1", "2", "3", "4"].includes(ws.name) ? (
-              <span className="extra-workspace">{ws.name}</span>
-            ) : null}
-          </div>
         </div>
       </div>
       <div className="monitor-foot" aria-hidden="true" />

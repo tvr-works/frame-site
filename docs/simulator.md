@@ -42,7 +42,7 @@ To refresh this evidence, copy the native repository into a separate temporary d
 - Six simulated windows per workspace, four columns, ten persistent workspaces. Resize stops before a column weight falls below 180 or a row weight below 150. These readability guards are demo limits, not native Frame minimum-size claims.
 - Added/removed displays are a bounded illustration: disconnect folds affinity to main while keeping the focused workspace visible; reconnect chooses an empty unused workspace. Window state is preserved. This is not the full native nearest-point/previous-workspace hotplug algorithm.
 - Create and close model demo app lifecycle actions. No native CLI command is implied. Background registration, app-specific exclusions, minimized/hidden/fullscreen windows, mouse drag, native app constraints and configuration overrides are outside scope.
-- Focus outline, display headers, numbered workspace buttons and intentionally simplified translucent skeleton interiors are explanatory demo chrome, not a claim that Frame draws those controls over macOS. Window interiors were simplified at the owner's request during review.
+- Focus outline, display headers and intentionally simplified translucent skeleton interiors are explanatory demo chrome, not a claim that Frame draws those controls over macOS. Window interiors were simplified at the owner's request during review.
 - Native focus/command outcomes are verified against fixtures/traces for the supported subset; this is not a full port of every native command, platform hook or failure code.
 
 ## Playback and input
