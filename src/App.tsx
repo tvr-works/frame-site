@@ -13,16 +13,23 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Panel } from "@/components/panel";
 import { Monitor } from "@/components/monitor";
 import { Guide } from "@/components/guide";
-import { KeyboardControls, directions, type ActionMode } from "@/components/keyboard-controls";
+import {
+  KeyboardControls,
+  directions,
+  type ActionMode,
+  type HeldKeys,
+} from "@/components/keyboard-controls";
 import { useDemo } from "@/demo/use-demo";
 import { describe, workspaceNames, type Command } from "@/demo/model";
 import { story } from "@/demo/playback";
 import { cn } from "@/lib/utils";
+const releasedKeys: HeldKeys = { alt: false, ctrl: false, shift: false, keys: [] };
 export default function App() {
   const { session, dispatch, region, reduced } = useDemo();
   const { state } = session;
   const [panel, setPanel] = useState<"guide" | "install" | null>(null);
   const [mode, setMode] = useState<ActionMode>("focus");
+  const [held, setHeld] = useState<HeldKeys>(releasedKeys);
   const illustrated = session.mode === "playing" ? story[session.step - 1]?.command : undefined;
   const shownMode =
     illustrated &&
@@ -31,6 +38,50 @@ export default function App() {
       : session.mode === "playing"
         ? "focus"
         : mode;
+  const heldMode = held.alt
+    ? held.ctrl
+      ? held.shift
+        ? "resize"
+        : undefined
+      : held.shift
+        ? "move"
+        : "focus"
+    : undefined;
+  function acceptsKeyboard(target: EventTarget | null) {
+    return (
+      target instanceof Node &&
+      region.current?.contains(target) &&
+      !(
+        target instanceof HTMLElement &&
+        target.closest(
+          'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]',
+        )
+      )
+    );
+  }
+  function trackHeld(event: KeyboardEvent, down: boolean) {
+    const key = event.altKey
+      ? event.code.replace(/^(Key|Digit)/, "").toUpperCase()
+      : event.key.toUpperCase();
+    setHeld((previous) => {
+      const keys = directions.some((item) => item.key === key)
+        ? down
+          ? previous.keys.includes(key)
+            ? previous.keys
+            : [...previous.keys, key]
+          : previous.keys.filter((item) => item !== key)
+        : previous.keys;
+      if (
+        previous.alt === event.altKey &&
+        previous.ctrl === event.ctrlKey &&
+        previous.shift === event.shiftKey &&
+        keys.length === previous.keys.length &&
+        keys.every((item, index) => item === previous.keys[index])
+      )
+        return previous;
+      return { alt: event.altKey, ctrl: event.ctrlKey, shift: event.shiftKey, keys };
+    });
+  }
   function act(command: Command) {
     setMode(
       command.type === "focus" || command.type === "move" || command.type === "resize"
@@ -44,14 +95,17 @@ export default function App() {
     setMode(value);
   }
   function openPanel(value: typeof panel) {
+    setHeld(releasedKeys);
     dispatch({ type: "user" });
     setPanel(value);
   }
   function reset() {
+    setHeld(releasedKeys);
     dispatch({ type: "reset" });
     setMode("focus");
   }
   function playback() {
+    setHeld(releasedKeys);
     if (session.mode === "playing") dispatch({ type: "pause" });
     else if (session.mode === "paused") dispatch({ type: "resume" });
     else {
@@ -60,23 +114,22 @@ export default function App() {
     }
   }
   const onKey = useEffectEvent((event: KeyboardEvent) => {
-    if (
-      !region.current?.contains(event.target as Node) ||
-      panel !== null ||
-      event.defaultPrevented ||
-      event.isComposing ||
-      (event.target instanceof HTMLElement &&
-        event.target.closest(
-          'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]',
-        ))
-    )
+    if (!acceptsKeyboard(event.target) || panel !== null || event.defaultPrevented) return;
+    if (event.isComposing || event.metaKey) {
+      setHeld(releasedKeys);
       return;
+    }
     if (event.key === "Escape") {
+      setHeld(releasedKeys);
       (document.activeElement as HTMLElement | null)?.blur();
       event.preventDefault();
       return;
     }
-    if (event.metaKey) return;
+    trackHeld(event, true);
+    if (["Alt", "Control", "Shift"].includes(event.key)) {
+      if (!event.repeat) chooseMode(shownMode);
+      return;
+    }
     // macOS Option changes event.key (e.g. H becomes ˙); code preserves the shortcut key.
     const key = event.altKey
       ? event.code.replace(/^(Key|Digit)/, "").toLowerCase()
@@ -107,9 +160,33 @@ export default function App() {
       act({ type: key === "n" ? "create" : "close" });
     }
   });
+  const onKeyUp = useEffectEvent((event: KeyboardEvent) => {
+    if (!acceptsKeyboard(event.target) || panel !== null || event.metaKey || event.isComposing) {
+      setHeld(releasedKeys);
+      return;
+    }
+    trackHeld(event, false);
+  });
+  const onFocusOut = useEffectEvent((event: FocusEvent) => {
+    if (!acceptsKeyboard(event.relatedTarget)) setHeld(releasedKeys);
+  });
   useEffect(() => {
+    const clear = () => setHeld(releasedKeys);
+    const visibility = () => {
+      if (document.hidden) clear();
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("focusout", onFocusOut);
+    window.addEventListener("blur", clear);
+    document.addEventListener("visibilitychange", visibility);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("focusout", onFocusOut);
+      window.removeEventListener("blur", clear);
+      document.removeEventListener("visibilitychange", visibility);
+    };
   }, []);
   return (
     <>
@@ -214,11 +291,14 @@ export default function App() {
               <p>{session.caption}</p>
             </div>
             <KeyboardControls
-              mode={shownMode}
+              mode={heldMode ?? shownMode}
+              held={held}
               state={state}
               onMode={chooseMode}
               onCommand={act}
-              illustrated={illustrated}
+              illustrated={
+                held.alt || held.ctrl || held.shift || held.keys.length ? undefined : illustrated
+              }
             />
             <p id="demo-keyboard-help" className="sr-only">
               Click or tab into the demo to use its keyboard controls. Option H/J/K/L focuses; add

@@ -2,6 +2,12 @@ import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from "lucide-react";
 import { Button } from "./ui/button";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 import { workspaceNames, type Command, type DemoState, type Direction } from "@/demo/model";
+export interface HeldKeys {
+  alt: boolean;
+  ctrl: boolean;
+  shift: boolean;
+  keys: string[];
+}
 export type ActionMode = "focus" | "move" | "resize";
 export const modes: { value: ActionMode; label: string; keys: string[]; spoken: string }[] = [
   { value: "focus", label: "Focus", keys: ["⌥"], spoken: "Option" },
@@ -20,12 +26,14 @@ export function KeyboardControls({
   onMode,
   onCommand,
   illustrated,
+  held,
 }: {
   mode: ActionMode;
   state: DemoState;
   onMode: (mode: ActionMode) => void;
   onCommand: (command: Command) => void;
   illustrated?: Command;
+  held: HeldKeys;
 }) {
   const workspaceAction = mode === "focus" ? "workspace" : mode === "move" ? "send" : null;
   function bank(names: readonly string[]) {
@@ -95,7 +103,14 @@ export function KeyboardControls({
               <span className="mode-label">{item.label}</span>
               <span className="modifier-chord" aria-hidden="true">
                 {item.keys.map((key) => (
-                  <kbd key={key}>{key}</kbd>
+                  <kbd
+                    key={key}
+                    data-held={
+                      (key === "⌥" ? held.alt : key === "⌃" ? held.ctrl : held.shift) || undefined
+                    }
+                  >
+                    {key}
+                  </kbd>
                 ))}
               </span>
             </ToggleGroupItem>
@@ -109,6 +124,7 @@ export function KeyboardControls({
             <Button
               key={key}
               variant="home"
+              data-held={held.keys.includes(key) || undefined}
               aria-label={`${mode} ${direction} · ${modes.find((item) => item.value === mode)!.spoken} ${key}`}
               data-illustrated={
                 (illustrated &&

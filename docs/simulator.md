@@ -54,6 +54,8 @@ All supported native actions are clickable. Keyboard commands are captured direc
 
 Escape releases keyboard focus; Tab leaves normally. Events outside the demo, editable targets, active dialogs, composition and Command shortcuts are ignored. The former Learn panel and dedicated practice textarea have been removed at the owner's request. Activating the already-selected modifier row also takes over autoplay. Frame's global Carbon shortcuts can act before a browser receives them; preventing browser defaults cannot stop that. Option chords are verified only through synthetic browser DOM events, never by sending global native hotkeys on the owner's desktop. No Frame detection, pause feature, configuration alteration or native keyboard interception is claimed.
 
+Held-key feedback is transient UI state, separate from the layout model and selected action. Matching copies of Option/Shift/Control keycaps fill while held; H/J/K/L fill independently until released. The modifier combination previews Focus, Move or Resize before a direction is pressed. Modifier-only interaction takes over autoplay without issuing a layout command. Auto-repeat does not toggle lights off. Escape, reset/replay, dialogs, focus leaving the demo, window blur and tab suspension clear feedback so a missed keyup cannot leave a key lit. Command/composition events remain excluded.
+
 Announcements describe manual state changes without narrating every autoplay step. Simulated app previews are decorative; actual actions remain named buttons. Automated WCAG checks supplement browser interaction checks; a full VoiceOver user study is not claimed.
 
 ## Accessibility tooling exception

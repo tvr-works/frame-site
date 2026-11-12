@@ -289,6 +289,132 @@ test("displayed Option chords handle macOS key characters without sending native
   await expect(windows(page)).toHaveCount(2);
 });
 
+test("held modifiers compose progressively and direction lights release independently", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await open(page);
+  await open(page);
+  const demo = page.getByRole("application", { name: "Interactive Frame demo", exact: true });
+  const caps = page.locator('.modifier-chord kbd[data-held="true"]');
+  const home = page.locator('.home-row [data-held="true"]');
+  const geometry = await windows(page).evaluateAll((nodes) =>
+    nodes.map((node) => node.getAttribute("style")),
+  );
+  await demo.dispatchEvent("keydown", { key: "Alt", code: "AltLeft", altKey: true });
+  await expect(caps).toHaveCount(3);
+  await expect(caps).toHaveText(["⌥", "⌥", "⌥"]);
+  await demo.dispatchEvent("keydown", {
+    key: "Shift",
+    code: "ShiftLeft",
+    altKey: true,
+    shiftKey: true,
+  });
+  await expect(caps).toHaveCount(5);
+  await expect(
+    page.getByRole("button", { name: "Move · Option Shift", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  expect(
+    await windows(page).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("style"))),
+  ).toEqual(geometry);
+  await demo.dispatchEvent("keydown", {
+    key: "Control",
+    code: "ControlLeft",
+    altKey: true,
+    shiftKey: true,
+    ctrlKey: true,
+  });
+  await expect(caps).toHaveCount(6);
+  await expect(
+    page.getByRole("button", { name: "Resize · Control Shift Option", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await demo.dispatchEvent("keydown", {
+    key: "Ó",
+    code: "KeyH",
+    altKey: true,
+    shiftKey: true,
+    ctrlKey: true,
+  });
+  await expect(home).toHaveCount(1);
+  await expect(home).toHaveAccessibleName("resize left · Control Shift Option H");
+  expect(await focused(page).getAttribute("style")).not.toBe(geometry[1]);
+  await demo.dispatchEvent("keydown", {
+    key: "Ó",
+    code: "KeyH",
+    altKey: true,
+    shiftKey: true,
+    ctrlKey: true,
+    repeat: true,
+  });
+  await expect(home).toHaveCount(1);
+  await demo.dispatchEvent("keyup", {
+    key: "Ó",
+    code: "KeyH",
+    altKey: true,
+    shiftKey: true,
+    ctrlKey: true,
+  });
+  await expect(home).toHaveCount(0);
+  await expect(caps).toHaveCount(6);
+  await demo.dispatchEvent("keyup", {
+    key: "Control",
+    code: "ControlLeft",
+    altKey: true,
+    shiftKey: true,
+  });
+  await expect(caps).toHaveCount(5);
+  await expect(
+    page.getByRole("button", { name: "Move · Option Shift", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await demo.dispatchEvent("keyup", { key: "Shift", code: "ShiftLeft", altKey: true });
+  await expect(caps).toHaveCount(3);
+  await demo.dispatchEvent("keyup", { key: "Alt", code: "AltLeft" });
+  await expect(caps).toHaveCount(0);
+  await expect(home).toHaveCount(0);
+});
+
+test("plain held keys light together and clear on Escape, focus loss or window suspension", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await open(page);
+  await open(page);
+  const demo = page.getByRole("application", { name: "Interactive Frame demo", exact: true });
+  const lights = page.locator('[data-held="true"]');
+  await demo.focus();
+  await page.keyboard.down("h");
+  await page.keyboard.down("j");
+  await expect(page.locator('.home-row [data-held="true"]')).toHaveCount(2);
+  await page.keyboard.up("h");
+  await expect(page.locator('.home-row [data-held="true"]')).toHaveAccessibleName(
+    "focus down · Option J",
+  );
+  await page.keyboard.press("Escape");
+  await expect(lights).toHaveCount(0);
+  await page.keyboard.up("j");
+  await demo.focus();
+  await page.keyboard.down("k");
+  await expect(lights).toHaveCount(1);
+  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
+  await expect(lights).toHaveCount(0);
+  await page.keyboard.up("k");
+  await demo.focus();
+  await demo.dispatchEvent("keydown", { key: "Alt", code: "AltLeft", altKey: true });
+  await expect(lights).toHaveCount(3);
+  await page.getByRole("link", { name: "Guide", exact: true }).click();
+  await expect(lights).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await demo.focus();
+  await page.keyboard.down("l");
+  await expect(lights).toHaveCount(1);
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect(lights).toHaveCount(0);
+  await page.keyboard.up("l");
+});
+
 test("Guide preserves the desktop and keyboard capture leaves dialogs and editable fields alone", async ({
   page,
 }) => {
