@@ -6,7 +6,7 @@ const movements = [
       "Option with H, J, K or L focuses a window in that direction. Option with a number key (1 through 9, or 0) switches to that workspace.",
     workspace: true,
     image: "focus",
-    caption: "Choose a window.",
+    caption: "Move focus between windows or workspaces.",
   },
   {
     name: "Move",
@@ -15,15 +15,16 @@ const movements = [
       "Option Shift with H, J, K or L moves a window in that direction. Option Shift with a number key (1 through 9, or 0) sends the window to that workspace.",
     workspace: true,
     image: "move",
-    caption: "Move between columns or rows.",
+    caption: "Move windows between columns, rows, or workspaces.",
   },
   {
     name: "Resize",
     modifiers: ["⌥", "⇧", "⌃"],
-    spoken: "Option Shift Control with H, J, K or L resizes a column or row in that direction.",
+    spoken:
+      "Option Shift Control with H or L resizes column width; with J or K it resizes row height.",
     workspace: false,
     image: "resize",
-    caption: "Resize a column or row.",
+    caption: "Push column edges left or right. Push row edges up or down.",
   },
 ];
 
@@ -83,6 +84,7 @@ export function BelowFold() {
                         </kbd>
                       ))}
                     </span>
+                    <span className="movement-join">+</span>
                     <span className="movement-targets">
                       <span className="movement-directions">
                         {["H", "J", "K", "L"].map((key) => (

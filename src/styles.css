@@ -137,12 +137,14 @@ a:hover {
   min-height: 44px;
 }
 .intro {
-  margin: 30px 16px 32px;
+  max-width: 1200px;
+  margin: 64px auto 72px;
 }
 .intro h1 {
-  font-size: clamp(30px, 3.5vw, 56px);
-  line-height: 1.15;
-  letter-spacing: -0.04em;
+  font-size: clamp(38px, 5.2vw, 72px);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
   font-weight: 650;
   margin: 0;
 }
@@ -153,13 +155,6 @@ a:hover {
   outline: 1px solid var(--border);
   outline-offset: 12px;
   border-radius: 12px;
-}
-.demo-top-row {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-bottom: 27px;
-  min-height: 40px;
 }
 .demo-action-label {
   position: absolute;
@@ -181,10 +176,18 @@ a:hover {
   color: var(--foreground);
 }
 .utility-controls {
+  position: absolute;
+  z-index: 3;
+  right: 18px;
+  bottom: -8px;
   display: flex;
-  gap: 9px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  gap: 4px;
+}
+.utility-controls .button-icon {
+  width: 44px;
+  height: 44px;
+  padding: 12px;
+  font-size: 18px;
 }
 .demo-stage {
   position: relative;
@@ -965,6 +968,17 @@ a:hover {
 .movement-keycaps {
   align-items: flex-start;
 }
+.movement-join {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 12px;
+  height: clamp(34px, 5.2vw, 50px);
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1;
+}
 .movement-targets {
   display: grid;
   gap: 14px;
@@ -1042,13 +1056,6 @@ a:hover {
 }
 
 @media (min-width: 1600px) {
-  .intro {
-    margin-top: 50px;
-    margin-bottom: 38px;
-  }
-  .demo-top-row {
-    margin-bottom: 40px;
-  }
   .keyboard-composition {
     margin-top: 38px;
   }
@@ -1059,11 +1066,8 @@ a:hover {
 }
 @media (min-width: 1000px) and (max-height: 950px) {
   .intro {
-    margin-top: 28px;
-    margin-bottom: 22px;
-  }
-  .demo-top-row {
-    margin-bottom: 24px;
+    margin-top: 48px;
+    margin-bottom: 56px;
   }
   .keyboard-composition {
     margin-top: 22px;
@@ -1073,18 +1077,6 @@ a:hover {
   }
 }
 @media (max-width: 1200px) {
-  .intro {
-    margin-inline: 0;
-  }
-  .demo-top-row {
-    gap: 14px;
-  }
-  .utility-controls {
-    gap: 3px;
-  }
-  .demo-top-row .ui-button {
-    padding-inline: 8px;
-  }
   .button-number {
     min-width: 40px;
   }
@@ -1152,16 +1144,11 @@ a:hover {
     font-size: 13px;
   }
   .intro {
-    margin: 36px 0 28px;
+    margin: 48px 0 56px;
   }
   .intro h1 {
-    font-size: clamp(32px, 5.5vw, 42px);
+    font-size: clamp(34px, 7vw, 48px);
     line-height: 1.12;
-    letter-spacing: -0.04em;
-  }
-  .demo-top-row {
-    gap: 16px;
-    margin-bottom: 24px;
   }
   .demo-action-label {
     top: 50%;
@@ -1171,10 +1158,8 @@ a:hover {
     min-height: 2.6em;
     font-size: 20px;
   }
-  .demo-top-row .ui-button {
-    font-size: 12px;
-    min-height: 40px;
-    padding-inline: 6px;
+  .utility-controls {
+    right: 0;
   }
   .demo-stage {
     margin: 0 -8px;
@@ -1289,14 +1274,6 @@ a:hover {
   }
   .site-header nav > a:nth-child(2) svg {
     font-size: 17px;
-  }
-  .utility-controls {
-    gap: 1px;
-  }
-  .demo-top-row .ui-button {
-    font-size: 11px;
-    gap: 4px;
-    padding-inline: 5px;
   }
   .window-focus > svg {
     display: none;

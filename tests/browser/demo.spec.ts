@@ -41,7 +41,9 @@ test("loads empty with only playback controls and no application keyboard captur
     "Intuitive, keyboard-first window management for macOS.",
   );
   await expect(windows(page)).toHaveCount(0);
-  await expect(scene(page).getByRole("button")).toHaveText(["Play", "Replay"]);
+  await expect(scene(page).getByRole("button")).toHaveCount(2);
+  await expect(scene(page).getByRole("button", { name: "Play", exact: true })).toBeVisible();
+  await expect(scene(page).getByRole("button", { name: "Replay", exact: true })).toBeVisible();
   await expect(page.getByRole("application")).toHaveCount(0);
   await expect(
     page.locator(".monitor button, .keyboard-controls button, .keyboard-controls [tabindex]"),

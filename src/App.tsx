@@ -67,22 +67,6 @@ export default function App() {
               close dot lights up before it closes, then the demo repeats from empty monitors. Use
               Play or Pause to control playback, or Replay to start again.
             </p>
-            <div id="demo-controls" className="demo-top-row" tabIndex={-1}>
-              <div className="utility-controls">
-                <Button variant="ghost" size="sm" onClick={playback} aria-controls="demo-stage">
-                  {session.mode === "playing" ? <Pause /> : <Play />}
-                  {session.mode === "playing" ? "Pause" : "Play"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => dispatch({ type: "replay" })}
-                  aria-controls="demo-stage"
-                >
-                  <RotateCcw /> Replay
-                </Button>
-              </div>
-            </div>
             <div id="demo-stage" className="demo-stage">
               <div className="stage-radiance" aria-hidden="true" />
               <div className="monitors" aria-hidden="true">
@@ -90,6 +74,32 @@ export default function App() {
                 <Monitor index={1} state={state} closingWindow={session.closingWindow} />
               </div>
               <p className="demo-action-label">{session.caption}</p>
+              <div id="demo-controls" className="utility-controls" tabIndex={-1}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={playback}
+                  aria-label={session.mode === "playing" ? "Pause" : "Play"}
+                  title={session.mode === "playing" ? "Pause demonstration" : "Play demonstration"}
+                  aria-controls="demo-stage"
+                >
+                  {session.mode === "playing" ? (
+                    <Pause aria-hidden="true" />
+                  ) : (
+                    <Play aria-hidden="true" />
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => dispatch({ type: "replay" })}
+                  aria-label="Replay"
+                  title="Replay demonstration"
+                  aria-controls="demo-stage"
+                >
+                  <RotateCcw aria-hidden="true" />
+                </Button>
+              </div>
             </div>
             <KeyboardShortcuts state={state} shortcut={session.shortcut} />
             <p className="sr-only" aria-live="polite" aria-atomic="true">

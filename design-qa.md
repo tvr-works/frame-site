@@ -235,3 +235,25 @@ Visual evidence is in the existing below-fold-build evidence directory: refined-
 Typography, spacing, colors, image fidelity and copy were reviewed against the owner's annotated screenshots and the retained approved layout. The new content is an explicit requested revision to that target. No actionable P0/P1/P2 issue remains. Browser plugin not available; verification used the established pinned Playwright workflow. Formatting, lint, TypeScript, all 65 unit tests and all 44 Chromium/WebKit browser checks pass, including enlarged text and the renamed structure region. Production build and all four artifact checks pass; the final artifact is restored to preview mode.
 
 final result: passed
+
+## Review update: quieter playback and explicit movement descriptions
+
+The owner's next two annotation sets refine the hero and movement explanations. Play/Pause and Replay now sit beside the right monitor foot, level with the caption between the feet on desktop. On stacked mobile displays, they remain beside the second monitor foot; the action caption stays in the reserved gap between displays. Removed the empty upper toolbar and its obsolete responsive styles. Buttons use the existing ghost/icon variants, retain Play/Pause/Replay accessible names and a skip-link destination, expose hover descriptions, and have 44 × 44 pixel targets. They are siblings of the decorative monitor group, so they remain available to assistive technology. Keyboard order, playback and pause behavior are unchanged.
+
+The hero headline uses exactly the same size, weight, tracking and line-height scale as the lower section titles. Its longer copy wraps to two lines at desktop widths, rather than being compressed onto one line. At the owner's 1047-pixel viewport, both headline and section heading compute to 54.444 px; at 320 pixels they both compute to 34 px. Desktop intro margins are 64/72 px, compact-height desktop uses 48/56 px, and mobile uses 48/56 px. Emergency wrapping remains enabled for enlarged text.
+
+The static shortcut rows now include a muted plus sign between the modifier group and its direction/workspace selection. All modifier keys retain their matching fill. Captions now read:
+
+- Focus: “Move focus between windows or workspaces.”
+- Move: “Move windows between columns, rows, or workspaces.”
+- Resize: “Push column edges left or right. Push row edges up or down.”
+
+The spoken resize description explicitly maps H/L to column width and J/K to row height, consistent with the model and retained native parity evidence.
+
+Final visual evidence in the existing below-fold-build directory: updated-hero-1047.png, updated-movements-1047.png, updated-movements-320.png, and updated-composed-full.png. Additional hero captures hero-controls-1488.png, hero-controls-390.png and hero-controls-320.png exercise the other layouts. The final annotated-width hero and both movement captures were opened and inspected; headings, icons, captions and plus signs remain legible. The 320-pixel Resize chord fits without clipping. Final geometry probes confirm no horizontal overflow at 1047 or 320 pixels, 44-pixel controls, and 16 pixels between the bottom of the controls and the workspace-key banks. All captures use deviceScaleFactor 1; there is no density normalization. No page/console errors were captured.
+
+Typography and section hierarchy now match by construction and by rendered measurement. Existing navy/icy-blue tokens, generated diagram assets, internal dividers and major-section whitespace remain intact. Caption wrapping is natural on narrow screens. No actionable P0/P1/P2 finding remains. The missing-selector error in the first geometry probe was confined to the capture script; a corrected probe confirmed the measurements above. The rendered app had no error.
+
+Formatting, lint, TypeScript, all 65 unit tests and all 44 Chromium/WebKit browser cases pass on the combined changes, including icon-only accessible naming, touch controls, Tab order, modal focus, axe scans, doubled text and responsive layouts. The initial browser assertion now checks the two named controls rather than requiring visible text. Static production-artifact verification and preview restoration are completed before commit. Manual VoiceOver testing is not claimed.
+
+final result: passed
