@@ -221,7 +221,9 @@ a:hover {
   max-width: 1800px;
   height: 175%;
   background: url("/monitor-backdrop.webp") center/100% 100% no-repeat;
-  mix-blend-mode: screen;
+  /* Blend the artwork locally so control repaints cannot enter its backdrop. */
+  background-color: var(--background);
+  background-blend-mode: screen;
   mask-image: linear-gradient(transparent, #000 12%, #000 80%, transparent);
   opacity: 0.8;
   z-index: -1;
@@ -264,6 +266,8 @@ a:hover {
   width: 95%;
   height: 80.625%;
   border-radius: 1.5cqw;
+  isolation: isolate;
+  contain: paint;
   background: #0d2338 url("/wallpaper.webp") center/cover;
   overflow: hidden;
   container-type: inline-size;

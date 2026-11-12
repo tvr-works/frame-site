@@ -159,6 +159,53 @@ test("modifier composition shares directions and gates unsupported workspace com
   await expect(focused(page)).toHaveAttribute("data-kind", "browser");
 });
 
+test("workspace hover leaves empty and populated monitor backgrounds unchanged", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Reset", exact: true }).click();
+  await page.evaluate(() => document.fonts.ready);
+  for (const populated of [false, true]) {
+    if (populated) {
+      await open(page);
+      await open(page);
+      await workspace(page, "6");
+      await open(page);
+      await open(page);
+    }
+    await expect
+      .poll(() =>
+        page
+          .locator(".monitors")
+          .evaluate(
+            (node) =>
+              node
+                .getAnimations({ subtree: true })
+                .filter((animation) => animation.playState === "running").length,
+          ),
+      )
+      .toBe(0);
+    await page.mouse.move(0, 0);
+    const screens = await page.locator(".monitor-screen").all();
+    const before = await Promise.all(screens.map((screen) => screen.screenshot()));
+    const caption = await page.locator(".demo-caption").innerText();
+    for (const name of ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]) {
+      await page
+        .getByRole("button", { name: `Switch to workspace ${name} · Option ${name}`, exact: true })
+        .hover();
+      for (const [index, screen] of screens.entries()) {
+        const after = await screen.screenshot();
+        expect(
+          after.equals(before[index]),
+          `Hovering workspace ${name} repainted ${populated ? "populated" : "empty"} display ${index + 1}`,
+        ).toBe(true);
+      }
+      await expect(page.locator(".demo-caption")).toHaveText(caption);
+    }
+  }
+});
+
 test("keyboard practice is opt-in, explicitly remapped, scoped and escapable", async ({ page }) => {
   await page.goto("/");
   await page.keyboard.press("n");
