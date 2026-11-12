@@ -1,7 +1,69 @@
-import type { WindowKind } from '@/demo/model';
-export function WindowContent({kind}:{kind:WindowKind}) {
- if(kind==='browser')return <div className="reading-content"><span className="eyebrow">THE QUIET WORKSPACE</span><h3>A little room<br/>to think.</h3><p>Good work starts with a clear view.</p><img src="/wallpaper.webp" width="1586" height="992" alt=""/><h4>Find your flow</h4><p>Keep what matters close. Give everything else its own space.</p></div>;
- if(kind==='notes')return <div className="notes-content"><span className="eyebrow">WEDNESDAY</span><h3>Make room.</h3><ul><li className="checked">Clear the desktop</li><li>Find the right rhythm</li><li>Bring ideas together</li><li>Make something good</li></ul><p className="note-foot">One thing at a time.</p></div>;
- if(kind==='editor')return <div className="editor-content"><p className="file-path">Frame / main.swift</p><pre><code><span className="syntax-purple">import</span> Foundation{'\n\n'}<span className="syntax-purple">struct</span> <span className="syntax-blue">Workspace</span> {'{'}{'\n'}  <span className="syntax-purple">let</span> windows: [Window]{'\n\n'}  <span className="syntax-purple">func</span> arrange() {'{'}{'\n'}    windows.forEach {'{'}{'\n'}      $0.findItsPlace(){'\n'}    {'}'}{'\n'}  {'}'}{'\n'}{'}'}{'\n\n'}<span className="syntax-comment">// A place for every idea.</span></code></pre></div>;
- return <div className="terminal-content"><p><span className="syntax-blue">~/Projects</span> <span className="syntax-comment">on main</span></p><p><span className="syntax-blue">❯</span> swift build</p><p className="syntax-comment">Building for debugging…<br/>[4/4] Linking Workspace</p><p>Build complete.</p><p><span className="syntax-blue">❯</span> <span className="cursor"/></p></div>;
+import { Check, ChevronRight, Square } from "lucide-react";
+import type { WindowKind } from "@/demo/model";
+import { Skeleton } from "./ui/skeleton";
+export function WindowContent({ kind }: { kind: WindowKind }) {
+  if (kind === "notes")
+    return (
+      <div className="window-skeleton">
+        <Skeleton variant="heading" />
+        <div className="skeleton-checklist">
+          <div>
+            <Check />
+            <Skeleton />
+          </div>
+          <div>
+            <Square />
+            <Skeleton variant="short" />
+          </div>
+          <div>
+            <Square />
+            <Skeleton />
+          </div>
+        </div>
+      </div>
+    );
+  if (kind === "editor")
+    return (
+      <div className="window-skeleton skeleton-code">
+        <Skeleton variant="short" />
+        <div>
+          <Skeleton />
+          <Skeleton variant="short" />
+        </div>
+        <div>
+          <Skeleton variant="short" />
+          <Skeleton />
+          <Skeleton variant="short" />
+        </div>
+      </div>
+    );
+  if (kind === "terminal")
+    return (
+      <div className="window-skeleton skeleton-terminal">
+        <div>
+          <ChevronRight />
+          <Skeleton variant="short" />
+        </div>
+        <Skeleton />
+        <div>
+          <ChevronRight />
+          <Skeleton variant="short" />
+        </div>
+      </div>
+    );
+  return (
+    <div className="window-skeleton">
+      <Skeleton variant="heading" />
+      <div className="skeleton-paragraph">
+        <Skeleton />
+        <Skeleton />
+        <Skeleton variant="short" />
+      </div>
+      <Skeleton variant="block" />
+      <div className="skeleton-paragraph">
+        <Skeleton />
+        <Skeleton variant="short" />
+      </div>
+    </div>
+  );
 }
