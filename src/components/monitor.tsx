@@ -17,8 +17,16 @@ export function Monitor({
   const active = state.workspace === ws.name;
   const windows = layout(ws);
   return (
-    <div className={cn("monitor", active && "monitor-active")} data-testid={`monitor-${index}`}>
-      <div className="monitor-bezel">
+    <div className="monitor" data-testid={`monitor-${index}`}>
+      <div className="monitor-shell">
+        <img
+          className="monitor-frame"
+          src="/monitor-shell.webp"
+          width="1400"
+          height="960"
+          alt=""
+          draggable={false}
+        />
         <div className="monitor-screen">
           <div className="desktop-menu">
             <button
@@ -110,7 +118,6 @@ export function Monitor({
           </div>
         </div>
       </div>
-      <div className="monitor-foot" aria-hidden="true" />
     </div>
   );
 }

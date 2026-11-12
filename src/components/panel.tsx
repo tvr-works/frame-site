@@ -8,18 +8,20 @@ export function Panel({
   title,
   description,
   children,
+  finalFocus,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
   description: string;
   children: ReactNode;
+  finalFocus?: React.RefObject<HTMLElement | null>;
 }) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Backdrop className="dialog-backdrop" />
-        <Dialog.Popup className="dialog-popup">
+        <Dialog.Popup className="dialog-popup" finalFocus={finalFocus}>
           <div className="panel-heading">
             <div>
               <Dialog.Title>{title}</Dialog.Title>

@@ -7,8 +7,24 @@ const open = (page: Page) => page.getByRole("button", { name: "Open window", exa
 async function mode(page: Page, name: string) {
   await page
     .getByRole("group", { name: "Window action", exact: true })
-    .getByRole("button", { name, exact: true })
+    .getByRole("button", { name: new RegExp(`^${name} ·`) })
     .click();
+}
+async function workspace(page: Page, name: string, send = false) {
+  await mode(page, send ? "Move" : "Focus");
+  await page
+    .getByRole("button", {
+      name: new RegExp(`^${send ? "Send to" : "Switch to"} workspace ${name} ·`),
+    })
+    .click();
+}
+async function practice(page: Page) {
+  await page.getByRole("button", { name: "Learn", exact: true }).click();
+  await page.getByText("Browser keyboard practice", { exact: true }).click();
+  await page.getByRole("button", { name: "Start keyboard practice", exact: true }).click();
+  const area = page.getByRole("textbox", { name: "Keyboard practice area", exact: true });
+  await expect(area).toBeFocused();
+  return area;
 }
 async function direction(page: Page, action: string, dir: string) {
   await page.getByRole("button", { name: new RegExp(`^${action} ${dir}`) }).click();
@@ -26,9 +42,9 @@ test("loads a meaningful empty desktop; create, focus, move, resize, close and r
   page.on("pageerror", (error) => errors.push(error.message));
   const response = await page.goto("/");
   expect(response?.status()).toBe(200);
-  await expect(page).toHaveTitle("Frame — Your windows, working together.");
+  await expect(page).toHaveTitle("Frame — Intuitive, keyboard-first window management for macOS.");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Your windows, working together.",
+    "Intuitive, keyboard-first window management for macOS.",
   );
   await expect(windows(page)).toHaveCount(0);
   await open(page);
@@ -51,7 +67,9 @@ test("loads a meaningful empty desktop; create, focus, move, resize, close and r
   const width = await focused(page).getAttribute("style");
   await direction(page, "resize", "left");
   expect(await focused(page).getAttribute("style")).not.toBe(width);
-  await page.getByRole("button", { name: "Close focused window", exact: true }).click();
+  await focused(page)
+    .getByRole("button", { name: /^Close/ })
+    .click();
   await expect(windows(page)).toHaveCount(2);
   await page.getByRole("button", { name: "Reset", exact: true }).click();
   await expect(windows(page)).toHaveCount(0);
@@ -64,32 +82,59 @@ test("workspace transfers retain focus and display affinity; display changes pre
 }) => {
   await page.goto("/");
   await open(page);
-  await page.getByLabel("Send focused window to workspace", { exact: true }).selectOption("2");
+  await workspace(page, "2", true);
   await expect(focused(page)).toHaveCount(0);
-  await expect(page.getByLabel("Switch workspace", { exact: true })).toHaveValue("1");
+  await expect(page.getByTestId("monitor-0")).toContainText("Workspace 1");
   await expect(windows(page)).toHaveCount(1);
-  await page.getByLabel("Switch workspace", { exact: true }).selectOption("2");
+  await workspace(page, "2");
   await expect(focused(page)).toHaveCount(1);
   await expect(page.getByTestId("monitor-1").locator("[data-focused=true]")).toHaveCount(1);
-  await page.getByLabel("Switch workspace", { exact: true }).selectOption("3");
+  await workspace(page, "3");
   await expect(page.getByTestId("monitor-0")).toContainText("Workspace 3");
   await expect(page.getByTestId("monitor-1")).toContainText("Workspace 2");
   await page.getByRole("button", { name: "Single monitor", exact: true }).click();
   await expect(windows(page)).toHaveCount(0);
-  await page.getByLabel("Switch workspace", { exact: true }).selectOption("2");
+  await workspace(page, "2");
   await expect(windows(page)).toHaveCount(1);
   await page.getByRole("button", { name: "Dual monitors", exact: true }).click();
   await expect(windows(page)).toHaveCount(1);
+});
+
+test("modifier composition shares directions and gates unsupported workspace combinations", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await open(page);
+  await open(page);
+  const before = await windows(page).evaluateAll((nodes) =>
+    nodes.map((node) => node.getAttribute("style")),
+  );
+  await mode(page, "Resize");
+  expect(
+    await windows(page).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("style"))),
+  ).toEqual(before);
+  const numbers = page
+    .getByRole("group", { name: "Workspace shortcuts", exact: true })
+    .getByRole("button");
+  await expect(numbers).toHaveCount(10);
+  for (const number of await numbers.all()) await expect(number).toBeDisabled();
+  await expect(page.locator(".home-row").getByRole("button")).toHaveCount(4);
+  await mode(page, "Focus");
+  await direction(page, "focus", "left");
+  await expect(focused(page)).toHaveAttribute("data-kind", "browser");
+  await mode(page, "Move");
+  await page.getByRole("button", { name: /^Send to workspace 6 ·/ }).click();
+  await expect(page.getByTestId("monitor-0")).toContainText("Workspace 1");
+  await workspace(page, "6");
+  await expect(page.getByTestId("monitor-0")).toContainText("Workspace 6");
+  await expect(focused(page)).toHaveAttribute("data-kind", "browser");
 });
 
 test("keyboard practice is opt-in, explicitly remapped, scoped and escapable", async ({ page }) => {
   await page.goto("/");
   await page.keyboard.press("n");
   await expect(windows(page)).toHaveCount(0);
-  const trigger = page.getByRole("button", { name: "Keyboard practice", exact: true });
-  await trigger.click();
-  const area = page.getByRole("textbox", { name: "Keyboard practice area", exact: true });
-  await area.focus();
+  const area = await practice(page);
   await area.press("n");
   await area.press("n");
   await expect(windows(page)).toHaveCount(2);
@@ -98,19 +143,24 @@ test("keyboard practice is opt-in, explicitly remapped, scoped and escapable", a
   const id = await focused(page).getAttribute("data-window-id");
   await area.dispatchEvent("keydown", { key: "l", altKey: true });
   await expect(focused(page)).toHaveAttribute("data-window-id", id!);
+  await area.press("m");
+  await area.press("2");
+  await expect(page.getByTestId("monitor-1").locator("[data-window-id]")).toHaveCount(1);
+  await expect(focused(page)).not.toHaveAttribute("data-window-id", id!);
+  await area.press("r");
+  await area.press("3");
+  await expect(page.getByTestId("monitor-0")).toContainText("Workspace 1");
+  await area.press("f");
+  await area.press("2");
+  await expect(focused(page)).toHaveAttribute("data-window-id", id!);
   await area.press("Escape");
   await expect(area).toHaveCount(0);
-  await expect(trigger).toBeFocused();
+  await expect(page.getByRole("button", { name: "Learn", exact: true })).toBeFocused();
   await page.keyboard.press("n");
   await expect(windows(page)).toHaveCount(2);
-  await trigger.click();
-  const next = page.getByRole("textbox", { name: "Keyboard practice area" });
-  await next.focus();
+  const next = await practice(page);
   await next.press("Tab");
   await expect(next).toHaveCount(0);
-  await expect(
-    page.getByRole("button", { name: "Keyboard practice", exact: true }),
-  ).toHaveAttribute("aria-expanded", "false");
 });
 
 test("help is progressively disclosed; clickable native shortcuts and lessons preserve the desktop", async ({
@@ -119,14 +169,15 @@ test("help is progressively disclosed; clickable native shortcuts and lessons pr
   await page.goto("/");
   await open(page);
   await open(page);
-  await page.getByRole("button", { name: "Shortcuts", exact: true }).click();
+  await page.getByRole("button", { name: "Learn", exact: true }).click();
+  await page.getByText("Shortcut index", { exact: true }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.getByRole("button", { name: /^Try focus left/ }).click();
   await expect(focused(page)).toHaveAttribute("data-kind", "browser");
   await expect(page.getByRole("status")).toContainText("Layout unchanged");
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Shortcuts", exact: true })).toBeFocused();
+  await expect(page.getByRole("button", { name: "Learn", exact: true })).toBeFocused();
   await page.getByRole("button", { name: "Learn", exact: true }).click();
   await expect(windows(page)).toHaveCount(2);
   await expect(page.getByRole("heading", { name: "Start with a clear desktop" })).toBeVisible();
@@ -263,7 +314,7 @@ for (const viewport of [
     await expect(page.getByTestId("monitor-1")).toBeAttached();
     await page.getByRole("button", { name: "Learn", exact: true }).click();
     await noOverflow(page);
-    await page.getByRole("button", { name: "Shortcuts", exact: true }).click();
+    await page.getByText("Shortcut index", { exact: true }).click();
     await noOverflow(page);
     await expect(page.getByRole("dialog")).toBeVisible();
     await page.getByRole("button", { name: "Close panel" }).click();
@@ -289,7 +340,7 @@ test("touch path opens, focuses and moves windows without keyboard shortcuts", a
   await expect(windows(page)).toHaveCount(2);
   await page
     .getByRole("group", { name: "Window action", exact: true })
-    .getByRole("button", { name: "Move", exact: true })
+    .getByRole("button", { name: /^Move ·/ })
     .tap();
   await page.getByRole("button", { name: /^move left/ }).tap();
   await expect(windows(page)).toHaveCount(2);
@@ -315,7 +366,7 @@ test("200% zoom equivalent and enlarged text keep controls reachable", async ({ 
     }
   });
   await noOverflow(page);
-  await page.getByRole("button", { name: "Keyboard practice", exact: true }).click();
+  await practice(page);
   await expect(page.getByRole("textbox", { name: "Keyboard practice area" })).toBeVisible();
 });
 
@@ -338,12 +389,14 @@ test("automated accessibility: demo, help, lessons and install", async ({ page }
   expect(
     (await new AxeBuilder({ page }).exclude("[data-base-ui-focus-guard]").analyze()).violations,
   ).toEqual([]);
+  await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Install", exact: true }).click();
   expect(
     (await new AxeBuilder({ page }).exclude("[data-base-ui-focus-guard]").analyze()).violations,
   ).toEqual([]);
   await page.keyboard.press("Escape");
-  await page.getByRole("button", { name: "Shortcuts", exact: true }).click();
+  await page.getByRole("button", { name: "Learn", exact: true }).click();
+  await page.getByText("Shortcut index", { exact: true }).click();
   expect(
     (await new AxeBuilder({ page }).exclude("[data-base-ui-focus-guard]").analyze()).violations,
   ).toEqual([]);
@@ -355,7 +408,7 @@ test("@artifact static HTML, security, indexing, identity, assets and honest 404
 }) => {
   const home = await request.get("/");
   const html = await home.text();
-  expect(html).toContain("Your windows, working together.");
+  expect(html).toContain("Intuitive, keyboard-first window management for macOS.");
   expect(html).toContain("https://frame.tvr.works/");
   expect(html).not.toContain('<div id="root"></div>');
   expect(home.headers()["content-security-policy"]).toContain("script-src 'self'");
@@ -372,6 +425,8 @@ test("@artifact static HTML, security, indexing, identity, assets and honest 404
   for (const path of [
     "/icon.png",
     "/wallpaper.webp",
+    "/monitor-shell.webp",
+    "/monitor-backdrop.webp",
     "/social-card.png",
     "/sitemap.xml",
     "/robots.txt",
@@ -394,7 +449,7 @@ test("@artifact no-JavaScript visitors can read the guide and install", async ({
   const page = await context.newPage();
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Your windows, working together.",
+    "Intuitive, keyboard-first window management for macOS.",
   );
   await page.getByRole("link", { name: "Guide", exact: true }).click();
   await expect(page).toHaveURL(/\/guide.html$/);
