@@ -1,6 +1,6 @@
 # Frame site
 
-A standalone local marketing site and interactive Frame demo. The native app stays in its own repository. No hosted repository or deployment has been created for this site.
+A standalone local marketing site and scripted Frame demonstration. The native app stays in its own repository. No hosted repository or deployment has been created for this site.
 
 ## Run
 
@@ -33,14 +33,14 @@ Return to `npm run build` afterward for preview indexing. Builds include an exac
 ## Behavior and ownership
 
 - `src/demo/model.ts`: immutable columns, focus/MRU, weights, workspace affinity and command transitions.
-- `src/demo/playback.ts`: the one-shot story and explicit playback/takeover ownership.
+- `src/demo/playback.ts`: the one-shot story, shortcut cues and playback state.
 - `src/demo/use-demo.ts`: timers, reduced motion, visibility and background suspension.
 - `src/components/monitor.tsx`: geometry and presentation; it never owns layout state.
 
-The current design uses one headline, matte monitor hardware with a blue stage glow, quiet translucent windows, workspace number keys locked 1–5 to the left display and 6–0 to the right and a modifier ladder feeding one shared H/J/K/L row. Open/playback/Reset sit above the displays. Status updates are screen-reader-only; no visible caption sits between the monitors and keyboard controls.
+The current design uses one headline, matte monitor hardware with a blue stage glow, quiet translucent windows, workspace number keys locked 1–5 to the left display and 6–0 to the right and a modifier ladder feeding one shared H/J/K/L row. The keys are a read-only visualization. Play/Pause and Replay are the only demo controls, above the displays. No visible caption sits between the monitors and keys.
 
-In Focus mode, selecting a workspace shows and focuses it on its assigned display, restoring its most recently focused window. In Move mode, selecting a workspace transfers the focused window, reveals that destination on its assigned display, and keeps the moved window focused. Single-display mode supports all ten workspaces; returning to dual displays restores the fixed banks.
+The one-shot script holds empty monitors for 600 ms, opens three windows 600 ms apart, then settles for 1.2 seconds. Option K/J/H/L demonstrate focus; Option Shift L/H/K/L moves the same focused window through columns and a stack; Option Shift Control L/L/L/H resizes it in several steps; Option Shift 7 transfers it to the right display with focus following. Each shortcut cues its matching modifier row 650 ms before its direction/number and action. The sequence lasts about 27 seconds, clears its key lights and holds the finished scene. Replay includes the empty opening. Pause preserves the current scene and cue; Play resumes or restarts a completed demo.
 
-The demo begins with empty displays. Manual interaction takes over without a reset. Pause preserves the current step; replay explicitly restarts; reset clears to an empty manual desktop. Offscreen/background suspension never automatically resumes. Reduced motion starts stable with autoplay off. Click or tab into the demo to capture its keyboard controls. Displayed Option shortcuts are supported when the browser receives them; plain H/J/K/L and numbers use the selected mode, F/M/R selects Focus/Move/Resize, and N/X opens/closes windows. Only the modifier row matching the held combination lights up; H/J/K/L light independently. Adding modifiers previews the matching action. Lights clear on key release or focus loss. Escape releases focus and Tab moves normally. Editable fields, composition and Command shortcuts are ignored. Native global shortcuts can run before the browser receives an event. The simulated menu bars group Display and Workspace labels on the left. Each window closes from its red traffic-light dot; Learn has been removed.
+Background/offscreen suspension and opening Guide/Install pause playback and require explicit Play to continue. Reduced motion starts empty with autoplay off and visual transitions disabled; visitors can explicitly play. The stage and keys are decorative, with a screen-reader summary and polite pause/completion status. There is no keyboard capture or hands-on window/workspace/display control. Existing model transitions and native parity fixtures remain the source of layout behavior. The follow-focus transfer and fixed workspace banks are deliberate demo policies documented below.
 
 [Simulator evidence and limits](docs/simulator.md) · [CI and future publication](docs/ci-deployment.md) · [Design verification](design-qa.md)

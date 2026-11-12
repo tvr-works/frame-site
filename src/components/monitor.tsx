@@ -1,21 +1,12 @@
 import { Monitor as MonitorIcon, Globe, NotebookPen, Code2, Terminal } from "lucide-react";
 import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
-import { layout, surface, windowTitles, type DemoState, type Command } from "@/demo/model";
+import { layout, surface, windowTitles, type DemoState } from "@/demo/model";
 import { WindowContent } from "./window-content";
 const icons = { browser: Globe, notes: NotebookPen, editor: Code2, terminal: Terminal };
-export function Monitor({
-  index,
-  state,
-  act,
-}: {
-  index: number;
-  state: DemoState;
-  act: (command: Command) => void;
-}) {
+export function Monitor({ index, state }: { index: number; state: DemoState }) {
   const ws = state.workspaces.find((w) => w.name === state.visible[index])!;
   const active = state.workspace === ws.name;
-  const windows = layout(ws);
   return (
     <div className="monitor" data-testid={`monitor-${index}`}>
       <div className="monitor-shell">
@@ -29,34 +20,14 @@ export function Monitor({
         />
         <div className="monitor-screen">
           <div className="desktop-menu">
-            <button
-              onClick={() => act({ type: "monitor", index })}
-              aria-label={`Focus display ${index + 1}, workspace ${ws.name}`}
-            >
+            <span className="desktop-label">
               <MonitorIcon /> <span>Display {index + 1}</span>
-              <span aria-hidden="true">·</span>
+              <span>·</span>
               <span>Workspace {ws.name}</span>
-            </button>
+            </span>
           </div>
-          <div
-            className="desktop-workarea"
-            aria-label={`Display ${index + 1}, workspace ${ws.name}`}
-          >
-            {windows.length === 0 ? (
-              <button
-                className="empty-desktop"
-                onClick={() => {
-                  act({ type: "monitor", index });
-                  act({ type: "create" });
-                }}
-              >
-                <span>Room for your next idea.</span>
-                <span className="empty-action">
-                  Open a window <span aria-hidden="true">↗</span>
-                </span>
-              </button>
-            ) : null}
-            {windows.map(({ window: win, x, y, width, height }) => {
+          <div className="desktop-workarea">
+            {layout(ws).map(({ window: win, x, y, width, height }) => {
               const Icon = icons[win.kind];
               const focused = state.focused === win.id && active;
               return (
@@ -77,40 +48,19 @@ export function Monitor({
                 >
                   <div className="window-titlebar">
                     <div className="traffic-lights">
-                      <button
-                        className="window-close"
-                        aria-label={`Close ${windowTitles[win.kind]} window ${win.id}`}
-                        onClick={(event) => {
-                          event.currentTarget
-                            .closest<HTMLElement>('[role="application"]')
-                            ?.focus({ preventScroll: true });
-                          act({ type: "select", id: win.id });
-                          act({ type: "close" });
-                        }}
-                      />
-                      <i aria-hidden="true" />
-                      <i aria-hidden="true" />
+                      <span className="window-close" />
+                      <i />
+                      <i />
                     </div>
-                    <button
-                      className="window-focus"
-                      onClick={() => act({ type: "select", id: win.id })}
-                      aria-label={`Focus ${windowTitles[win.kind]} window ${win.id}`}
-                      aria-pressed={focused}
-                    >
+                    <div className="window-focus">
                       <Icon />
                       <span>{windowTitles[win.kind]}</span>
-                    </button>
+                    </div>
                   </div>
                   <div className="window-body">
-                    <div className="window-preview" aria-hidden="true">
+                    <div className="window-preview">
                       <WindowContent kind={win.kind} />
                     </div>
-                    <button
-                      className="window-surface-button"
-                      tabIndex={-1}
-                      aria-label={`Focus ${windowTitles[win.kind]} window ${win.id}`}
-                      onClick={() => act({ type: "select", id: win.id })}
-                    />
                   </div>
                 </div>
               );

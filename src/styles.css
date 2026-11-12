@@ -155,63 +155,17 @@ a:hover {
   border-radius: 12px;
 }
 .demo-top-row {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
-  gap: 22px;
   margin-bottom: 27px;
-  min-height: 48px;
-}
-.open-control {
-  justify-self: start;
-}
-.display-switch {
-  justify-self: center;
+  min-height: 40px;
 }
 .utility-controls {
-  justify-self: end;
   display: flex;
   gap: 9px;
   flex-wrap: wrap;
   justify-content: flex-end;
-}
-.ui-toggle-group {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  padding: 4px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #0c1825;
-  max-width: 100%;
-}
-.ui-toggle {
-  border: 0;
-  background: transparent;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  white-space: nowrap;
-  color: var(--muted);
-  border-radius: 8px;
-  padding: 10px 22px;
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 570;
-  min-height: 40px;
-  transition:
-    background 0.15s,
-    color 0.15s;
-}
-.ui-toggle:hover {
-  background: var(--secondary);
-  color: var(--foreground);
-}
-.ui-toggle[aria-pressed="true"] {
-  background: var(--accent);
-  color: var(--background);
-  box-shadow: inset 0 0 0 1px #e7f7ff;
 }
 .demo-stage {
   position: relative;
@@ -291,7 +245,7 @@ a:hover {
   color: #a8c2d8;
   background: #09132152;
 }
-.desktop-menu button {
+.desktop-label {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -306,33 +260,6 @@ a:hover {
   flex: 1;
   min-height: 0;
   isolation: isolate;
-}
-.empty-desktop {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  border: 0;
-  background: transparent;
-  width: 100%;
-  color: #d3e9f9;
-  font-size: clamp(14px, 2.8cqw, 22px);
-  letter-spacing: -0.025em;
-  text-shadow: 0 1px 20px #06101b;
-}
-.empty-action {
-  font-size: 12px;
-  letter-spacing: 0;
-  color: #a7c8df;
-}
-.empty-action span {
-  padding-left: 6px;
-}
-.empty-desktop:hover .empty-action {
-  color: var(--foreground);
 }
 .demo-window {
   position: absolute;
@@ -430,13 +357,6 @@ a:hover {
   height: 8px;
   border-radius: 50%;
   background: #f56f70;
-}
-.window-close:hover::before {
-  background: #ff8586;
-  box-shadow: 0 0 0 2px #f56f7033;
-}
-.window-close:focus-visible {
-  outline-offset: -2px;
 }
 .window-body {
   display: block;
@@ -609,8 +529,7 @@ a:hover {
   background: var(--secondary);
   color: var(--foreground);
 }
-.ui-button:focus-visible,
-.ui-toggle:focus-visible {
+.ui-button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
@@ -753,11 +672,6 @@ a:hover {
     inset 0 -2px 1px #01061066,
     0 2px 3px #0003;
 }
-.button-number:hover,
-.button-home:hover {
-  border-color: #97c7e6;
-  background: #1b3349;
-}
 .button-number {
   min-height: 36px;
   min-width: 46px;
@@ -770,16 +684,20 @@ a:hover {
   line-height: 1.2;
   font-weight: 550;
 }
-.button-number[aria-pressed="true"] {
+.button-number[data-active="true"] {
   border-color: #99d7ff;
   color: #ecf8ff;
   box-shadow:
     0 0 12px #9bd7ff26,
     inset 0 0 0 1px #b4e5ff33;
 }
-.ui-button[data-illustrated="true"] {
-  border-color: var(--accent);
-  box-shadow: 0 0 14px #9bd7ff40;
+.shortcut-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-width: 1px;
+  border-style: solid;
+  flex-shrink: 0;
 }
 .keyboard-composition {
   display: flex;
@@ -798,7 +716,7 @@ a:hover {
   border-radius: 0;
   background: transparent;
 }
-.toggle-ladder .ui-toggle {
+.toggle-ladder .shortcut-row {
   display: grid;
   grid-template-columns: 74px auto;
   justify-content: start;
@@ -810,9 +728,6 @@ a:hover {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-}
-.toggle-ladder .ui-toggle:hover {
-  background: transparent;
 }
 .mode-label {
   font-weight: 560;
@@ -840,20 +755,11 @@ a:hover {
     inset 0 1px 0 #abcce51a,
     inset 0 -2px 0 #01081480;
 }
-.toggle-ladder .ui-toggle[aria-pressed="true"] .mode-label {
+.toggle-ladder .shortcut-row[data-active="true"] .mode-label {
   color: #f1f6fb;
 }
-.toggle-ladder .ui-toggle[aria-pressed="true"] .modifier-chord kbd {
-  color: #e8f7ff;
-  border-color: #abe1ff;
-  box-shadow:
-    0 0 0 1px #c6eeff40,
-    0 0 13px #76c7ff66,
-    inset 0 0 8px #a1ddff17;
-}
-.toggle-ladder .ui-toggle .modifier-chord kbd[data-held="true"],
-.button-home[data-held="true"] {
-  transition: none;
+.modifier-chord kbd[data-lit="true"],
+.shortcut-key[data-lit="true"] {
   color: var(--background);
   background: var(--accent);
   border-color: #e2f6ff;
@@ -911,14 +817,6 @@ a:hover {
 .window-preview {
   height: 100%;
   overflow: hidden;
-}
-.window-surface-button {
-  position: absolute;
-  inset: 0;
-  border: 0;
-  background: transparent;
-  width: 100%;
-  height: 100%;
 }
 .demo-window {
   background: #0c1a28b3;
@@ -1003,9 +901,6 @@ a:hover {
   .demo-top-row .ui-button {
     padding-inline: 8px;
   }
-  .ui-toggle {
-    padding-inline: 15px;
-  }
   .button-number {
     min-width: 40px;
   }
@@ -1020,21 +915,6 @@ a:hover {
   }
 }
 @media (max-width: 1000px) {
-  .demo-top-row {
-    grid-template-columns: 1fr 1fr;
-  }
-  .display-switch {
-    grid-column: 1/-1;
-    grid-row: 1;
-  }
-  .open-control {
-    grid-column: 1;
-    grid-row: 2;
-  }
-  .utility-controls {
-    grid-column: 2;
-    grid-row: 2;
-  }
   .keyboard-composition {
     gap: 28px;
   }
@@ -1043,7 +923,7 @@ a:hover {
     height: 23px;
     min-height: 23px;
   }
-  .desktop-menu button {
+  .desktop-label {
     font-size: 9px;
   }
   .window-titlebar {
@@ -1128,7 +1008,7 @@ a:hover {
     height: 25px;
     min-height: 25px;
   }
-  .desktop-menu button {
+  .desktop-label {
     font-size: 10px;
   }
   .window-titlebar {
@@ -1165,7 +1045,7 @@ a:hover {
     width: 100%;
     max-width: 288px;
   }
-  .toggle-ladder .ui-toggle {
+  .toggle-ladder .shortcut-row {
     grid-template-columns: 80px 1fr;
     gap: 20px;
     min-height: 42px;
@@ -1217,10 +1097,6 @@ a:hover {
   }
   .site-header nav > a:nth-child(2) svg {
     font-size: 17px;
-  }
-  .ui-toggle {
-    padding-inline: 14px;
-    font-size: 12px;
   }
   .utility-controls {
     gap: 1px;

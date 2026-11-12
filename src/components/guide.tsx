@@ -47,15 +47,11 @@ export function Guide({ install = false }: { install?: boolean }) {
             Workspaces 1–5 are pinned to the left display and 6–0 to the right. Frame’s native
             defaults keep focus on the source workspace; native workspaces remember their display.
           </p>
-          <h3>Try the keyboard in this demo</h3>
+          <h3>Watch the shortcuts compose</h3>
           <p>
-            Click or tab into the demo to use the displayed shortcuts. You can also use plain
-            H/J/K/L and number keys with the selected action. F/M/R selects Focus/Move/Resize; N
-            opens a window and X closes it. Escape releases keyboard focus; Tab moves normally.
-          </p>
-          <p className="small-copy">
-            Frame’s global Option shortcuts may reach the native app before the browser. The
-            plain-key controls let you explore without using those system-wide bindings.
+            The demo opens three windows, then shows focus, move, resize and a workspace transfer.
+            The highlighted keys show how each shortcut builds on the last. Pause at any point, or
+            replay from the empty monitors.
           </p>
           <h3>Make it yours</h3>
           <p>

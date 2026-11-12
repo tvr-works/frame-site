@@ -1,110 +1,179 @@
 import { initialState, transition, type Command, type DemoState } from "./model";
-export const story: { command: Command; caption: string; keys?: string }[] = [
+
+export type ShortcutMode = "focus" | "move" | "resize";
+export interface ShortcutCue {
+  mode: ShortcutMode;
+  key?: string;
+}
+interface Beat {
+  /** Time before this beat, including a reading pause after the previous action. */
+  delay: number;
+  command?: Command;
+  caption: string;
+  shortcut?: ShortcutCue;
+}
+function shortcut(
+  command: Extract<Command, { direction: unknown } | { name: string }>,
+  mode: ShortcutMode,
+  key: string,
+  caption: string,
+  delay: number,
+): Beat[] {
+  return [
+    { delay, caption, shortcut: { mode } },
+    { delay: 650, command, caption, shortcut: { mode, key } },
+  ];
+}
+export const story: Beat[] = [
   {
+    delay: 600,
     command: { type: "create", kind: "browser" },
-    caption: "Open a window. Frame gives it the whole workspace.",
-  },
-  { command: { type: "create", kind: "notes" }, caption: "A second window opens in a new column." },
-  {
-    command: { type: "focus", direction: "left" },
-    caption: "Focus changes the active window. Everything stays in place.",
-    keys: "⌥ H",
+    caption: "One window fills the workspace.",
   },
   {
+    delay: 600,
+    command: { type: "create", kind: "notes" },
+    caption: "A second window opens in a new column.",
+  },
+  {
+    delay: 600,
     command: { type: "create", kind: "editor" },
-    caption: "The next window joins the focused column.",
+    caption: "A third window joins the focused column.",
   },
-  {
-    command: { type: "move", direction: "right" },
-    caption: "Move pushes the window into the next column.",
-    keys: "⌥ ⇧ L",
-  },
-  {
-    command: { type: "resize", direction: "right" },
-    caption: "Resize shifts the active column boundary.",
-    keys: "⌥ ⇧ ⌃ L",
-  },
-  {
-    command: { type: "send", name: "6" },
-    caption: "Move a window to another workspace. Focus follows it across displays.",
-    keys: "⌥ ⇧ 6",
-  },
-  {
-    command: { type: "create", kind: "terminal" },
-    caption: "Keep your tools together, across your displays.",
-  },
-  {
-    command: { type: "focus", direction: "left" },
-    caption: "Your turn. Click any window or open one of your own.",
-    keys: "⌥ H",
-  },
+  ...shortcut(
+    { type: "focus", direction: "up" },
+    "focus",
+    "K",
+    "Option K focuses up within a column. The windows stay in place.",
+    1200,
+  ),
+  ...shortcut(
+    { type: "focus", direction: "down" },
+    "focus",
+    "J",
+    "Option J focuses down in the same column.",
+    900,
+  ),
+  ...shortcut(
+    { type: "focus", direction: "left" },
+    "focus",
+    "H",
+    "Option H focuses the window in the left column.",
+    900,
+  ),
+  ...shortcut(
+    { type: "focus", direction: "right" },
+    "focus",
+    "L",
+    "Option L focuses right. The same directions work for every action.",
+    900,
+  ),
+  ...shortcut(
+    { type: "move", direction: "right" },
+    "move",
+    "L",
+    "Add Shift: Option Shift L moves the focused window right into a new column.",
+    1800,
+  ),
+  ...shortcut(
+    { type: "move", direction: "left" },
+    "move",
+    "H",
+    "Option Shift H moves the same window back into the neighboring column.",
+    1000,
+  ),
+  ...shortcut(
+    { type: "move", direction: "up" },
+    "move",
+    "K",
+    "Option Shift K moves it above the other window in its column.",
+    1000,
+  ),
+  ...shortcut(
+    { type: "move", direction: "right" },
+    "move",
+    "L",
+    "Option Shift L gives the window its own column again.",
+    1000,
+  ),
+  ...shortcut(
+    { type: "resize", direction: "right" },
+    "resize",
+    "L",
+    "Add Control: Option Shift Control L shifts the column boundary to resize the window.",
+    1800,
+  ),
+  ...shortcut(
+    { type: "resize", direction: "right" },
+    "resize",
+    "L",
+    "Repeat the same chord to resize another step.",
+    700,
+  ),
+  ...shortcut(
+    { type: "resize", direction: "right" },
+    "resize",
+    "L",
+    "One more step, keeping the same window focused.",
+    700,
+  ),
+  ...shortcut(
+    { type: "resize", direction: "left" },
+    "resize",
+    "H",
+    "Option Shift Control H adjusts the boundary in the other direction.",
+    700,
+  ),
+  ...shortcut(
+    { type: "send", name: "7" },
+    "move",
+    "7",
+    "Option Shift 7 sends the window to workspace 7 on the right display. Focus follows.",
+    1800,
+  ),
+  { delay: 2400, caption: "Learn the directions once. Add modifiers to focus, move and resize." },
 ];
-export type PlaybackMode = "playing" | "paused" | "manual" | "complete";
+export type PlaybackMode = "playing" | "paused" | "complete";
 export interface DemoSession {
   state: DemoState;
   step: number;
   mode: PlaybackMode;
   caption: string;
-  keys?: string;
+  shortcut?: ShortcutCue;
 }
 export type SessionEvent =
   | { type: "tick" }
-  | { type: "user"; command?: Command }
   | { type: "pause" }
   | { type: "resume" }
-  | { type: "reset" }
   | { type: "replay" };
 export function initialSession(): DemoSession {
   return {
     state: initialState(),
     step: 0,
     mode: "paused",
-    caption: "A clear desktop. Watch it come together, or open a window.",
+    caption: "The demo starts with empty monitors, then opens three windows.",
   };
 }
 export function sessionTransition(s: DemoSession, event: SessionEvent): DemoSession {
   switch (event.type) {
-    case "user": {
-      const state = event.command ? transition(s.state, event.command) : s.state;
-      return {
-        ...s,
-        state,
-        mode: "manual",
-        keys: undefined,
-        caption: event.command
-          ? state.message
-          : "You’re in control. Open a window, then make it your own.",
-      };
-    }
     case "tick": {
       if (s.mode !== "playing") return s;
       const next = story[s.step];
-      if (!next) return { ...s, mode: "complete" };
+      if (!next) return s;
       return {
         ...s,
-        state: transition(s.state, next.command),
+        state: next.command ? transition(s.state, next.command) : s.state,
         step: s.step + 1,
         mode: s.step + 1 === story.length ? "complete" : "playing",
         caption: next.caption,
-        keys: next.keys,
+        shortcut: next.shortcut,
       };
     }
     case "pause":
       return s.mode === "playing" ? { ...s, mode: "paused" } : s;
     case "resume":
       return s.mode === "paused" ? { ...s, mode: "playing" } : s;
-    case "reset":
-      return {
-        ...initialSession(),
-        state: initialState(s.state.visible.length as 1 | 2),
-        mode: "manual",
-        caption: "A clear desktop. Open a window to begin.",
-      };
     case "replay":
-      return {
-        ...initialSession(),
-        state: initialState(s.state.visible.length as 1 | 2),
-        mode: "playing",
-      };
+      return { ...initialSession(), mode: "playing" };
   }
 }

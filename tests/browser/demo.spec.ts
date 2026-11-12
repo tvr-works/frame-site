@@ -3,23 +3,18 @@ import AxeBuilder from "@axe-core/playwright";
 import { story } from "../../src/demo/playback";
 const windows = (page: Page) => page.locator("[data-window-id]");
 const focused = (page: Page) => page.locator('[data-focused="true"]');
-const open = (page: Page) => page.getByRole("button", { name: "Open window", exact: true }).click();
-async function mode(page: Page, name: string) {
-  await page
-    .getByRole("group", { name: "Window action", exact: true })
-    .getByRole("button", { name: new RegExp(`^${name} ·`) })
-    .click();
+const scene = (page: Page) => page.getByRole("region", { name: "Frame shortcut demonstration" });
+async function advance(page: Page, step: number) {
+  const current = Number(await scene(page).getAttribute("data-step"));
+  for (let i = current; i < step; i++) {
+    await page.clock.runFor(story[i].delay + 1);
+    await expect(scene(page)).toHaveAttribute("data-step", String(i + 1));
+  }
 }
-async function workspace(page: Page, name: string, send = false) {
-  await mode(page, send ? "Move" : "Focus");
-  await page
-    .getByRole("button", {
-      name: new RegExp(`^${send ? "Send to" : "Switch to"} workspace ${name} ·`),
-    })
-    .click();
-}
-async function direction(page: Page, action: string, dir: string) {
-  await page.getByRole("button", { name: new RegExp(`^${action} ${dir}`) }).click();
+async function start(page: Page) {
+  await page.clock.install();
+  await page.goto("/");
+  await page.getByRole("button", { name: "Play", exact: true }).click();
 }
 async function noOverflow(page: Page) {
   expect(
@@ -27,7 +22,7 @@ async function noOverflow(page: Page) {
   ).toBe(true);
 }
 
-test("loads a meaningful empty desktop; create, focus, move, resize, close and reset operate on the same state", async ({
+test("loads empty with only playback controls and no application keyboard capture", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -39,534 +34,171 @@ test("loads a meaningful empty desktop; create, focus, move, resize, close and r
     "Intuitive, keyboard-first window management for macOS.",
   );
   await expect(windows(page)).toHaveCount(0);
-  await open(page);
-  await open(page);
-  await expect(windows(page)).toHaveCount(2);
-  await expect(page.locator("[aria-live=polite]")).toContainText("Opened Notes");
-  const before = await windows(page).evaluateAll((nodes) =>
-    nodes.map((node) => node.getAttribute("style")),
-  );
-  await direction(page, "focus", "left");
-  await expect(focused(page)).toHaveAttribute("data-kind", "browser");
-  expect(
-    await windows(page).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("style"))),
-  ).toEqual(before);
-  await open(page);
-  await expect(windows(page)).toHaveCount(3);
-  await mode(page, "Move");
-  await direction(page, "move", "right");
-  await expect(focused(page)).toHaveAttribute("data-kind", "editor");
-  await mode(page, "Resize");
-  const width = await focused(page).getAttribute("style");
-  await direction(page, "resize", "left");
-  expect(await focused(page).getAttribute("style")).not.toBe(width);
-  await focused(page)
-    .getByRole("button", { name: /^Close/ })
-    .click();
-  await expect(windows(page)).toHaveCount(2);
-  await page.getByRole("button", { name: "Reset", exact: true }).click();
+  await expect(scene(page).getByRole("button")).toHaveText(["Play", "Replay"]);
+  await expect(page.getByRole("application")).toHaveCount(0);
+  await expect(
+    page.locator(".monitor button, .keyboard-controls button, .keyboard-controls [tabindex]"),
+  ).toHaveCount(0);
+  await page.getByTestId("monitor-0").click();
+  await page.keyboard.type("nmhrx123");
+  await scene(page).dispatchEvent("keydown", {
+    key: "Ò",
+    code: "KeyL",
+    altKey: true,
+    shiftKey: true,
+  });
   await expect(windows(page)).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Replay", exact: true })).toBeVisible();
+  await expect(scene(page)).toHaveAttribute("data-step", "0");
   expect(errors).toEqual([]);
 });
 
-test("red-dot close targets its own window and preserves keyboard control after closing", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await open(page);
-  await open(page);
-  const remaining = await focused(page).getAttribute("data-window-id");
-  await page.getByRole("button", { name: /^Close Reading window/ }).click();
-  await expect(windows(page)).toHaveCount(1);
-  await expect(focused(page)).toHaveAttribute("data-window-id", remaining!);
-  const close = page.getByRole("button", { name: /^Close Notes window/ });
-  await close.focus();
-  await close.press("Enter");
-  await expect(windows(page)).toHaveCount(0);
-  await page.keyboard.press("n");
-  await expect(windows(page)).toHaveCount(1);
-});
-
-test("workspace transfers follow the moved window across hidden workspaces and displays", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await open(page);
-  const id = await focused(page).getAttribute("data-window-id");
-  await workspace(page, "6", true);
-  await expect(page.getByTestId("monitor-1").locator("[data-focused=true]")).toHaveAttribute(
-    "data-window-id",
-    id!,
-  );
-  await expect(page.getByTestId("monitor-0")).toContainText("Workspace 1");
-  await workspace(page, "0", true);
-  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 0");
-  await expect(focused(page)).toHaveAttribute("data-window-id", id!);
-  await workspace(page, "3", true);
-  await expect(page.getByTestId("monitor-0")).toContainText("Workspace 3");
-  await expect(page.getByTestId("monitor-0").locator("[data-focused=true]")).toHaveAttribute(
-    "data-window-id",
-    id!,
-  );
-  await page.getByRole("button", { name: "Single monitor", exact: true }).click();
-  await workspace(page, "8", true);
-  await expect(page.getByTestId("monitor-0")).toContainText("Workspace 8");
-  await expect(focused(page)).toHaveAttribute("data-window-id", id!);
-  await page.getByRole("button", { name: "Dual monitors", exact: true }).click();
-  await expect(page.getByTestId("monitor-1").locator("[data-focused=true]")).toHaveAttribute(
-    "data-window-id",
-    id!,
-  );
-  await expect(windows(page)).toHaveCount(1);
-});
-
-test("Focus workspace clicks reveal and focus each bank on its locked display", async ({
-  page,
-}) => {
-  await page.goto("/");
-  for (const [index, names] of [
-    [0, ["1", "2", "3", "4", "5"]],
-    [1, ["6", "7", "8", "9", "0"]],
-  ] as const) {
-    for (const name of names) {
-      const other = page.getByTestId(`monitor-${1 - index}`);
-      const untouched = await other.innerText();
-      await workspace(page, name);
-      await expect(page.getByTestId(`monitor-${index}`)).toContainText(`Workspace ${name}`);
-      await expect(other).toHaveText(untouched, { useInnerText: true });
-      await expect(
-        page.getByRole("button", { name: new RegExp(`^Switch to workspace ${name} ·`) }),
-      ).toHaveAttribute("aria-pressed", "true");
-      await open(page);
-      const id = await focused(page).getAttribute("data-window-id");
-      await expect(page.getByTestId(`monitor-${index}`).locator("[data-focused=true]")).toHaveCount(
-        1,
-      );
-      await workspace(page, index === 0 ? "6" : "1");
-      await workspace(page, name);
-      await expect(focused(page)).toHaveAttribute("data-window-id", id!);
-    }
-  }
-});
-
-test("modifier composition shares directions and gates unsupported workspace combinations", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await open(page);
-  await open(page);
-  const before = await windows(page).evaluateAll((nodes) =>
-    nodes.map((node) => node.getAttribute("style")),
-  );
-  await mode(page, "Resize");
-  expect(
-    await windows(page).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("style"))),
-  ).toEqual(before);
-  const numbers = page
-    .getByRole("group", { name: "Workspace shortcuts", exact: true })
-    .getByRole("button");
-  await expect(numbers).toHaveCount(10);
-  for (const number of await numbers.all()) await expect(number).toBeDisabled();
-  await expect(page.locator(".home-row").getByRole("button")).toHaveCount(4);
-  await mode(page, "Focus");
-  await direction(page, "focus", "left");
-  await expect(focused(page)).toHaveAttribute("data-kind", "browser");
-  await mode(page, "Move");
-  await page.getByRole("button", { name: /^Send to workspace 6 ·/ }).click();
-  await expect(page.getByTestId("monitor-0")).toContainText("Workspace 1");
-  await workspace(page, "6");
-  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 6");
-  await expect(focused(page)).toHaveAttribute("data-kind", "browser");
-});
-
-test("workspace hover leaves empty and populated monitor backgrounds unchanged", async ({
-  page,
-}) => {
+test("opening builds three windows steadily before the shortcut sequence", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/");
-  await page.getByRole("button", { name: "Reset", exact: true }).click();
-  await page.evaluate(() => document.fonts.ready);
-  for (const populated of [false, true]) {
-    if (populated) {
-      await open(page);
-      await open(page);
-      await workspace(page, "6");
-      await open(page);
-      await open(page);
-    }
-    await expect
-      .poll(() =>
-        page
-          .locator(".monitors")
-          .evaluate(
-            (node) =>
-              node
-                .getAnimations({ subtree: true })
-                .filter((animation) => animation.playState === "running").length,
-          ),
-      )
-      .toBe(0);
-    await page.mouse.move(0, 0);
-    const screens = await page.locator(".monitor-screen").all();
-    const before = await Promise.all(screens.map((screen) => screen.screenshot()));
-    const announcement = await page.locator("[aria-live=polite]").textContent();
-    for (const name of ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]) {
-      await page
-        .getByRole("button", { name: `Switch to workspace ${name} · Option ${name}`, exact: true })
-        .hover();
-      for (const [index, screen] of screens.entries()) {
-        const after = await screen.screenshot();
-        expect(
-          after.equals(before[index]),
-          `Hovering workspace ${name} repainted ${populated ? "populated" : "empty"} display ${index + 1}`,
-        ).toBe(true);
-      }
-      await expect(page.locator("[aria-live=polite]")).toHaveText(announcement ?? "");
-    }
-  }
-});
-
-test("keyboard controls work directly after a demo click and release with Escape or Tab", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await page.keyboard.press("n");
-  await expect(windows(page)).toHaveCount(0);
-  await page
-    .getByTestId("monitor-0")
-    .getByRole("button", { name: /Room for your next idea/ })
-    .click();
-  await page.keyboard.press("n");
-  await expect(windows(page)).toHaveCount(2);
-  await page.keyboard.press("h");
-  await expect(focused(page)).toHaveAttribute("data-kind", "browser");
-  const id = await focused(page).getAttribute("data-window-id");
-  await page.keyboard.press("m");
-  await page.keyboard.press("6");
-  await expect(page.getByTestId("monitor-1").locator("[data-window-id]")).toHaveCount(1);
-  await expect(focused(page)).toHaveAttribute("data-window-id", id!);
-  await page.keyboard.press("r");
-  await page.keyboard.press("3");
-  await expect(page.getByTestId("monitor-0")).toContainText("Workspace 1");
-  await page.keyboard.press("f");
-  await page.keyboard.press("6");
-  await expect(focused(page)).toHaveAttribute("data-window-id", id!);
-  await page.keyboard.press("Escape");
-  await page.keyboard.press("n");
-  await expect(windows(page)).toHaveCount(2);
-  const demo = page.getByRole("application", { name: "Interactive Frame demo", exact: true });
-  await demo.focus();
-  await page.keyboard.press("Shift+Tab");
-  await expect(page.getByRole("button", { name: "Install", exact: true })).toBeFocused();
-  await page.keyboard.press("n");
-  await expect(windows(page)).toHaveCount(2);
-  await page.keyboard.press("Tab");
-  await expect(page.getByRole("button", { name: "Open window", exact: true })).toBeFocused();
-  await page.keyboard.press("n");
-  await expect(windows(page)).toHaveCount(3);
-  await page.keyboard.press("x");
-  await page.keyboard.press("x");
-  await expect(windows(page)).toHaveCount(1);
-  await page.keyboard.press("n");
-  await expect(windows(page)).toHaveCount(2);
-});
-
-test("displayed Option chords handle macOS key characters without sending native OS shortcuts", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await open(page);
-  await open(page);
-  const demo = page.getByRole("application", { name: "Interactive Frame demo", exact: true });
-  // Synthetic DOM events verify macOS Option characters without registering/sending system hotkeys.
-  await demo.dispatchEvent("keydown", { key: "˙", code: "KeyH", altKey: true });
-  await expect(focused(page)).toHaveAttribute("data-kind", "browser");
-  const id = await focused(page).getAttribute("data-window-id");
-  await demo.dispatchEvent("keydown", { key: "Ò", code: "KeyL", altKey: true, shiftKey: true });
-  await expect(
-    page.getByRole("button", { name: "Move · Option Shift", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
-  const before = await focused(page).getAttribute("style");
-  await demo.dispatchEvent("keydown", {
-    key: "Ô",
-    code: "KeyJ",
-    ctrlKey: true,
-    shiftKey: true,
-    altKey: true,
-  });
-  expect(await focused(page).getAttribute("style")).not.toBe(before);
-  await expect(
-    page.getByRole("button", { name: "Resize · Option Shift Control", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
-  await demo.dispatchEvent("keydown", { key: "‚", code: "Digit0", altKey: true, shiftKey: true });
-  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 0");
-  await expect(focused(page)).toHaveAttribute("data-window-id", id!);
-  await demo.dispatchEvent("keydown", { key: "º", code: "Digit0", altKey: true });
-  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 0");
-  await expect(focused(page)).toHaveAttribute("data-window-id", id!);
-  await expect(page.getByRole("button", { name: "Focus · Option", exact: true })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  for (const ignored of [
-    { key: "h", code: "KeyH", altKey: true, metaKey: true },
-    { key: "h", code: "KeyH", altKey: true, ctrlKey: true },
-    { key: "n", code: "KeyN", isComposing: true },
-  ])
-    await demo.dispatchEvent("keydown", ignored);
-  await expect(focused(page)).toHaveAttribute("data-window-id", id!);
-  await expect(windows(page)).toHaveCount(2);
-});
-
-test("held modifiers compose progressively and direction lights release independently", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await open(page);
-  await open(page);
-  const demo = page.getByRole("application", { name: "Interactive Frame demo", exact: true });
-  const caps = page.locator('.modifier-chord kbd[data-held="true"]');
-  const home = page.locator('.home-row [data-held="true"]');
-  const geometry = await windows(page).evaluateAll((nodes) =>
-    nodes.map((node) => node.getAttribute("style")),
-  );
-  await demo.dispatchEvent("keydown", { key: "Control", code: "ControlLeft", ctrlKey: true });
-  await expect(caps).toHaveCount(0);
-  await demo.dispatchEvent("keydown", { key: "Alt", code: "AltLeft", ctrlKey: true, altKey: true });
-  await expect(caps).toHaveCount(0);
-  await demo.dispatchEvent("keyup", { key: "Alt", code: "AltLeft", ctrlKey: true });
-  await demo.dispatchEvent("keyup", { key: "Control", code: "ControlLeft" });
-  await demo.dispatchEvent("keydown", { key: "Alt", code: "AltLeft", altKey: true });
-  await expect(caps).toHaveCount(1);
-  await expect(caps).toHaveText(["⌥"]);
-  await demo.dispatchEvent("keydown", {
-    key: "Shift",
-    code: "ShiftLeft",
-    altKey: true,
-    shiftKey: true,
-  });
-  await expect(caps).toHaveCount(2);
-  await expect(caps).toHaveText(["⌥", "⇧"]);
-  await expect(
-    page.getByRole("button", { name: "Move · Option Shift", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
-  expect(
-    await windows(page).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("style"))),
-  ).toEqual(geometry);
-  await demo.dispatchEvent("keydown", {
-    key: "Control",
-    code: "ControlLeft",
-    altKey: true,
-    shiftKey: true,
-    ctrlKey: true,
-  });
-  await expect(caps).toHaveCount(3);
-  await expect(caps).toHaveText(["⌥", "⇧", "⌃"]);
-  await expect(
-    page.getByRole("button", { name: "Resize · Option Shift Control", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
-  await demo.dispatchEvent("keydown", {
-    key: "Ó",
-    code: "KeyH",
-    altKey: true,
-    shiftKey: true,
-    ctrlKey: true,
-  });
-  await expect(home).toHaveCount(1);
-  await expect(home).toHaveAccessibleName("resize left · Option Shift Control H");
-  expect(await focused(page).getAttribute("style")).not.toBe(geometry[1]);
-  await demo.dispatchEvent("keydown", {
-    key: "Ó",
-    code: "KeyH",
-    altKey: true,
-    shiftKey: true,
-    ctrlKey: true,
-    repeat: true,
-  });
-  await expect(home).toHaveCount(1);
-  await demo.dispatchEvent("keyup", {
-    key: "Ó",
-    code: "KeyH",
-    altKey: true,
-    shiftKey: true,
-    ctrlKey: true,
-  });
-  await expect(home).toHaveCount(0);
-  await expect(caps).toHaveCount(3);
-  await expect(caps).toHaveText(["⌥", "⇧", "⌃"]);
-  await demo.dispatchEvent("keyup", {
-    key: "Control",
-    code: "ControlLeft",
-    altKey: true,
-    shiftKey: true,
-  });
-  await expect(caps).toHaveCount(2);
-  await expect(caps).toHaveText(["⌥", "⇧"]);
-  await expect(
-    page.getByRole("button", { name: "Move · Option Shift", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
-  await demo.dispatchEvent("keyup", { key: "Shift", code: "ShiftLeft", altKey: true });
-  await expect(caps).toHaveCount(1);
-  await demo.dispatchEvent("keyup", { key: "Alt", code: "AltLeft" });
-  await expect(caps).toHaveCount(0);
-  await expect(home).toHaveCount(0);
-});
-
-test("plain held keys light together and clear on Escape, focus loss or window suspension", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await open(page);
-  await open(page);
-  const demo = page.getByRole("application", { name: "Interactive Frame demo", exact: true });
-  const lights = page.locator('[data-held="true"]');
-  await demo.focus();
-  await page.keyboard.down("h");
-  await page.keyboard.down("j");
-  await expect(page.locator('.home-row [data-held="true"]')).toHaveCount(2);
-  await page.keyboard.up("h");
-  await expect(page.locator('.home-row [data-held="true"]')).toHaveAccessibleName(
-    "focus down · Option J",
-  );
-  await page.keyboard.press("Escape");
-  await expect(lights).toHaveCount(0);
-  await page.keyboard.up("j");
-  await demo.focus();
-  await page.keyboard.down("k");
-  await expect(lights).toHaveCount(1);
-  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
-  await expect(lights).toHaveCount(0);
-  await page.keyboard.up("k");
-  await demo.focus();
-  await demo.dispatchEvent("keydown", { key: "Alt", code: "AltLeft", altKey: true });
-  await expect(lights).toHaveCount(1);
-  await page.getByRole("link", { name: "Guide", exact: true }).click();
-  await expect(lights).toHaveCount(0);
-  await page.keyboard.press("Escape");
-  await demo.focus();
-  await page.keyboard.down("l");
-  await expect(lights).toHaveCount(1);
-  await page.evaluate(() => {
-    Object.defineProperty(document, "hidden", { configurable: true, value: true });
-    document.dispatchEvent(new Event("visibilitychange"));
-  });
-  await expect(lights).toHaveCount(0);
-  await page.keyboard.up("l");
-});
-
-test("Guide preserves the desktop and keyboard capture leaves dialogs and editable fields alone", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await open(page);
-  await open(page);
-  const demo = page.getByRole("application", { name: "Interactive Frame demo", exact: true });
-  await demo.evaluate((node) => {
-    const input = document.createElement("input");
-    input.setAttribute("aria-label", "Test editable field");
-    node.append(input);
-  });
-  await page.getByRole("textbox", { name: "Test editable field" }).fill("hjklmn123");
-  await expect(windows(page)).toHaveCount(2);
-  await page.getByRole("textbox", { name: "Test editable field" }).press("n");
-  await expect(windows(page)).toHaveCount(2);
-  await demo.locator("input").evaluate((node) => node.remove());
-  await page.getByRole("link", { name: "Guide", exact: true }).click();
-  await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Try the keyboard in this demo" })).toBeVisible();
-  await page.keyboard.press("n");
-  await expect(windows(page)).toHaveCount(2);
-  await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Guide", exact: true })).toBeFocused();
-});
-
-test("reduced motion starts stable and stays manual after reset", async ({ page }) => {
   await page.clock.install();
   await page.goto("/");
-  await page.clock.runFor(6000);
+  await expect(page.getByRole("button", { name: "Pause", exact: true })).toBeVisible();
+  await page.clock.runFor(500);
   await expect(windows(page)).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Play", exact: true })).toBeVisible();
-  await open(page);
+  for (let step = 1; step <= 3; step++) {
+    await advance(page, step);
+    await expect(windows(page)).toHaveCount(step);
+    await expect(page.locator('[data-lit="true"]')).toHaveCount(0);
+  }
+  await expect(page.getByTestId("monitor-1").locator("[data-window-id]")).toHaveCount(0);
+});
+
+test("script cues the matching row before actions and composes L for focus, move and resize", async ({
+  page,
+}) => {
+  await start(page);
+  await advance(page, 3);
+  const geometry = () =>
+    windows(page).evaluateAll((nodes) =>
+      nodes.map((node) => ({
+        id: node.getAttribute("data-window-id"),
+        style: node.getAttribute("style"),
+      })),
+    );
+  let previous = await geometry();
+  let id: string | null = null;
+  for (let i = 3; i < story.length; i++) {
+    const beat = story[i];
+    await advance(page, i + 1);
+    await expect(windows(page)).toHaveCount(3);
+    if (beat.shortcut) {
+      const row = page.locator(`.shortcut-row[data-mode="${beat.shortcut.mode}"]`);
+      await expect(page.locator('.shortcut-row[data-active="true"]')).toHaveCount(1);
+      await expect(row.locator('[data-lit="true"]')).toHaveCount(
+        beat.shortcut.mode === "focus" ? 1 : beat.shortcut.mode === "move" ? 2 : 3,
+      );
+      await expect(page.locator('.home-row [data-lit="true"]')).toHaveCount(
+        beat.shortcut.key && "HJKL".includes(beat.shortcut.key) ? 1 : 0,
+      );
+    }
+    if (!beat.command || beat.command.type === "focus") expect(await geometry()).toEqual(previous);
+    if (beat.command?.type === "focus" && beat.command.direction === "right")
+      id = await focused(page).getAttribute("data-window-id");
+    if (beat.command?.type === "move" || beat.command?.type === "resize") {
+      expect(await geometry()).not.toEqual(previous);
+      await expect(focused(page)).toHaveAttribute("data-window-id", id!);
+      await expect(page.locator('.home-row [data-lit="true"]')).toHaveText(beat.shortcut!.key!);
+    }
+    previous = await geometry();
+  }
+  await expect(page.getByTestId("monitor-0").locator("[data-window-id]")).toHaveCount(2);
+  await expect(page.getByTestId("monitor-1").locator('[data-focused="true"]')).toHaveAttribute(
+    "data-window-id",
+    id!,
+  );
+  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 7");
+  await expect(page.locator('[data-lit="true"]')).toHaveCount(0);
+  await expect(scene(page)).toHaveAttribute("data-playback", "complete");
+  await expect(page.locator('[aria-live="polite"]')).toContainText("Demo complete");
+  const end = await geometry();
+  await page.clock.runFor(30000);
+  expect(await geometry()).toEqual(end);
+});
+
+test("pause holds the exact scene and cue; Play continues and Replay repeats the opening", async ({
+  page,
+}) => {
+  await start(page);
+  await advance(page, 8);
+  await page.getByRole("button", { name: "Pause", exact: true }).click();
+  const before = await page.locator(".monitors").innerHTML();
+  const keys = await page.locator(".keyboard-controls").innerHTML();
+  await page.clock.runFor(10000);
+  await expect(scene(page)).toHaveAttribute("data-step", "8");
+  expect(await page.locator(".monitors").innerHTML()).toBe(before);
+  expect(await page.locator(".keyboard-controls").innerHTML()).toBe(keys);
+  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await advance(page, 9);
+  await page.getByRole("button", { name: "Replay", exact: true }).click();
+  await expect(windows(page)).toHaveCount(0);
+  await expect(page.locator('[data-lit="true"]')).toHaveCount(0);
+  await expect(scene(page)).toHaveAttribute("data-step", "0");
+  await advance(page, 1);
+  await expect(windows(page)).toHaveCount(1);
+});
+
+test("finished Play and Replay both explicitly restart without an automatic loop", async ({
+  page,
+}) => {
+  await start(page);
+  await advance(page, story.length);
+  await page.clock.runFor(20000);
+  await expect(scene(page)).toHaveAttribute("data-playback", "complete");
+  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await expect(windows(page)).toHaveCount(0);
+  await advance(page, story.length);
+  await page.getByRole("button", { name: "Replay", exact: true }).click();
+  await expect(windows(page)).toHaveCount(0);
+});
+
+test("reduced motion disables autoplay but allows explicit playback without transitions", async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.goto("/");
+  await page.clock.runFor(10000);
+  await expect(windows(page)).toHaveCount(0);
+  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await advance(page, 3);
   expect(
     await windows(page)
       .first()
       .evaluate((node) => getComputedStyle(node).transitionDuration),
   ).toBe("0s");
-  await page.getByRole("button", { name: "Reset", exact: true }).click();
-  await page.clock.runFor(6000);
-  await expect(windows(page)).toHaveCount(0);
-});
-
-test("autoplay starts blank; pause/resume and exact-state takeover never restart unexpectedly", async ({
-  page,
-}) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.clock.install();
-  await page.goto("/");
-  await expect(page.getByRole("button", { name: "Pause", exact: true })).toBeVisible();
-  await expect(windows(page)).toHaveCount(0);
-  await page.clock.runFor(1550);
-  await expect(windows(page)).toHaveCount(1);
-  await page.getByRole("button", { name: "Pause", exact: true }).click();
-  await page.clock.runFor(5000);
-  await expect(windows(page)).toHaveCount(1);
-  await page.getByRole("button", { name: "Play", exact: true }).click();
-  await page.clock.runFor(2450);
-  await expect(windows(page)).toHaveCount(2);
-  const before = await windows(page).evaluateAll((nodes) =>
-    nodes.map((node) => node.getAttribute("data-window-id")),
-  );
-  await page.getByRole("button", { name: "Focus Notes window 4", exact: true }).first().click();
+  await advance(page, 4);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(scene(page)).toHaveAttribute("data-playback", "paused");
   await page.clock.runFor(10000);
-  expect(
-    await windows(page).evaluateAll((nodes) =>
-      nodes.map((node) => node.getAttribute("data-window-id")),
-    ),
-  ).toEqual(before);
-  await open(page);
-  await expect(windows(page)).toHaveCount(3);
-  await page.getByRole("button", { name: "Replay", exact: true }).click();
-  await expect(windows(page)).toHaveCount(0);
-  await page.clock.runFor(1550);
-  await expect(windows(page)).toHaveCount(1);
+  await expect(scene(page)).toHaveAttribute("data-step", "4");
 });
 
-test("autoplay completes once and hands off four windows", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.clock.install();
-  await page.goto("/");
-  await expect(page.getByRole("button", { name: "Pause", exact: true })).toBeVisible();
-  for (let i = 0; i < story.length; i++) {
-    await page.clock.runFor(i === 0 ? 1550 : 2450);
-    await expect(windows(page)).toHaveCount(
-      story.slice(0, i + 1).filter((step) => step.command.type === "create").length,
-    );
-  }
-  await expect(page.getByRole("button", { name: "Replay", exact: true })).toBeVisible();
-  await expect(windows(page)).toHaveCount(4);
-  await expect(page.locator("[aria-live=polite]")).toContainText("Demo complete");
-  const ids = await windows(page).evaluateAll((nodes) =>
-    nodes.map((node) => node.getAttribute("data-window-id")),
-  );
-  await page.clock.runFor(12000);
-  expect(
-    await windows(page).evaluateAll((nodes) =>
-      nodes.map((node) => node.getAttribute("data-window-id")),
-    ),
-  ).toEqual(ids);
-});
-
-test("offscreen and background pause autoplay; returning requires explicit Play", async ({
+test("Guide pauses playback, preserves the scene and requires explicit Play on return", async ({
   page,
 }) => {
+  await start(page);
+  await advance(page, 3);
+  await page.getByRole("link", { name: "Guide", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Watch the shortcuts compose" })).toBeVisible();
+  await page.clock.runFor(10000);
+  await expect(scene(page)).toHaveAttribute("data-step", "3");
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("link", { name: "Guide", exact: true })).toBeFocused();
+  await expect(scene(page)).toHaveAttribute("data-playback", "paused");
+  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await advance(page, 4);
+});
+
+test("offscreen and background pause; returning never resumes automatically", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.clock.install();
   await page.goto("/");
-  await expect(page.getByRole("button", { name: "Pause", exact: true })).toBeVisible();
-  await page.clock.runFor(1550);
-  await expect(windows(page)).toHaveCount(1);
+  await expect(scene(page)).toHaveAttribute("data-playback", "playing");
+  await advance(page, 1);
   await page.evaluate(() => {
     const spacer = document.createElement("div");
     spacer.style.height = "2000px";
@@ -574,27 +206,26 @@ test("offscreen and background pause autoplay; returning requires explicit Play"
     document.body.append(spacer);
     window.scrollTo(0, document.body.scrollHeight);
   });
-  await expect(page.getByRole("button", { name: "Play", exact: true })).toBeAttached();
+  await expect(scene(page)).toHaveAttribute("data-playback", "paused");
   await page.clock.runFor(5000);
-  await expect(windows(page)).toHaveCount(1);
   await page.evaluate(() => {
     document.getElementById("test-spacer")?.remove();
     window.scrollTo(0, 0);
   });
   await page.clock.runFor(5000);
-  await expect(windows(page)).toHaveCount(1);
+  await expect(scene(page)).toHaveAttribute("data-step", "1");
   await page.getByRole("button", { name: "Play", exact: true }).click();
   await page.evaluate(() => {
     Object.defineProperty(document, "hidden", { configurable: true, value: true });
     document.dispatchEvent(new Event("visibilitychange"));
   });
-  await expect(page.getByRole("button", { name: "Play", exact: true })).toBeVisible();
+  await expect(scene(page)).toHaveAttribute("data-playback", "paused");
   await page.evaluate(() => {
     Object.defineProperty(document, "hidden", { configurable: true, value: false });
     document.dispatchEvent(new Event("visibilitychange"));
   });
   await page.clock.runFor(5000);
-  await expect(windows(page)).toHaveCount(1);
+  await expect(scene(page)).toHaveAttribute("data-step", "1");
 });
 
 for (const viewport of [
@@ -603,22 +234,20 @@ for (const viewport of [
   { width: 1488, height: 1058 },
   { width: 320, height: 700 },
 ])
-  test(`responsive controls and readable displays at ${viewport.width}px`, async ({ page }) => {
+  test(`script and playback controls reflow at ${viewport.width}px`, async ({ page }) => {
     await page.setViewportSize(viewport);
-    await page.goto("/");
-    await open(page);
-    await open(page);
+    await start(page);
+    await advance(page, 3);
+    await page.getByRole("button", { name: "Pause", exact: true }).click();
     await noOverflow(page);
-    await expect(page.getByTestId("monitor-1")).toBeAttached();
     await page.getByRole("link", { name: "Guide", exact: true }).click();
-    await noOverflow(page);
-    await noOverflow(page);
     await expect(page.getByRole("dialog")).toBeVisible();
+    await noOverflow(page);
     await page.getByRole("button", { name: "Close panel" }).click();
     await noOverflow(page);
   });
 
-test("touch path opens, focuses and moves windows without keyboard shortcuts", async ({
+test("touch playback starts, pauses and replays without interactive windows", async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -628,31 +257,24 @@ test("touch path opens, focuses and moves windows without keyboard shortcuts", a
     reducedMotion: "reduce",
   });
   const page = await context.newPage();
+  await page.clock.install();
   await page.goto("/");
-  await page
-    .getByTestId("monitor-0")
-    .getByRole("button", { name: /Room for your next idea/ })
-    .tap();
-  await page.getByRole("button", { name: "Open window", exact: true }).tap();
-  await expect(windows(page)).toHaveCount(2);
-  await page
-    .getByRole("group", { name: "Window action", exact: true })
-    .getByRole("button", { name: /^Move ·/ })
-    .tap();
-  await page.getByRole("button", { name: /^move left/ }).tap();
-  await expect(windows(page)).toHaveCount(2);
+  await page.getByRole("button", { name: "Play", exact: true }).tap();
+  await advance(page, 3);
+  await page.getByRole("button", { name: "Pause", exact: true }).tap();
+  await page.clock.runFor(10000);
+  await expect(windows(page)).toHaveCount(3);
+  await page.getByRole("button", { name: "Replay", exact: true }).tap();
+  await expect(windows(page)).toHaveCount(0);
   await noOverflow(page);
   await context.close();
 });
 
-test("200% zoom equivalent and enlarged text keep controls reachable", async ({ page }) => {
+test("200% zoom equivalent and enlarged text keep playback reachable", async ({ page }) => {
   await page.setViewportSize({ width: 744, height: 529 });
-  await page.goto("/");
-  await open(page);
-  await open(page);
-  await noOverflow(page);
-  await page.getByRole("button", { name: "Reset", exact: true }).click();
-  await expect(windows(page)).toHaveCount(0);
+  await start(page);
+  await advance(page, 3);
+  await page.getByRole("button", { name: "Pause", exact: true }).click();
   await page.evaluate(() => {
     document.documentElement.style.fontSize = "200%";
     for (const element of document.querySelectorAll<HTMLElement>("p,button,a,h1,h2,h3,label")) {
@@ -663,18 +285,27 @@ test("200% zoom equivalent and enlarged text keep controls reachable", async ({ 
     }
   });
   await noOverflow(page);
-  await mode(page, "Focus");
-  await page.keyboard.press("n");
-  await expect(windows(page)).toHaveCount(1);
+  await page.getByRole("button", { name: "Replay", exact: true }).click();
+  await expect(windows(page)).toHaveCount(0);
 });
 
-// Base UI intentionally exposes Safari focus guards for VoiceOver swiping.
-// Follow the maintainer’s narrow exclusion; keyboard containment is checked separately.
-// https://github.com/mui/base-ui/issues/5237
-test("automated accessibility: demo, guide and install", async ({ page }) => {
+test("normal Tab navigation skips decorative windows and keys", async ({ page }) => {
   await page.goto("/");
-  await open(page);
-  await open(page);
+  await page.getByRole("button", { name: "Install", exact: true }).focus();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Play", exact: true })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Replay", exact: true })).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: "Pause", exact: true })).toBeFocused();
+});
+
+// Base UI's Safari/VoiceOver focus guards are intentionally exposed; modal containment is tested below.
+test("automated accessibility: scripted scene, guide and install", async ({ page }) => {
+  await start(page);
+  await advance(page, 3);
+  await page.getByRole("button", { name: "Pause", exact: true }).click();
   expect(
     (
       await new AxeBuilder({ page })
@@ -731,7 +362,9 @@ test("@artifact static HTML, security, indexing, identity, assets and honest 404
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
-  await open(page);
+  await page.clock.install();
+  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await advance(page, 1);
   await expect(windows(page)).toHaveCount(1);
   expect(errors).toEqual([]);
 });

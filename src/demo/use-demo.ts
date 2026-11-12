@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useRef, useState } from "react";
-import { initialSession, sessionTransition } from "./playback";
+import { initialSession, sessionTransition, story } from "./playback";
 export function useDemo() {
   const [session, dispatch] = useReducer(sessionTransition, undefined, initialSession);
   const region = useRef<HTMLElement>(null);
@@ -41,7 +41,7 @@ export function useDemo() {
     if (session.mode !== "playing" || !visible || document.hidden) return;
     const timer = window.setTimeout(
       () => dispatch({ type: "tick" }),
-      session.step === 0 ? 1500 : 2400,
+      story[session.step]?.delay ?? 0,
     );
     return () => window.clearTimeout(timer);
   }, [session.mode, session.step, visible]);

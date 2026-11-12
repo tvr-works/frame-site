@@ -1,129 +1,79 @@
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from "lucide-react";
-import { Button } from "./ui/button";
-import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
-import { workspaceNames, type Command, type DemoState, type Direction } from "@/demo/model";
-export interface HeldKeys {
-  alt: boolean;
-  ctrl: boolean;
-  shift: boolean;
-  keys: string[];
-}
-export type ActionMode = "focus" | "move" | "resize";
-export const modes: { value: ActionMode; label: string; keys: string[]; spoken: string }[] = [
-  { value: "focus", label: "Focus", keys: ["⌥"], spoken: "Option" },
-  { value: "move", label: "Move", keys: ["⌥", "⇧"], spoken: "Option Shift" },
-  { value: "resize", label: "Resize", keys: ["⌥", "⇧", "⌃"], spoken: "Option Shift Control" },
+import { workspaceNames, type DemoState } from "@/demo/model";
+import type { ShortcutCue, ShortcutMode } from "@/demo/playback";
+const modes: { value: ShortcutMode; label: string; keys: string[] }[] = [
+  { value: "focus", label: "Focus", keys: ["⌥"] },
+  { value: "move", label: "Move", keys: ["⌥", "⇧"] },
+  { value: "resize", label: "Resize", keys: ["⌥", "⇧", "⌃"] },
 ];
-export const directions: { key: string; direction: Direction; Icon: typeof ArrowLeft }[] = [
-  { key: "H", direction: "left", Icon: ArrowLeft },
-  { key: "J", direction: "down", Icon: ArrowDown },
-  { key: "K", direction: "up", Icon: ArrowUp },
-  { key: "L", direction: "right", Icon: ArrowRight },
+const directions = [
+  { key: "H", Icon: ArrowLeft },
+  { key: "J", Icon: ArrowDown },
+  { key: "K", Icon: ArrowUp },
+  { key: "L", Icon: ArrowRight },
 ];
-export function KeyboardControls({
-  mode,
+export function KeyboardShortcuts({
   state,
-  onMode,
-  onCommand,
-  illustrated,
-  held,
-  heldMode,
+  shortcut,
 }: {
-  mode: ActionMode;
   state: DemoState;
-  onMode: (mode: ActionMode) => void;
-  onCommand: (command: Command) => void;
-  illustrated?: Command;
-  held: HeldKeys;
-  heldMode?: ActionMode;
+  shortcut?: ShortcutCue;
 }) {
-  const workspaceAction = mode === "focus" ? "workspace" : mode === "move" ? "send" : null;
   function bank(names: readonly string[]) {
     return (
       <div className="number-bank">
         {names.map((name) => (
-          <Button
+          <span
             key={name}
-            variant="number"
-            disabled={
-              workspaceAction === null || (workspaceAction === "send" && state.focused === null)
-            }
-            aria-label={`${workspaceAction === "send" ? "Send to" : "Switch to"} workspace ${name} · ${workspaceAction === "send" ? "Option Shift" : "Option"} ${name}`}
-            aria-pressed={workspaceAction === "workspace" ? state.workspace === name : undefined}
-            data-illustrated={
-              (illustrated &&
-                (illustrated.type === "workspace" || illustrated.type === "send") &&
-                illustrated.name === name) ||
-              undefined
-            }
-            onClick={() => {
-              if (workspaceAction) onCommand({ type: workspaceAction, name });
-            }}
+            className="shortcut-key button-number"
+            data-active={state.workspace === name || undefined}
+            data-lit={shortcut?.key === name || undefined}
           >
             <kbd>{name}</kbd>
-          </Button>
+          </span>
         ))}
       </div>
     );
   }
   return (
-    <div id="demo-controls" className="keyboard-controls">
-      <h2 className="sr-only">Try Frame’s keyboard shortcuts</h2>
-      <fieldset className="workspace-keys">
-        <legend className="sr-only">Workspace shortcuts</legend>
+    <div className="keyboard-controls" aria-hidden="true">
+      <div className="workspace-keys">
         {bank(workspaceNames.slice(0, 5))}
         {bank(workspaceNames.slice(5))}
-      </fieldset>
+      </div>
       <div className="keyboard-composition">
-        <ToggleGroup
-          appearance="ladder"
-          value={[mode]}
-          orientation="vertical"
-          onValueChange={(value) => {
-            onMode((value[0] ?? mode) as ActionMode);
-          }}
-          aria-label="Window action"
-        >
+        <div className="toggle-ladder">
           {modes.map((item) => (
-            <ToggleGroupItem
-              value={item.value}
+            <div
+              className="shortcut-row"
               key={item.value}
-              aria-label={`${item.label} · ${item.spoken}`}
+              data-mode={item.value}
+              data-active={shortcut?.mode === item.value || undefined}
             >
               <span className="mode-label">{item.label}</span>
-              <span className="modifier-chord" aria-hidden="true">
+              <span className="modifier-chord">
                 {item.keys.map((key) => (
-                  <kbd key={key} data-held={item.value === heldMode || undefined}>
+                  <kbd key={key} data-lit={shortcut?.mode === item.value || undefined}>
                     {key}
                   </kbd>
                 ))}
               </span>
-            </ToggleGroupItem>
+            </div>
           ))}
-        </ToggleGroup>
-        <div className="composition-join" aria-hidden="true">
+        </div>
+        <div className="composition-join">
           <ArrowRight />
         </div>
-        <div className="home-row" aria-label={`${mode} directions`}>
-          {directions.map(({ key, direction, Icon }) => (
-            <Button
+        <div className="home-row">
+          {directions.map(({ key, Icon }) => (
+            <span
               key={key}
-              variant="home"
-              data-held={held.keys.includes(key) || undefined}
-              aria-label={`${mode} ${direction} · ${modes.find((item) => item.value === mode)!.spoken} ${key}`}
-              data-illustrated={
-                (illustrated &&
-                  (illustrated.type === "focus" ||
-                    illustrated.type === "move" ||
-                    illustrated.type === "resize") &&
-                  illustrated.direction === direction) ||
-                undefined
-              }
-              onClick={() => onCommand({ type: mode, direction })}
+              className="shortcut-key button-home"
+              data-lit={shortcut?.key === key || undefined}
             >
               <kbd>{key}</kbd>
-              <Icon aria-hidden="true" />
-            </Button>
+              <Icon />
+            </span>
           ))}
         </div>
       </div>
