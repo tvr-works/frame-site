@@ -22,7 +22,7 @@ export const story: { command: Command; caption: string; keys?: string }[] = [
   {
     command: { type: "resize", direction: "right" },
     caption: "Resize shifts the active column boundary.",
-    keys: "⌃ ⇧ ⌥ L",
+    keys: "⌥ ⇧ ⌃ L",
   },
   {
     command: { type: "send", name: "6" },

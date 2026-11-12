@@ -300,8 +300,8 @@ export default function App() {
             />
             <p id="demo-keyboard-help" className="sr-only">
               Click or tab into the demo to use its keyboard controls. Option H/J/K/L focuses; add
-              Shift to move or Control and Shift to resize. Option 1–0 switches workspace; add Shift
-              to send. Plain H/J/K/L and numbers use the selected action, F/M/R selects
+              Shift to move, then Control to resize. Option 1–0 switches workspace; add Shift to
+              send. Plain H/J/K/L and numbers use the selected action, F/M/R selects
               Focus/Move/Resize, N opens and X closes. Escape releases keyboard focus. Tab moves
               normally.
             </p>

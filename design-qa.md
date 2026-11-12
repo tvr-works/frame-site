@@ -114,3 +114,7 @@ Removed the visible “Workspaces · Option switch · Option Shift send” hint,
 ## Review update: match the top-row action styles
 
 Open window now uses the same small, quiet icon-and-text button treatment as Replay and Reset. Shared responsive sizing applies across all three actions, replacing the former outlined-button padding overrides. Inspected `quiet-open-window.png` and `quiet-open-window-mobile.png`; full desktop evidence is `quiet-open-window-desktop.png`. The social card was refreshed. All 64 unit tests, 48 Chromium/WebKit checks, formatting, lint, TypeScript and static build pass. Window creation, keyboard focus, hover and touch behavior remain verified; final capture had no page errors.
+
+## Review update: additive modifier order
+
+Resize now displays Option → Shift → Control, keeping its first two keycaps aligned with Move and its first keycap aligned with Focus. Accessible names, keyboard help, Guide and autoplay shortcut metadata use that same additive order. Shortcut behavior and matching-row illumination are unchanged. Inspected `composable-modifier-order.png`; desktop/mobile captures are also retained, and the social card was refreshed. All 64 unit tests, 48 Chromium/WebKit browser cases, formatting, lint, TypeScript, preview/production builds and four production-artifact cases pass. Preview indexing was restored; the final capture reported no page errors.

@@ -279,7 +279,7 @@ test("displayed Option chords handle macOS key characters without sending native
   });
   expect(await focused(page).getAttribute("style")).not.toBe(before);
   await expect(
-    page.getByRole("button", { name: "Resize · Control Shift Option", exact: true }),
+    page.getByRole("button", { name: "Resize · Option Shift Control", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await demo.dispatchEvent("keydown", { key: "‚", code: "Digit0", altKey: true, shiftKey: true });
   await expect(page.getByTestId("monitor-1")).toContainText("Workspace 0");
@@ -344,9 +344,9 @@ test("held modifiers compose progressively and direction lights release independ
     ctrlKey: true,
   });
   await expect(caps).toHaveCount(3);
-  await expect(caps).toHaveText(["⌃", "⇧", "⌥"]);
+  await expect(caps).toHaveText(["⌥", "⇧", "⌃"]);
   await expect(
-    page.getByRole("button", { name: "Resize · Control Shift Option", exact: true }),
+    page.getByRole("button", { name: "Resize · Option Shift Control", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await demo.dispatchEvent("keydown", {
     key: "Ó",
@@ -356,7 +356,7 @@ test("held modifiers compose progressively and direction lights release independ
     ctrlKey: true,
   });
   await expect(home).toHaveCount(1);
-  await expect(home).toHaveAccessibleName("resize left · Control Shift Option H");
+  await expect(home).toHaveAccessibleName("resize left · Option Shift Control H");
   expect(await focused(page).getAttribute("style")).not.toBe(geometry[1]);
   await demo.dispatchEvent("keydown", {
     key: "Ó",
@@ -376,7 +376,7 @@ test("held modifiers compose progressively and direction lights release independ
   });
   await expect(home).toHaveCount(0);
   await expect(caps).toHaveCount(3);
-  await expect(caps).toHaveText(["⌃", "⇧", "⌥"]);
+  await expect(caps).toHaveText(["⌥", "⇧", "⌃"]);
   await demo.dispatchEvent("keyup", {
     key: "Control",
     code: "ControlLeft",

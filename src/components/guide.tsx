@@ -36,9 +36,9 @@ export function Guide({ install = false }: { install?: boolean }) {
           </p>
           <h3>Focus, move, resize</h3>
           <p>
-            Use Option + H/J/K/L to focus left/down/up/right. Add Shift to move the window, or
-            Control + Shift to resize. Focus stops at workspace edges; moving left or right at an
-            edge creates a column.
+            Use Option + H/J/K/L to focus left/down/up/right. Add Shift to move the window, then
+            Control to resize. Focus stops at workspace edges; moving left or right at an edge
+            creates a column.
           </p>
           <h3>Workspaces that remember</h3>
           <p>

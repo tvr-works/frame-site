@@ -12,7 +12,7 @@ export type ActionMode = "focus" | "move" | "resize";
 export const modes: { value: ActionMode; label: string; keys: string[]; spoken: string }[] = [
   { value: "focus", label: "Focus", keys: ["⌥"], spoken: "Option" },
   { value: "move", label: "Move", keys: ["⌥", "⇧"], spoken: "Option Shift" },
-  { value: "resize", label: "Resize", keys: ["⌃", "⇧", "⌥"], spoken: "Control Shift Option" },
+  { value: "resize", label: "Resize", keys: ["⌥", "⇧", "⌃"], spoken: "Option Shift Control" },
 ];
 export const directions: { key: string; direction: Direction; Icon: typeof ArrowLeft }[] = [
   { key: "H", direction: "left", Icon: ArrowLeft },
