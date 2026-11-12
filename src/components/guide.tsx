@@ -50,8 +50,8 @@ export function Guide({ install = false }: { install?: boolean }) {
           <h3>Watch the shortcuts compose</h3>
           <p>
             The demo opens three windows, then shows focus, move, resize and a workspace transfer.
-            The highlighted keys show how each shortcut builds on the last. Pause at any point, or
-            replay from the empty monitors.
+            The highlighted keys show how each shortcut builds on the last. Windows close one at a
+            time before the demo repeats. Pause at any point, or replay from the empty monitors.
           </p>
           <h3>Make it yours</h3>
           <p>

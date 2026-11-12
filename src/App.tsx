@@ -16,9 +16,7 @@ export default function App() {
     setPanel(value);
   }
   function playback() {
-    dispatch({
-      type: session.mode === "playing" ? "pause" : session.mode === "paused" ? "resume" : "replay",
-    });
+    dispatch({ type: session.mode === "playing" ? "pause" : "resume" });
   }
   return (
     <>
@@ -65,8 +63,9 @@ export default function App() {
               change focus without moving windows. Adding Shift to Option L moves the focused window
               right; adding Control resizes it in steps. Option Shift 7 sends it to workspace 7 on
               the right display, then Option Shift 1 brings it back to the left, keeping it focused
-              both ways. The illustrated keys light up before each action. Use Play or Pause to
-              control playback, or Replay to start again.
+              both ways. The illustrated keys light up before each action. The windows close one at
+              a time, then the demo repeats from empty monitors. Use Play or Pause to control
+              playback, or Replay to start again.
             </p>
             <div id="demo-controls" className="demo-top-row" tabIndex={-1}>
               <div className="utility-controls">
@@ -93,11 +92,9 @@ export default function App() {
             </div>
             <KeyboardShortcuts state={state} shortcut={session.shortcut} />
             <p className="sr-only" aria-live="polite" aria-atomic="true">
-              {session.mode === "complete"
-                ? `Demo complete. ${session.caption} ${describe(state)}`
-                : session.mode === "paused"
-                  ? `Demo paused. ${session.caption} ${describe(state)}`
-                  : ""}
+              {session.mode === "paused"
+                ? `Demo paused. ${session.caption} ${describe(state)}`
+                : ""}
             </p>
             {reduced ? (
               <span className="sr-only">

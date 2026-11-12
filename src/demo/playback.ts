@@ -138,9 +138,12 @@ export const story: Beat[] = [
     "Option Shift 1 brings the same window back to workspace 1 on the left display. Focus follows back.",
     1800,
   ),
-  { delay: 2400, caption: "Learn the directions once. Add modifiers to focus, move and resize." },
+  { delay: 1800, command: { type: "close" }, caption: "Close one window. The others retile." },
+  { delay: 600, command: { type: "close" }, caption: "Close the next window." },
+  { delay: 600, command: { type: "close" }, caption: "Back to empty monitors." },
+  { delay: 1200, caption: "An empty desktop, ready to begin again." },
 ];
-export type PlaybackMode = "playing" | "paused" | "complete";
+export type PlaybackMode = "playing" | "paused";
 export interface DemoSession {
   state: DemoState;
   step: number;
@@ -167,11 +170,12 @@ export function sessionTransition(s: DemoSession, event: SessionEvent): DemoSess
       if (s.mode !== "playing") return s;
       const next = story[s.step];
       if (!next) return s;
+      // The final beat holds the empty scene, then restores the opening for the next cycle.
+      if (s.step + 1 === story.length) return { ...initialSession(), mode: "playing" };
       return {
         ...s,
         state: next.command ? transition(s.state, next.command) : s.state,
         step: s.step + 1,
-        mode: s.step + 1 === story.length ? "complete" : "playing",
         caption: next.caption,
         shortcut: next.shortcut,
       };

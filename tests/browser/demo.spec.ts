@@ -8,7 +8,10 @@ async function advance(page: Page, step: number) {
   const current = Number(await scene(page).getAttribute("data-step"));
   for (let i = current; i < step; i++) {
     await page.clock.runFor(story[i].delay + 1);
-    await expect(scene(page)).toHaveAttribute("data-step", String(i + 1));
+    await expect(scene(page)).toHaveAttribute(
+      "data-step",
+      String(i + 1 === story.length ? 0 : i + 1),
+    );
   }
 }
 async function start(page: Page) {
@@ -84,10 +87,12 @@ test("script cues the matching row before actions and composes L for focus, move
     );
   let previous = await geometry();
   let id: string | null = null;
+  let remaining = 3;
   for (let i = 3; i < story.length; i++) {
     const beat = story[i];
     await advance(page, i + 1);
-    await expect(windows(page)).toHaveCount(3);
+    if (beat.command?.type === "close") remaining--;
+    await expect(windows(page)).toHaveCount(remaining);
     if (beat.shortcut) {
       const row = page.locator(`.shortcut-row[data-mode="${beat.shortcut.mode}"]`);
       await expect(page.locator('.shortcut-row[data-active="true"]')).toHaveCount(1);
@@ -118,19 +123,14 @@ test("script cues the matching row before actions and composes L for focus, move
     }
     previous = await geometry();
   }
-  await expect(page.getByTestId("monitor-0").locator("[data-window-id]")).toHaveCount(3);
-  await expect(page.getByTestId("monitor-1").locator("[data-window-id]")).toHaveCount(0);
-  await expect(page.getByTestId("monitor-0").locator('[data-focused="true"]')).toHaveAttribute(
-    "data-window-id",
-    id!,
-  );
-  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 7");
+  await expect(windows(page)).toHaveCount(0);
+  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 6");
   await expect(page.locator('[data-lit="true"]')).toHaveCount(0);
-  await expect(scene(page)).toHaveAttribute("data-playback", "complete");
-  await expect(page.locator('[aria-live="polite"]')).toContainText("Demo complete");
-  const end = await geometry();
+  await expect(scene(page)).toHaveAttribute("data-playback", "playing");
+  await expect(scene(page)).toHaveAttribute("data-step", "0");
+  await page.getByRole("button", { name: "Pause", exact: true }).click();
   await page.clock.runFor(30000);
-  expect(await geometry()).toEqual(end);
+  await expect(windows(page)).toHaveCount(0);
 });
 
 test("pause holds the exact scene and cue; Play continues and Replay repeats the opening", async ({
@@ -155,18 +155,36 @@ test("pause holds the exact scene and cue; Play continues and Replay repeats the
   await expect(windows(page)).toHaveCount(1);
 });
 
-test("finished Play and Replay both explicitly restart without an automatic loop", async ({
+test("closing empties the monitors one window at a time and loops; Pause also holds the empty ending", async ({
   page,
 }) => {
   await start(page);
+  const firstClose = story.findIndex((beat) => beat.command?.type === "close");
+  await advance(page, firstClose);
+  await expect(windows(page)).toHaveCount(3);
+  for (let i = 0; i < 3; i++) {
+    await advance(page, firstClose + i + 1);
+    await expect(windows(page)).toHaveCount(2 - i);
+    await expect(page.locator('[data-lit="true"]')).toHaveCount(0);
+  }
   await advance(page, story.length);
-  await page.clock.runFor(20000);
-  await expect(scene(page)).toHaveAttribute("data-playback", "complete");
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await expect(scene(page)).toHaveAttribute("data-step", "0");
   await expect(windows(page)).toHaveCount(0);
+  await advance(page, 1);
+  await expect(windows(page)).toHaveCount(1);
+  await advance(page, story.length - 1);
+  await expect(windows(page)).toHaveCount(0);
+  await page.getByRole("button", { name: "Pause", exact: true }).click();
+  await page.clock.runFor(10000);
+  await expect(scene(page)).toHaveAttribute("data-step", String(story.length - 1));
+  await expect(windows(page)).toHaveCount(0);
+  await page.getByRole("button", { name: "Play", exact: true }).click();
   await advance(page, story.length);
+  await advance(page, 1);
+  await expect(windows(page)).toHaveCount(1);
   await page.getByRole("button", { name: "Replay", exact: true }).click();
   await expect(windows(page)).toHaveCount(0);
+  await expect(scene(page)).toHaveAttribute("data-step", "0");
 });
 
 test("reduced motion disables autoplay but allows explicit playback without transitions", async ({

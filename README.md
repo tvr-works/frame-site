@@ -33,13 +33,13 @@ Return to `npm run build` afterward for preview indexing. Builds include an exac
 ## Behavior and ownership
 
 - `src/demo/model.ts`: immutable columns, focus/MRU, weights, workspace affinity and command transitions.
-- `src/demo/playback.ts`: the one-shot story, shortcut cues and playback state.
+- `src/demo/playback.ts`: the repeating story, shortcut cues and playback state.
 - `src/demo/use-demo.ts`: timers, reduced motion, visibility and background suspension.
 - `src/components/monitor.tsx`: geometry and presentation; it never owns layout state.
 
 The current design uses one headline, matte monitor hardware with a blue stage glow, quiet translucent windows, workspace number keys locked 1–5 to the left display and 6–0 to the right and a modifier ladder feeding one shared H/J/K/L row. The keys are a read-only visualization. Play/Pause and Replay are the only demo controls, above the displays. No visible caption sits between the monitors and keys.
 
-The one-shot script holds empty monitors for 600 ms, opens three windows 600 ms apart, then settles for 1.2 seconds. Option K/J/H/L demonstrate focus; Option Shift L/H/K/L moves the same focused window through columns and a stack; Option Shift Control L/L/L/H resizes it in several steps; Option Shift 7 transfers it to the right display, then Option Shift 1 brings it back to the left, with focus following both ways. Each shortcut cues its matching modifier row 650 ms before its direction/number and action. The sequence lasts about 30 seconds, clears its key lights and holds the finished scene. Replay includes the empty opening. Pause preserves the current scene and cue; Play resumes or restarts a completed demo.
+The script holds empty monitors for 600 ms, opens three windows 600 ms apart, then settles for 1.2 seconds. Option K/J/H/L demonstrate focus; Option Shift L/H/K/L moves the same focused window through columns and a stack; Option Shift Control L/L/L/H resizes it in several steps; Option Shift 7 transfers it to the right display, then Option Shift 1 brings it back to the left, with focus following both ways. Each shortcut cues its matching modifier row 650 ms before its direction/number and action. After the transfer returns, windows close one at a time, 600 ms apart, with shortcut lights off. Empty monitors hold for 1.8 seconds before the next window opens. The full sequence repeats about every 31 seconds. Replay restarts immediately from the empty opening. Pause preserves the current scene and cue, including during closing and the empty hold; Play resumes.
 
 Background/offscreen suspension and opening Guide/Install pause playback and require explicit Play to continue. Reduced motion starts empty with autoplay off and visual transitions disabled; visitors can explicitly play. The stage and keys are decorative, with a screen-reader summary and polite pause/completion status. There is no keyboard capture or hands-on window/workspace/display control. Existing model transitions and native parity fixtures remain the source of layout behavior. The follow-focus transfer and fixed workspace banks are deliberate demo policies documented below.
 

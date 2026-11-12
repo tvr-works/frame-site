@@ -53,16 +53,27 @@ describe("scripted playback", () => {
         expect(s.shortcut?.key).toBe(beat.command.name);
       }
     }
-    expect(s.state.workspace).toBe("1");
-    expect(
-      s.state.workspaces.find((w) => w.name === "1")!.columns.flatMap((c) => c.windows),
-    ).toHaveLength(3);
-    expect(s.state.workspaces.find((w) => w.name === "7")!.columns).toHaveLength(0);
-    expect(s.mode).toBe("complete");
-    expect(s.shortcut).toBeUndefined();
-    expect(s.state.workspaces.flatMap((w) => w.columns.flatMap((c) => c.windows))).toHaveLength(3);
-    expect(sessionTransition(s, { type: "tick" })).toBe(s);
-    expect(sessionTransition(s, { type: "resume" })).toBe(s);
+    expect(s).toEqual({ ...initialSession(), mode: "playing" });
+  });
+  it("closes windows individually, holds empty, and starts a fresh cycle without accumulating state", () => {
+    let s = sessionTransition(initialSession(), { type: "resume" });
+    for (let cycle = 0; cycle < 2; cycle++) {
+      let closed = 0;
+      for (const beat of story) {
+        s = sessionTransition(s, { type: "tick" });
+        if (beat.command?.type === "close") {
+          closed++;
+          expect(
+            s.state.workspaces.flatMap((w) => w.columns.flatMap((c) => c.windows)),
+          ).toHaveLength(3 - closed);
+          expect(s.shortcut).toBeUndefined();
+          const paused = sessionTransition(s, { type: "pause" });
+          expect(sessionTransition(paused, { type: "tick" })).toBe(paused);
+        }
+      }
+      expect(closed).toBe(3);
+      expect(s).toEqual({ ...initialSession(), mode: "playing" });
+    }
   });
   it("pause preserves the exact scene and cue; only explicit resume continues", () => {
     let s = sessionTransition(initialSession(), { type: "resume" });
@@ -75,10 +86,10 @@ describe("scripted playback", () => {
     expect(resumed.step).toBe(paused.step);
     expect(sessionTransition(resumed, { type: "tick" }).step).toBe(paused.step + 1);
   });
-  it("replay restarts blank from playing, paused and completed scenes", () => {
+  it("replay restarts blank from playing and paused scenes", () => {
     let s = sessionTransition(initialSession(), { type: "resume" });
     for (const _ of story) s = sessionTransition(s, { type: "tick" });
-    for (const mode of ["playing", "paused", "complete"] as const) {
+    for (const mode of ["playing", "paused"] as const) {
       expect(sessionTransition({ ...s, mode }, { type: "replay" })).toEqual({
         ...initialSession(),
         mode: "playing",
