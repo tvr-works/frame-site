@@ -220,6 +220,21 @@ test("pause holds the exact scene and cue; Play continues and Replay repeats the
   await expect(windows(page)).toHaveCount(1);
 });
 
+test("Replay during the empty opening restarts the full opening delay", async ({ page }) => {
+  const startTime = new Date();
+  await page.clock.install({ time: startTime });
+  await page.clock.pauseAt(new Date(startTime.getTime() + 1000));
+  await page.goto("/");
+  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await page.clock.runFor(800);
+  await page.getByRole("button", { name: "Replay", exact: true }).click();
+  await page.clock.runFor(1199);
+  await expect(windows(page)).toHaveCount(0);
+  await expect(scene(page)).toHaveAttribute("data-step", "0");
+  await page.clock.runFor(2);
+  await expect(windows(page)).toHaveCount(1);
+});
+
 test("closing empties the monitors one window at a time and loops; Pause also holds the empty ending", async ({
   page,
 }) => {

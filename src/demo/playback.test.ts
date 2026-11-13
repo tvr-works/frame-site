@@ -141,6 +141,7 @@ describe("scripted playback", () => {
       expect(sessionTransition({ ...s, mode }, { type: "replay" })).toEqual({
         ...initialSession(),
         mode: "playing",
+        replayVersion: s.replayVersion + 1,
       });
     }
   });

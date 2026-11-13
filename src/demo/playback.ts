@@ -106,6 +106,7 @@ export const story: Beat[] = [
 export type PlaybackMode = "playing" | "paused";
 export interface DemoSession {
   state: DemoState;
+  replayVersion: number;
   closingWindow?: number;
   step: number;
   mode: PlaybackMode;
@@ -120,6 +121,7 @@ export type SessionEvent =
 export function initialSession(): DemoSession {
   return {
     state: initialState(),
+    replayVersion: 0,
     step: 0,
     mode: "paused",
     caption: "Start with an empty workspace",
@@ -132,7 +134,8 @@ export function sessionTransition(s: DemoSession, event: SessionEvent): DemoSess
       const next = story[s.step];
       if (!next) return s;
       // The final beat holds the empty scene, then restores the opening for the next cycle.
-      if (s.step + 1 === story.length) return { ...initialSession(), mode: "playing" };
+      if (s.step + 1 === story.length)
+        return { ...initialSession(), mode: "playing", replayVersion: s.replayVersion };
       return {
         ...s,
         state: next.command ? transition(s.state, next.command) : s.state,
@@ -147,6 +150,6 @@ export function sessionTransition(s: DemoSession, event: SessionEvent): DemoSess
     case "resume":
       return s.mode === "paused" ? { ...s, mode: "playing" } : s;
     case "replay":
-      return { ...initialSession(), mode: "playing" };
+      return { ...initialSession(), mode: "playing", replayVersion: s.replayVersion + 1 };
   }
 }

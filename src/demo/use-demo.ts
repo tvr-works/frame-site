@@ -44,6 +44,6 @@ export function useDemo() {
       story[session.step]?.delay ?? 0,
     );
     return () => window.clearTimeout(timer);
-  }, [session.mode, session.step, visible]);
+  }, [session.mode, session.step, session.replayVersion, visible]);
   return { session, dispatch, region, reduced };
 }
