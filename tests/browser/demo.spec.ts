@@ -647,7 +647,14 @@ test("Install scrolls to the fourth section, pauses the demo and keeps normal na
       nodes.map((node) => node.getAttribute("data-window-id")),
     ),
   ).toEqual(ids);
-  await page.getByRole("link", { name: "Read the setup guide", exact: true }).click();
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Guide", exact: true })
+    .click();
+  await page
+    .getByRole("navigation", { name: "On this page" })
+    .getByRole("link", { name: "First launch", exact: true })
+    .click();
   await expect(page).toHaveURL(/\/guide.html#first-launch$/);
   await expect(page.getByRole("heading", { name: "First launch", exact: true })).toBeInViewport();
   await page.reload();

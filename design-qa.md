@@ -330,3 +330,13 @@ Removed cursor:pointer from the old window body and made the decorative monitor 
 ### Verification
 
 Formatting, lint, TypeScript, 65 unit tests and all 44 Chromium/WebKit cases pass on the final changes. Updated interaction contracts cover install scrolling/focus/pause, real page navigation, reference anchors, deep-link reloads, no-JavaScript guide/CLI reading, mobile reflow and enlarged text, plus unfiltered axe scans. Local preview captures reported no page/console errors. Static production builds and the four production-artifact checks are completed before commit, followed by preview restoration. Manual VoiceOver and live native/SketchyBar integration testing are not claimed. No actionable P0/P1/P2 finding remains.
+
+## Review update: installation column layout
+
+Removed the install subtitle and setup-guide link at the owner's request. Download release and Homebrew installation now share the left column; the right column contains only Accessibility setup. Mobile stacks installation before permission setup. Removed the obsolete subtitle/link styles and retained the existing section gap, typography, command block and native Install anchor.
+
+The flow under test is homepage → header Install → fourth section with installation left and Accessibility right, without changing page or opening a dialog. Browser plugin not available; used the existing pinned Playwright workflow. Desktop 1484 × 1308 and mobile 390 × 844 captures are install-columns-1484.png and install-columns-390.png in the existing below-fold-build evidence directory. Both were opened and inspected: no clipping, horizontal overflow, missing content or framework overlay. Page identity and visible content match Frame, console/page errors are empty, and keyboard Install navigation still pauses the offscreen demo. The existing guide/deep-link test now reaches First launch through Guide and its contents navigation.
+
+Formatting, lint, TypeScript, 65 unit tests, the preview build and all 44 Chromium/WebKit browser cases pass, including responsive/enlarged-text, no-JavaScript and unfiltered accessibility checks. Production artifact verification and preview restoration are completed before commit. No dependencies, guide content, native application behavior or hosting settings changed. Manual VoiceOver remains untested.
+
+final result: passed

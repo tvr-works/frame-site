@@ -1264,9 +1264,6 @@ html {
   align-items: start;
   scroll-margin-top: 48px;
 }
-.install-section .explanation-lead {
-  font-size: clamp(20px, 2vw, 28px);
-}
 .install-requirement {
   margin: 24px 0 28px;
   color: var(--muted);
@@ -1280,7 +1277,7 @@ html {
   font-weight: 550;
   letter-spacing: -0.02em;
 }
-.install-details h3:not(:first-child) {
+.install-homebrew {
   margin-top: 36px;
 }
 .install-details p {
@@ -1301,13 +1298,11 @@ html {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
-.install-guide-link,
 .guide-back {
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
-.install-guide-link,
 .install-details p a {
   color: var(--accent);
   text-decoration: underline;
