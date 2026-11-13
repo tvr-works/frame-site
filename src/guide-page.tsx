@@ -222,7 +222,7 @@ export default function GuidePage() {
                   Add a <code>[workspace-to-monitor-force-assignment]</code> table to your
                   configuration to pin workspaces. For example:
                 </p>
-                <pre className="install-command">
+                <pre className="code-block">
                   <code>
                     {'[workspace-to-monitor-force-assignment]\n1 = "main"\n2 = "secondary"'}
                   </code>

@@ -36,6 +36,7 @@ Return to `npm run build` afterward for preview indexing. Builds include an exac
 - `src/demo/playback.ts`: the repeating story, shortcut cues and playback state.
 - `src/demo/use-demo.ts`: timers, reduced motion, visibility and background suspension.
 - `src/components/monitor.tsx`: geometry and presentation; it never owns layout state.
+- `src/styles.css`: stylesheet entry; `src/styles/` separates base tokens, shared site UI, demo, homepage and guide rules. Each file owns its responsive overrides.
 - `src/components/below-fold.tsx`: static workspace structure and composable movement explanations.
 - `src/components/install.tsx`: fourth homepage section and shared installation commands.
 - `src/guide-page.tsx`: standalone guide at `/guide.html`; shared header/footer and diagram keep it aligned with the homepage.

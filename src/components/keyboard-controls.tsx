@@ -25,7 +25,7 @@ export function KeyboardShortcuts({
         {names.map((name) => (
           <span
             key={name}
-            className="shortcut-key button-number"
+            className="shortcut-key workspace-key"
             data-active={state.workspace === name || undefined}
             data-lit={shortcut?.key === name || undefined}
           >
@@ -68,7 +68,7 @@ export function KeyboardShortcuts({
           {directions.map(({ key, Icon }) => (
             <span
               key={key}
-              className="shortcut-key button-home"
+              className="shortcut-key direction-key"
               data-lit={shortcut?.key === key || undefined}
             >
               <kbd>{key}</kbd>

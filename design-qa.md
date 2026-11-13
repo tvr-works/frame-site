@@ -350,3 +350,13 @@ Browser plugin not available; verified the homepage → Install anchor → align
 Formatting, lint, TypeScript, 65 unit tests, the static build and all 44 Chromium/WebKit browser checks pass, including accessibility, doubled text and native navigation. Production artifact checks and preview restoration are completed before commit. Manual VoiceOver remains untested.
 
 final result: passed
+
+## Review update: consolidate style ownership
+
+Consolidated duplicate window, skeleton, skip-link and guide-back rules; grouped responsive overrides with their owning surface. The stylesheet entry now imports base tokens, shared site UI, demo, homepage and guide styles. Removed unused single-display/focused-label rules, obsolete syntax tokens and unused button variants. Decorative keys now use workspace-key/direction-key classes, and the shared command/config block uses code-block rather than an install-specific class.
+
+Captured before/after demo, install, guide entry and CLI views at 320, 390, 1047 and 1484 CSS pixels using the existing Playwright workflow (Browser plugin not available). All 16 comparisons have identical computed styles on every rendered descendant. Screenshot comparisons allow only the observed maximum 1/255 channel rounding in composited image edges; no geometric, type, color-token or content changes remain. The matching mobile before/after images were opened and inspected. Evidence is in the sibling cleanup visualization directory.
+
+Formatting, lint, TypeScript, 65 unit tests, the static build and all 46 Chromium/WebKit cases pass. Manual VoiceOver remains untested.
+
+final result: passed
