@@ -30,11 +30,11 @@ Before declaring hosting ready, verify a disposable failing preview is rejected 
 
 ## Static delivery
 
-Public HTML is prerendered and hydrated; Guide is also a real static page usable without JavaScript. Unknown URLs return a real 404. The public artifact excludes source, the server render bundle, native test fixtures and source maps. `build-info.json` exposes only source SHA, branch, mode and dirty status and is served with `no-store`.
+Both the homepage and /guide.html are Vite HTML entries, prerendered from their React components and hydrated. Both remain readable without JavaScript; install and guide links use native anchors. Unknown URLs return a real 404. The public artifact excludes source, the server render bundle, native test fixtures and source maps. `build-info.json` exposes only source SHA, branch, mode and dirty status and is served with `no-store`.
 
 Production permits indexing; preview HTML and response headers independently exclude it. The 404 always excludes indexing. Sitemap/canonicals point to the provisional production origin. The artifact server used by browser tests applies the generated Pages headers.
 
-CSP permits same-origin scripts, styles, fonts and images, blocks objects/frames/forms, and has no blanket inline-script/eval exception. `style-src-attr 'unsafe-inline'` allows measured numeric geometry custom properties on simulated windows. Referrer, permissions, framing and MIME-sniffing headers follow the other sites. The build currently bounds total JavaScript at 150 KiB gzip and homepage HTML at 65 KiB; current JavaScript is about 102 KiB gzip.
+CSP permits same-origin scripts, styles, fonts and images, blocks objects/frames/forms, and has no blanket inline-script/eval exception. `style-src-attr 'unsafe-inline'` allows measured numeric geometry custom properties on simulated windows. Referrer, permissions, framing and MIME-sniffing headers follow the other sites. The build currently bounds total JavaScript at 150 KiB gzip and each page’s HTML at 65 KiB; current total JavaScript across both pages is about 98.5 KiB gzip.
 
 A failed gate leaves existing production unchanged. Retry a Pages build after a successful CI rerun; CI success does not itself retry Pages. Normal recovery is a source revert through the same gate. Hosting setup and real edge-header/SHA verification remain a later owner-authorized milestone.
 

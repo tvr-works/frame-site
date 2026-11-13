@@ -1,15 +1,15 @@
 # Demo wording and pacing
 
-Labels use a consistent verb → object → direction/result pattern. A column is a vertical stack of windows. A row is one window’s slot inside that column. Focus changes the active window; Move changes its position; Resize changes column width or row height.
+Opening labels explain the placement sequence. Shortcut labels use a consistent verb → object → direction/result pattern. A column is a vertical stack of windows. A row is one window’s slot inside that column. Focus changes the active window; Move changes its position; Resize changes column width or row height.
 
 One prominent label remains centered between the two monitor feet. On narrow layouts it sits in the reserved gap between the stacked monitors. The label, full key chord and layout change appear together, then hold before the next step. Repeated steps use the same label, keeping attention on the size or position change rather than new copy. There are no shortcut symbols or implementation details in the label.
 
 | Stage         | Keys                 | Visible wording                                                 | What changes                                  |
 | ------------- | -------------------- | --------------------------------------------------------------- | --------------------------------------------- |
 | Empty         | —                    | Start with an empty workspace                                   | Both monitors are empty                       |
-| First window  | —                    | Open window to fill workspace                                   | Reading fills workspace 1                     |
-| Second window | —                    | Open window in a new column                                     | Notes creates a right column                  |
-| Third window  | —                    | Stack window below                                              | Editor stacks below Notes                     |
+| First window  | —                    | First window, full workspace                                    | Reading fills workspace 1                     |
+| Second window | —                    | Second window, new column                                       | Notes creates a right column                  |
+| Third window  | —                    | Then, new rows in focused column                                | Editor stacks below Notes                     |
 | Focus         | ⌥ K / J              | Focus window above / Focus window below                         | Focus changes within the column               |
 | Focus         | ⌥ H / L              | Focus window to the left / Focus window to the right            | Focus changes between columns                 |
 | Move          | ⌥ ⇧ L                | Move window right into a new column                             | Editor gets a new column                      |

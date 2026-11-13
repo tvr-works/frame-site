@@ -1,9 +1,8 @@
-import { useState, type MouseEvent } from "react";
-import { ArrowUpRight, Pause, Play, RotateCcw } from "lucide-react";
+import { Pause, Play, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Panel } from "@/components/panel";
 import { Monitor } from "@/components/monitor";
-import { Guide } from "@/components/guide";
+import { InstallSection } from "@/components/install";
+import { SiteHeader, SiteFooter } from "@/components/site-navigation";
 import { BelowFold } from "@/components/below-fold";
 import { KeyboardShortcuts } from "@/components/keyboard-controls";
 import { useDemo } from "@/demo/use-demo";
@@ -11,16 +10,6 @@ import { describe } from "@/demo/model";
 export default function App() {
   const { session, dispatch, region, reduced } = useDemo();
   const { state } = session;
-  const [panel, setPanel] = useState<"guide" | "install" | null>(null);
-  function openPanel(value: typeof panel) {
-    dispatch({ type: "pause" });
-    setPanel(value);
-  }
-  function openGuide(event: MouseEvent<HTMLAnchorElement>) {
-    event.preventDefault();
-    event.currentTarget.focus();
-    openPanel("guide");
-  }
   function playback() {
     dispatch({ type: session.mode === "playing" ? "pause" : "resume" });
   }
@@ -30,21 +19,7 @@ export default function App() {
         Skip to demo controls
       </a>
       <div className="site-shell">
-        <header className="site-header">
-          <a className="wordmark" href="/" aria-label="Frame home">
-            <img src="/icon.png" width="42" height="42" alt="" />
-            <span>Frame</span>
-          </a>
-          <nav aria-label="Main navigation">
-            <a href="/guide.html" onClick={openGuide}>
-              Guide
-            </a>
-            <a href="https://github.com/tvr-works/frame">
-              GitHub <ArrowUpRight />
-            </a>
-            <Button onClick={() => openPanel("install")}>Install</Button>
-          </nav>
-        </header>
+        <SiteHeader />
         <main>
           <div className="intro">
             <p className="intro-eyebrow">Keyboard-first · Vim-inspired</p>
@@ -115,30 +90,10 @@ export default function App() {
             ) : null}
           </section>
           <BelowFold />
+          <InstallSection />
         </main>
-        <footer className="site-footer">
-          <nav aria-label="Footer navigation">
-            <a href="/guide.html" onClick={openGuide}>
-              Guide
-            </a>
-            <a href="https://github.com/tvr-works/frame">
-              GitHub <ArrowUpRight />
-            </a>
-          </nav>
-        </footer>
+        <SiteFooter />
       </div>
-      <Panel
-        open={panel !== null}
-        onOpenChange={(open) => {
-          if (!open) setPanel(null);
-        }}
-        title={
-          panel === "install" ? "Meet your new workspace." : "A clear path to getting started."
-        }
-        description={panel === "install" ? "Frame for macOS" : "A quick guide to Frame."}
-      >
-        <Guide install={panel === "install"} />
-      </Panel>
     </>
   );
 }

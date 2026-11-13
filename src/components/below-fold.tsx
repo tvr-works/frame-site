@@ -1,3 +1,5 @@
+import { WorkspaceDiagram } from "@/components/workspace-diagram";
+
 const movements = [
   {
     name: "Focus",
@@ -38,24 +40,7 @@ export function BelowFold() {
         <p className="explanation-lead">
           A workspace contains columns. Windows stack as rows within each column.
         </p>
-        <figure className="structure-figure">
-          <picture>
-            <source
-              media="(max-width: 600px)"
-              width="1320"
-              height="1192"
-              srcSet="/illustrations/workspace-structure-mobile.webp"
-            />
-            <img
-              src="/illustrations/workspace-structure.webp"
-              width="1517"
-              height="1037"
-              loading="lazy"
-              decoding="async"
-              alt="A workspace contains two columns. Window A fills the left column. Windows B and C form two rows in the right column; Window C is focused."
-            />
-          </picture>
-        </figure>
+        <WorkspaceDiagram />
       </section>
       <section className="movements-section" aria-labelledby="movements-title">
         <h2 id="movements-title" className="explanation-title">

@@ -281,3 +281,52 @@ Final evidence: structure-no-caption-1047.png and structure-no-caption-390.png i
 Formatting, lint, TypeScript, all 65 unit tests and all 44 Chromium/WebKit browser checks pass. Content/no-JavaScript checks now use the retained structural explanation rather than the removed caption. Production-artifact verification and preview restoration are completed before commit. No actionable P0/P1/P2 visual issue remains.
 
 final result: passed
+
+## Review update: fourth install section and complete user guide
+
+final result: passed
+
+### Scope and delivery
+
+The owner replaced both popup destinations with a fourth Install Frame section and a dedicated guide. Homepage Install is now a native #install link, with a focusable target. Guide links use /guide.html, including a first-launch deep link from installation. There is no dialog, focus trap or custom routing interception. Native fragment navigation respects reduced motion; moving off the demo pauses playback. The four major homepage sections retain whitespace boundaries without new dividers.
+
+Shared header/footer, installation commands and workspace diagram now have real reuse across the two pages. Vite builds both HTML entries and the existing finalizer prerenders both React trees, so the entire guide and installation instructions work without JavaScript. The old popup components and styles are removed. Both pages retain canonical/indexing/security behavior and the 65-KiB HTML limit; total JavaScript remains below 150 KiB gzip.
+
+### Guide coverage and factual checks
+
+The guide covers installation/permission, tiling structure, keyboard defaults, workspace/display behavior, every configuration field, Accessibility classification, all 18 CLI commands and scripting. The command reference includes arguments, flags, constraints, output fields and examples rather than deferring to help. It explains why a CLI is useful and includes a workspace hook plus a SketchyBar display/workspace indicator. Classification documentation explains app-exposed signals, exact/regex matchers, AND semantics, first-match order, tiling/excluded results and their limits. Config documentation covers file resolution, defaults/replacement, startup, persistent workspaces, mappings, bindings/sequences, gaps/per-display fallbacks, display assignment, hooks and validation.
+
+Native source revision, inspected files and external primary references are recorded in docs/user-guide.md. A source comparison checked all 18 commands and every declared flag. All eight rendered TOML examples parse; shell examples pass syntax checks; an isolated stubbed indicator script gives the expected two-display label. No native app, Accessibility permission, personal config or live status-bar item was changed.
+
+### Visual evidence and corrections
+
+Evidence remains in the existing below-fold-build directory. Source visual truth is the retained approved site composition plus the owner’s explicit new install/guide instructions; there is no separate image mock for this ordinary feature extension. Browser-rendered captures use deviceScaleFactor 1.
+
+- install-section-final.png and homepage-four-sections-final.png: final 1047 × 1308 homepage/section captures.
+- install-final-mobile.png: install section at 390 × 844.
+- complete-guide-top-1047.png and complete-guide-top-320.png: final guide entry layouts.
+- complete-guide-configuration-1047.png, complete-guide-window-rules-1047.png, complete-guide-cli-1047.png and complete-guide-scripting-1047.png: final chapter/reference views.
+- Matching complete-guide-*-320.png captures check the narrow layout.
+- opening-cues-final.png: third opening cue in the revised demo, 1047 × 1308.
+
+Opened and inspected the install desktop/mobile views, guide entry, CLI, window-rules and mobile scripting/shortcut views. Initial P2 findings were a cramped three-column shortcut table on mobile, missing ordered-list markers under the reset stylesheet, and long-word overflow when text was doubled at 320 pixels. Fixed these with an accessible mobile definition list from the same shortcut data, explicit decimal list markers, bounded text width, wrapping navigation and emergency text wrapping. Later expanded introductory wording exposed another long word outside the article; the guide heading container now also permits emergency wrapping. Post-fix probes confirm no document overflow, including true doubled text at 320 pixels. The final mobile axe scan has no violations.
+
+The new link buttons exposed a hover contrast risk from the global anchor color. The primary variant now preserves its foreground on hover; the existing axe flow explicitly hovers the release link before scanning. No lint rules or accessibility nodes are excluded.
+
+### Fidelity surfaces
+
+| Surface              | Final result                                                                                                                                                                                                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Fonts and typography | Existing Geist and heading scale; readable 17-pixel guide prose with bounded line length. Monospace command/config blocks wrap without overflowing. Numbered setup steps remain visible.                                                         |
+| Spacing and layout   | Fourth section uses the established 200-pixel desktop / 120-pixel mobile major-section gap. Desktop guide uses contents navigation beside the text; mobile returns it to normal flow. Internal table/reference separators group related content. |
+| Colors and tokens    | Existing navy, white/muted copy, icy-blue links and primary/ghost variants. Release-link hover retains contrast.                                                                                                                                 |
+| Image quality        | Existing structure diagram is reused, with its mobile source and full description. No placeholder assets, new illustrations or code-drawn substitutes.                                                                                           |
+| Copy and content     | Practical setup and full reference, grounded in native source. No task-organization prescriptions. Native behavior is distinguished from demo policies.                                                                                          |
+
+### Remaining demo refinements
+
+Removed cursor:pointer from the old window body and made the decorative monitor group use a default cursor without text selection. Only actual playback controls and navigation retain interactive affordances. The final browser probe reports cursor default on window bodies. Opening cues now read “First window, full workspace”, “Second window, new column”, and “Then, new rows in focused column”. Full workspace avoids implying that setup enters the separate Frame fullscreen overlay. Playback timing, model transitions and native fixtures are unchanged.
+
+### Verification
+
+Formatting, lint, TypeScript, 65 unit tests and all 44 Chromium/WebKit cases pass on the final changes. Updated interaction contracts cover install scrolling/focus/pause, real page navigation, reference anchors, deep-link reloads, no-JavaScript guide/CLI reading, mobile reflow and enlarged text, plus unfiltered axe scans. Local preview captures reported no page/console errors. Static production builds and the four production-artifact checks are completed before commit, followed by preview restoration. Manual VoiceOver and live native/SketchyBar integration testing are not claimed. No actionable P0/P1/P2 finding remains.

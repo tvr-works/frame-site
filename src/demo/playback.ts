@@ -33,17 +33,17 @@ export const story: Beat[] = [
   {
     delay: 1200,
     command: { type: "create", kind: "browser" },
-    caption: "Open window to fill workspace",
+    caption: "First window, full workspace",
   },
   {
     delay: 1200,
     command: { type: "create", kind: "notes" },
-    caption: "Open window in a new column",
+    caption: "Second window, new column",
   },
   {
     delay: 1200,
     command: { type: "create", kind: "editor" },
-    caption: "Stack window below",
+    caption: "Then, new rows in focused column",
   },
   ...shortcut({ type: "focus", direction: "up" }, "focus", "K", "Focus window above", 2250),
   ...shortcut({ type: "focus", direction: "down" }, "focus", "J", "Focus window below", 1550),
