@@ -37,16 +37,6 @@
   align-items: center;
   gap: 6px;
 }
-.site-header .ui-button {
-  min-width: 102px;
-  min-height: 44px;
-}
-.utility-controls .button-icon {
-  width: 44px;
-  height: 44px;
-  padding: 12px;
-  font-size: 18px;
-}
 
 .ui-button {
   display: inline-flex;
@@ -69,10 +59,15 @@
   padding: 10px 16px;
   font-size: 14px;
 }
+.button-header {
+  min-width: 102px;
+  min-height: 44px;
+}
 .button-icon {
-  width: 36px;
-  height: 36px;
-  padding: 8px;
+  width: 44px;
+  height: 44px;
+  padding: 12px;
+  font-size: 18px;
 }
 .button-primary {
   background: var(--primary);
@@ -195,7 +190,7 @@
     height: 34px;
     border-radius: 9px;
   }
-  .site-header .ui-button {
+  .button-header {
     min-width: 76px;
     min-height: 38px;
     font-size: 13px;

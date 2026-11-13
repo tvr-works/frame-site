@@ -15,7 +15,7 @@ export function SiteHeader({ guide = false }: { guide?: boolean }) {
         <a href="https://github.com/tvr-works/frame">
           GitHub <ArrowUpRight />
         </a>
-        <a className={buttonVariants()} href={guide ? "/#install" : "#install"}>
+        <a className={buttonVariants({ size: "header" })} href={guide ? "/#install" : "#install"}>
           Install
         </a>
       </nav>

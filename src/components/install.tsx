@@ -26,7 +26,7 @@ export function InstallSection() {
             Run these commands in Terminal with <a href="https://brew.sh/">Homebrew</a> installed.
           </p>
           <a className={buttonVariants()} href={releaseUrl}>
-            Download release <ArrowUpRight aria-hidden="true" />
+            Download release <ArrowUpRight aria-hidden="true" data-icon="inline-end" />
           </a>
         </div>
         <div className="install-details">
