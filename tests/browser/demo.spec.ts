@@ -378,7 +378,9 @@ test("structure and movements explain the model; footer Guide opens and restores
   await page.goto("/");
   const structure = page.getByRole("region", { name: "Simple structure" });
   await structure.scrollIntoViewIfNeeded();
-  await expect(structure.getByText("One workspace. Two columns. Three windows.")).toBeVisible();
+  await expect(
+    structure.getByText("A workspace contains columns. Windows stack as rows within each column."),
+  ).toBeVisible();
   const movements = page.getByRole("region", { name: "Simple composable movements" });
   await movements.scrollIntoViewIfNeeded();
   await expect(movements.getByRole("article")).toHaveCount(3);
@@ -535,7 +537,9 @@ test("@artifact no-JavaScript visitors can read the guide and install", async ({
     "Tiling Window Manager for macOS",
   );
   await expect(page.getByRole("heading", { name: "Simple composable movements" })).toBeVisible();
-  await expect(page.getByText("One workspace. Two columns. Three windows.")).toBeVisible();
+  await expect(
+    page.getByText("A workspace contains columns. Windows stack as rows within each column."),
+  ).toBeVisible();
   await headerGuide(page).click();
   await expect(page).toHaveURL(/\/guide.html$/);
   await expect(page.getByRole("heading", { name: "Install", exact: true })).toBeVisible();

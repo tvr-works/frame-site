@@ -271,3 +271,13 @@ Terminology was checked against the primary AeroSpace guide (https://nikitabobko
 Formatting, lint, TypeScript, all 65 unit tests and all 44 Chromium/WebKit browser cases pass, including heading/title/static HTML assertions, enlarged text and axe scans. Production-artifact checks and preview restoration are completed before commit. The site remains local-only.
 
 final result: passed
+
+## Review update: remove the structure caption
+
+Removed “One workspace. Two columns. Three windows.” and its unused desktop/mobile styles at the owner's request. The annotated diagram, section lead and descriptive image alt remain. No empty caption wrapper or replacement spacer remains. The established major-section gap now runs directly from the figure to the movements heading: 200 px on desktop/tablet and 120 px on mobile.
+
+Final evidence: structure-no-caption-1047.png and structure-no-caption-390.png in the existing below-fold-build directory, captured at the matching 1047 × 1308 and 390 × 844 CSS viewports with deviceScaleFactor 1. Opened and inspected both: the diagram transitions into a clear, uninterrupted section gap, with no stranded caption space or crowding. DOM probes confirmed zero structure captions, the intended 200/120-pixel gaps and no horizontal overflow. Typography, colors and diagram assets are unchanged.
+
+Formatting, lint, TypeScript, all 65 unit tests and all 44 Chromium/WebKit browser checks pass. Content/no-JavaScript checks now use the retained structural explanation rather than the removed caption. Production-artifact verification and preview restoration are completed before commit. No actionable P0/P1/P2 visual issue remains.
+
+final result: passed

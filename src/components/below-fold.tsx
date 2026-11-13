@@ -55,7 +55,6 @@ export function BelowFold() {
               alt="A workspace contains two columns. Window A fills the left column. Windows B and C form two rows in the right column; Window C is focused."
             />
           </picture>
-          <figcaption>One workspace. Two columns. Three windows.</figcaption>
         </figure>
       </section>
       <section className="movements-section" aria-labelledby="movements-title">

@@ -933,12 +933,6 @@ a:hover {
   width: 100%;
   height: auto;
 }
-.structure-figure figcaption {
-  margin-top: 24px;
-  color: var(--muted);
-  font-size: clamp(16px, 2.6vw, 22px);
-  line-height: 1.5;
-}
 .movements-section {
   margin-top: 200px;
 }
@@ -1322,10 +1316,6 @@ a:hover {
   }
   .structure-figure {
     margin-top: 36px;
-  }
-  .structure-figure figcaption {
-    margin-top: 20px;
-    font-size: 16px;
   }
   .movements-section {
     margin-top: 120px;
