@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import sharp from "sharp";
 import { story } from "../../src/demo/playback";
 const windows = (page: Page) => page.locator("[data-window-id]");
 const focused = (page: Page) => page.locator('[data-focused="true"]');
@@ -596,6 +597,89 @@ test("@artifact static HTML, security, indexing, identity, assets and honest 404
   await advance(page, 1);
   await expect(windows(page)).toHaveCount(1);
   expect(errors).toEqual([]);
+});
+
+test("@artifact search and social metadata describe each static page and its real image", async ({
+  browser,
+  request,
+}) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  const origin = "https://frame.tvr.works";
+  const titles = new Set<string>();
+  const descriptions = new Set<string>();
+  const info = await (await request.get("/build-info.json")).json();
+  const robots = await (await request.get("/robots.txt")).text();
+  expect(robots).toBe(
+    info.mode === "production"
+      ? `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`
+      : "User-agent: *\nDisallow: /\n",
+  );
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  const locations = await page.evaluate((xml) => {
+    const document = new DOMParser().parseFromString(xml, "application/xml");
+    if (document.querySelector("parsererror")) throw new Error("Invalid sitemap XML");
+    return [...document.querySelectorAll("url > loc")].map((node) => node.textContent);
+  }, sitemap);
+  expect(locations).toEqual([`${origin}/`, `${origin}/guide.html`]);
+
+  for (const path of ["/", "/guide.html"]) {
+    const response = await page.goto(path);
+    expect(response?.status()).toBe(200);
+    expect(response?.headers()["x-robots-tag"]).toBe(
+      info.mode === "preview" ? "noindex, nofollow" : undefined,
+    );
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    const title = await page.title();
+    expect(title).not.toBe("");
+    expect(titles.has(title)).toBe(false);
+    titles.add(title);
+    const canonical = page.locator('head link[rel="canonical"]');
+    await expect(canonical).toHaveCount(1);
+    await expect(canonical).toHaveAttribute("href", `${origin}${path}`);
+    const meta = async (attribute: "name" | "property", key: string) => {
+      const node = page.locator(`head meta[${attribute}="${key}"]`);
+      await expect(node).toHaveCount(1);
+      const content = await node.getAttribute("content");
+      expect(content).not.toBe("");
+      return content!;
+    };
+    const description = await meta("name", "description");
+    expect(descriptions.has(description)).toBe(false);
+    descriptions.add(description);
+    expect(await meta("name", "robots")).toBe(
+      info.mode === "production" ? "index, follow" : "noindex, nofollow",
+    );
+    expect(await meta("property", "og:type")).toBe("website");
+    expect(await meta("property", "og:site_name")).toBe("Frame");
+    expect(await meta("property", "og:locale")).toBe("en_US");
+    expect(await meta("property", "og:url")).toBe(`${origin}${path}`);
+    expect(await meta("property", "og:title")).toBe(title);
+    expect(await meta("property", "og:description")).toBe(description);
+    expect(await meta("name", "twitter:card")).toBe("summary_large_image");
+    expect(await meta("name", "twitter:title")).toBe(title);
+    expect(await meta("name", "twitter:description")).toBe(description);
+    const imageUrl = await meta("property", "og:image");
+    expect(imageUrl).toBe(`${origin}/social-card.png`);
+    expect(await meta("name", "twitter:image")).toBe(imageUrl);
+    const alt = await meta("property", "og:image:alt");
+    expect(alt).toContain("two-monitor demo");
+    expect(await meta("name", "twitter:image:alt")).toBe(alt);
+    // Fetch the deployed path locally; never probe the provisional production host.
+    const image = await request.get(new URL(imageUrl).pathname);
+    expect(image.status()).toBe(200);
+    expect(image.headers()["content-type"]).toBe(await meta("property", "og:image:type"));
+    const body = await image.body();
+    expect(body.length).toBeLessThan(1024 * 1024);
+    const dimensions = await sharp(body).metadata();
+    expect(dimensions.format).toBe("png");
+    expect(dimensions.width).toBe(1200);
+    expect(dimensions.height).toBe(630);
+    expect(await meta("property", "og:image:width")).toBe(String(dimensions.width));
+    expect(await meta("property", "og:image:height")).toBe(String(dimensions.height));
+  }
+  await context.close();
 });
 
 test("@artifact guide loads no client runtime and keeps native navigation", async ({ page }) => {

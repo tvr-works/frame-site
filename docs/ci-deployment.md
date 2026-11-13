@@ -34,6 +34,12 @@ Both the homepage and /guide.html are Vite HTML entries prerendered from their R
 
 Production permits indexing; preview HTML and response headers independently exclude it. The 404 always excludes indexing. Sitemap/canonicals point to the provisional production origin. The artifact server used by browser tests applies the generated Pages headers.
 
+Both pages have unique titles and descriptions, matching canonical/Open Graph URLs, and explicit Open Graph and Twitter large-image metadata. The shared 1200 × 630 PNG includes a descriptive image alternative and declared MIME type/dimensions. Artifact checks read the HTML with JavaScript disabled, check unique/nonempty metadata, load the actual image and compare its decoded dimensions, parse the sitemap, and verify robots directives/response headers in both modes. Keep the origin consistent in both HTML entries and the finalizer when the production domain is confirmed; update the artifact expectations in the same change. No social account handle is claimed.
+
+Software rich-result markup is deferred: the site has no published review/rating data, which [Google’s software app feature requires](https://developers.google.com/search/docs/appearance/structured-data/software-app). The current work does not claim rich-result eligibility. At publication, verify the confirmed public canonicals, robots/sitemap, real crawler previews and Search Console ownership/submission. None of those hosted checks has been run locally.
+
+Metadata follows the [Open Graph protocol](https://ogp.me/), including its image description and structured image properties.
+
 CSP permits same-origin scripts, styles, fonts and images, blocks objects/frames/forms, and has no blanket inline-script/eval exception. `style-src-attr 'unsafe-inline'` allows measured numeric geometry custom properties on simulated windows. Referrer, permissions, framing and MIME-sniffing headers follow the other sites. The build currently bounds total JavaScript at 150 KiB gzip and each page’s HTML at 65 KiB; current total JavaScript across both pages is about 85.6 KiB gzip.
 
 A failed gate leaves existing production unchanged. Retry a Pages build after a successful CI rerun; CI success does not itself retry Pages. Normal recovery is a source revert through the same gate. Hosting setup and real edge-header/SHA verification remain a later owner-authorized milestone.
