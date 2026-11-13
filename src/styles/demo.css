@@ -1,11 +1,14 @@
 .demo {
+  --workspace-key-height: 36px;
+  --workspace-bank-gap: 24px;
+  --workspace-bank-offset: calc(var(--workspace-key-height) + var(--workspace-bank-gap));
   min-width: 0;
 }
 .demo-action-label {
   position: absolute;
   z-index: 2;
   left: 50%;
-  bottom: 0;
+  bottom: var(--workspace-bank-offset);
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -24,7 +27,7 @@
   position: absolute;
   z-index: 3;
   right: 18px;
-  bottom: -8px;
+  bottom: calc(var(--workspace-bank-offset) - 8px);
   display: flex;
   gap: 4px;
 }
@@ -34,12 +37,12 @@
 }
 .stage-radiance {
   position: absolute;
-  top: -40%;
+  top: calc(-40% + var(--workspace-bank-offset) * 0.4);
   left: 50%;
   transform: translateX(-50%);
   width: 100vw;
   max-width: 1800px;
-  height: 175%;
+  height: calc(175% - var(--workspace-bank-offset) * 1.75);
   background: url("/monitor-backdrop.webp") center/100% 100% no-repeat;
   /* Blend the artwork locally so control repaints cannot enter its backdrop. */
   background-color: var(--background);
@@ -308,20 +311,12 @@
   max-width: 74%;
 }
 .keyboard-controls {
-  margin-top: 24px;
+  margin-top: 0;
   position: relative;
   min-width: 0;
 }
-.workspace-keys {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 16px;
-  border: 0;
-  padding: 0;
-  margin: 0;
-}
 .number-bank {
+  margin-top: var(--workspace-bank-gap);
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -338,7 +333,7 @@
     0 2px 3px #0003;
 }
 .workspace-key {
-  min-height: 36px;
+  min-height: var(--workspace-key-height);
   min-width: 46px;
   padding: 5px 10px;
   border-radius: 8px;
@@ -457,6 +452,9 @@
   display: flex;
   gap: 10px;
 }
+.direction-label {
+  display: none;
+}
 .direction-key {
   display: flex;
   flex-direction: column;
@@ -481,11 +479,13 @@
   overflow: hidden;
 }
 @media (min-width: 1600px) {
+  .demo {
+    --workspace-key-height: 40px;
+  }
   .keyboard-composition {
     margin-top: 38px;
   }
   .workspace-key {
-    min-height: 40px;
     min-width: 50px;
   }
 }
@@ -540,6 +540,10 @@
   }
 }
 @media (max-width: 760px) {
+  .demo {
+    --workspace-key-height: 40px;
+    --workspace-bank-gap: 16px;
+  }
   .demo-action-label {
     top: 50%;
     bottom: auto;
@@ -587,55 +591,57 @@
     width: 6px;
     height: 6px;
   }
-  .workspace-keys {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
   .number-bank {
-    grid-row: auto;
-    gap: 9px;
+    gap: 8px;
   }
   .workspace-key {
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 40px;
     font-size: 18px;
   }
   .keyboard-composition {
     flex-direction: column;
-    gap: 24px;
-    margin-top: 30px;
+    gap: 18px;
+    max-width: 272px;
+    margin: 24px auto 0;
   }
   .toggle-ladder {
     width: 100%;
-    max-width: 288px;
   }
   .toggle-ladder .shortcut-row {
     grid-template-columns: 80px 1fr;
-    gap: 20px;
-    min-height: 42px;
-    font-size: 17px;
+    gap: 8px;
+    min-height: 40px;
+    font-size: 16px;
   }
   .modifier-chord kbd {
     height: 36px;
-    min-width: 44px;
-    font-size: 23px;
+    min-width: 40px;
+    font-size: 22px;
   }
   .composition-join {
     display: none;
   }
   .home-row {
-    gap: 9px;
+    display: grid;
+    grid-template-columns: 80px repeat(4, 40px);
+    align-items: center;
+    gap: 8px;
     width: 100%;
-    max-width: 350px;
+  }
+  .direction-label {
+    display: block;
   }
   .direction-key {
-    flex: 1;
     min-width: 0;
-    min-height: 76px;
-    padding: 10px 8px;
+    min-height: 56px;
+    padding: 8px 4px;
   }
   .direction-key kbd {
-    font-size: 25px;
+    font-size: 20px;
+  }
+  .direction-key svg {
+    width: 18px;
+    height: 18px;
   }
 }
 @media (max-width: 370px) {

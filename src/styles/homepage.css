@@ -231,6 +231,19 @@
   .movement-shortcut {
     margin-top: 22px;
   }
+  .movement-keycaps {
+    --movement-key-size: clamp(32px, 9vw, 40px);
+  }
+  .movement-modifiers {
+    min-width: calc(var(--movement-key-size) * 3 + 12px);
+  }
+  .movement-key {
+    width: var(--movement-key-size);
+    height: var(--movement-key-size);
+  }
+  .movement-join {
+    height: var(--movement-key-size);
+  }
   .movement-figure {
     max-width: 480px;
   }

@@ -420,6 +420,7 @@ test("offscreen and background pause; returning never resumes automatically", as
 
 for (const viewport of [
   { width: 390, height: 844 },
+  { width: 760, height: 1024 },
   { width: 768, height: 1024 },
   { width: 1488, height: 1058 },
   { width: 320, height: 700 },
@@ -430,6 +431,48 @@ for (const viewport of [
     await advance(page, story.findIndex((beat) => beat.command?.type === "move") + 1);
     await page.getByRole("button", { name: "Pause", exact: true }).click();
     await noOverflow(page);
+    const banks = [];
+    const screens = [];
+    for (const [index, names] of [
+      [0, ["1", "2", "3", "4", "5"]],
+      [1, ["6", "7", "8", "9", "0"]],
+    ] as const) {
+      const monitor = page.getByTestId(`monitor-${index}`);
+      await expect(monitor.locator(".number-bank kbd")).toHaveText([...names]);
+      const screen = (await monitor.locator(".monitor-shell").boundingBox())!;
+      const bank = (await monitor.locator(".number-bank").boundingBox())!;
+      expect(bank.y - screen.y - screen.height).toBeCloseTo(viewport.width <= 760 ? 16 : 24, 0);
+      expect(bank.x + bank.width / 2).toBeCloseTo(screen.x + screen.width / 2, 0);
+      banks.push(bank);
+      screens.push(screen);
+    }
+    const playback = (await page.locator(".utility-controls").boundingBox())!;
+    expect(playback.y + playback.height).toBeLessThanOrEqual(banks[1].y);
+    if (viewport.width <= 760) {
+      const caption = (await page.locator(".demo-action-label").boundingBox())!;
+      expect(banks[0].y + banks[0].height).toBeLessThan(caption.y);
+      expect(caption.y + caption.height).toBeLessThan(screens[1].y);
+      const option = (await page
+        .locator('.shortcut-row[data-mode="resize"] kbd')
+        .first()
+        .boundingBox())!;
+      const shift = (await page
+        .locator('.shortcut-row[data-mode="resize"] kbd')
+        .nth(1)
+        .boundingBox())!;
+      const keys = page.locator(".home-row .direction-key");
+      const h = (await keys.nth(0).boundingBox())!;
+      const j = (await keys.nth(1).boundingBox())!;
+      expect(h.x).toBeCloseTo(option.x, 0);
+      expect(j.x).toBeCloseTo(shift.x, 0);
+      expect(h.width).toBe(40);
+      const directions = await page
+        .locator(".movement-directions")
+        .evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().left));
+      expect(Math.max(...directions) - Math.min(...directions)).toBeLessThan(1);
+    } else {
+      expect(banks[0].y).toBeCloseTo(banks[1].y, 0);
+    }
     await page
       .getByRole("navigation", { name: "Main navigation" })
       .getByRole("link", { name: "Install", exact: true })

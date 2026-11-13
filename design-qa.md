@@ -424,3 +424,15 @@ Hosted Linux WebKit exposed virtual-clock scheduling differences. The harness no
 Both production origins and the preview passed the eight-case hosted artifact suite in Chromium/WebKit, including exact commit/branch/mode identity, canonical/social metadata, decoded PNG delivery, security/indexing headers, real 404s, permanent guide redirects, native navigation and JavaScript-free reading. The disposable negative-preview test failed its intended assertion, and Cloudflare stopped at the exact-commit CI gate before the application build. The full release evidence and operational settings are in docs/ci-deployment.md. Manual VoiceOver was deferred by the owner while the Mac was locked.
 
 final result: passed
+
+## Review update: mobile workspace pairing and key layout
+
+Moved each workspace bank into its monitor’s presentation tree and derive its labels from the model’s monitor assignments. Mobile now reads Display 1 → workspaces 1–5 → action caption → Display 2 → workspaces 6–0. The caption stays in the gap between groups and playback controls remain beside the second monitor foot, clear of its workspace keys. Retired the separate workspace grid from the shared keyboard composition.
+
+Mobile uses 40-pixel workspace/direction key widths, a compact labeled Direction row aligned with the modifier columns, and 56-pixel direction-key height. Focus/Move/Resize examples reserve the same three-key modifier width on mobile, aligning their plus signs, direction keys and workspace alternative. The content hierarchy and desktop layout remain intact. Desktop monitor geometry, caption, playback controls and section positions match the published baseline exactly at 768 and 1488 pixels; workspace banks now center on their actual monitor group.
+
+The flow checked was homepage → play/pause → monitor-local workspace banks → mobile key composition → movement examples → Install/Guide navigation. Browser plugin not available; used the existing pinned Playwright workflow. Before/grouped/tailored captures and geometry records cover 320, 390, 760, 768 and 1488 pixels in the cleanup evidence directory. Opened and inspected the 390-pixel demo and movement screenshots. No horizontal overflow or page errors were observed. Regression checks verify both banks’ values and ownership, monitor/bank spacing and centering, caption/playback clearance, modifier/direction alignment, and the mobile breakpoint.
+
+Formatting, Oxlint/shadcn, Stylelint, TypeScript, 73 unit tests, 54 Chromium/WebKit cases and eight production artifact cases pass. Preview mode is restored before publication. The prior owner-requested VoiceOver deferral remains unchanged.
+
+final result: passed

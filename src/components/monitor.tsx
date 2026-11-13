@@ -3,15 +3,19 @@ import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import { layout, surface, windowTitles, type DemoState } from "@/demo/model";
 import { WindowContent } from "./window-content";
+import { WorkspaceBank } from "./workspace-bank";
+import type { ShortcutCue } from "@/demo/playback";
 const icons = { browser: Globe, notes: NotebookPen, editor: Code2 };
 export function Monitor({
   index,
   state,
   closingWindow,
+  shortcut,
 }: {
   index: number;
   state: DemoState;
   closingWindow?: number;
+  shortcut?: ShortcutCue;
 }) {
   const ws = state.workspaces.find((w) => w.name === state.visible[index])!;
   const active = state.workspace === ws.name;
@@ -79,6 +83,13 @@ export function Monitor({
           </div>
         </div>
       </div>
+      <WorkspaceBank
+        names={state.workspaces
+          .filter((workspace) => workspace.monitor === index)
+          .map((workspace) => workspace.name)}
+        activeWorkspace={state.workspace}
+        litKey={shortcut?.key}
+      />
     </div>
   );
 }

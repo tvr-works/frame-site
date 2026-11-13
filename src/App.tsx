@@ -46,8 +46,18 @@ export default function App() {
             <div id="demo-stage" className="demo-stage">
               <div className="stage-radiance" aria-hidden="true" />
               <div className="monitors" aria-hidden="true">
-                <Monitor index={0} state={state} closingWindow={session.closingWindow} />
-                <Monitor index={1} state={state} closingWindow={session.closingWindow} />
+                <Monitor
+                  index={0}
+                  state={state}
+                  closingWindow={session.closingWindow}
+                  shortcut={session.shortcut}
+                />
+                <Monitor
+                  index={1}
+                  state={state}
+                  closingWindow={session.closingWindow}
+                  shortcut={session.shortcut}
+                />
               </div>
               <p className="demo-action-label">{session.caption}</p>
               <div id="demo-controls" className="utility-controls" tabIndex={-1}>
@@ -77,7 +87,7 @@ export default function App() {
                 </Button>
               </div>
             </div>
-            <KeyboardShortcuts state={state} shortcut={session.shortcut} />
+            <KeyboardShortcuts shortcut={session.shortcut} />
             <p className="sr-only" aria-live="polite" aria-atomic="true">
               {session.mode === "paused"
                 ? `Demo paused. ${session.caption} ${describe(state)}`
