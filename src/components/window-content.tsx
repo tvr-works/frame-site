@@ -1,4 +1,4 @@
-import { Check, ChevronRight, Square } from "lucide-react";
+import { Check, Square } from "lucide-react";
 import type { WindowKind } from "@/demo/model";
 import { Skeleton } from "./ui/skeleton";
 export function WindowContent({ kind }: { kind: WindowKind }) {
@@ -33,20 +33,6 @@ export function WindowContent({ kind }: { kind: WindowKind }) {
         <div>
           <Skeleton variant="short" />
           <Skeleton />
-          <Skeleton variant="short" />
-        </div>
-      </div>
-    );
-  if (kind === "terminal")
-    return (
-      <div className="window-skeleton skeleton-terminal">
-        <div>
-          <ChevronRight />
-          <Skeleton variant="short" />
-        </div>
-        <Skeleton />
-        <div>
-          <ChevronRight />
           <Skeleton variant="short" />
         </div>
       </div>

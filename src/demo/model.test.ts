@@ -9,7 +9,7 @@ import {
   type Command,
 } from "./model";
 function seed(columns: number[][], focused = columns[0]?.[0] ?? null): DemoState {
-  const s = initialState(1);
+  const s = initialState();
   s.nextId = 100;
   s.focused = focused;
   s.clock = 10;
@@ -66,7 +66,7 @@ describe("FrameEngine fixture parity — source commit 88c47e8", () => {
     expect(columns(s)).toEqual([[1], [2, 5, 3]]);
   });
   it("FocusCommandTest.testFocusNoWrapping / default workspace boundary", () => {
-    const s = initialState(2);
+    const s = initialState();
     s.workspaces[0] = seed([[1]], 1).workspaces[0];
     s.focused = 1;
     expect(transition(s, { type: "focus", direction: "right" }).workspace).toBe("1");
@@ -74,7 +74,7 @@ describe("FrameEngine fixture parity — source commit 88c47e8", () => {
   });
   it("WindowRegistrationTest: landscape second column, then focused-column placement", () => {
     const s = run(
-      initialState(1),
+      initialState(),
       { type: "create" },
       { type: "create" },
       { type: "focus", direction: "left" },
@@ -143,14 +143,13 @@ describe("browser demo bounds and state invariants", () => {
     }
   });
   it.each([
-    { count: 1, name: "2", visible: ["2"] },
-    { count: 2, name: "3", visible: ["3", "6"] },
-    { count: 2, name: "6", visible: ["1", "6"] },
-    { count: 2, name: "0", visible: ["1", "0"] },
+    { name: "3", visible: ["3", "6"] },
+    { name: "6", visible: ["1", "6"] },
+    { name: "0", visible: ["1", "0"] },
   ] as const)(
-    "follows a transferred window to workspace $name with $count display(s)",
-    ({ count, name, visible }) => {
-      const source = run(initialState(count), { type: "create" }, { type: "create" });
+    "follows a transferred window to workspace $name on its assigned display",
+    ({ name, visible }) => {
+      const source = run(initialState(), { type: "create" }, { type: "create" });
       const sent = source.focused;
       const s = transition(source, { type: "send", name });
       expect(s.visible).toEqual(visible);
@@ -185,40 +184,17 @@ describe("browser demo bounds and state invariants", () => {
     source = transition(source, { type: "workspace", name: "1" });
     for (const name of ["1", "6", "missing"]) {
       const s = transition(source, { type: "send", name });
-      expect({ ...s, message: source.message }).toEqual(source);
+      expect(s).toEqual(source);
     }
     const empty = initialState();
     expect(transition(empty, { type: "send", name: "0" }).focused).toBeNull();
   });
-  it.each(["3", "8"])("restores both banks after using workspace %s on one monitor", (name) => {
-    let s = run(
-      initialState(),
-      { type: "workspace", name },
-      { type: "create" },
-      { type: "monitors", count: 1 },
-    );
-    const focused = s.focused;
-    expect(s.visible).toEqual([name]);
-    expect(s.workspaces.every((w) => w.monitor === 0)).toBe(true);
-    s = transition(s, { type: "monitors", count: 2 });
-    expect(s.visible).toEqual(name === "3" ? ["3", "6"] : ["1", "8"]);
-    expect(s.focused).toBe(focused);
-    expect(s.workspace).toBe(name);
-    expect(s.workspaces.map((w) => w.monitor)).toEqual([0, 0, 0, 0, 0, 1, 1, 1, 1, 1]);
-  });
-  it("preserves windows when changing monitor count and when closing the focused window", () => {
-    const s = run(
-      initialState(),
-      { type: "monitor", index: 1 },
-      { type: "create" },
-      { type: "monitors", count: 1 },
-    );
-    expect(s.visible).toEqual(["6"]);
-    expect(currentWorkspace(s).columns[0].windows).toHaveLength(1);
-    const two = transition(s, { type: "monitors", count: 2 });
-    expect(two.workspaces.flatMap((w) => w.columns.flatMap((c) => c.windows))).toHaveLength(1);
-    const closed = transition(two, { type: "close" });
+  it("closing the last focused window leaves an empty workspace", () => {
+    const source = run(initialState(), { type: "workspace", name: "6" }, { type: "create" });
+    const closed = transition(source, { type: "close" });
     expect(closed.focused).toBeNull();
+    expect(closed.workspace).toBe("6");
+    expect(closed.visible).toEqual(["1", "6"]);
     expect(columns(closed)).toEqual([]);
   });
   it("keeps Frame’s 8-point outer/inner gaps and one-point height correction", () => {
@@ -229,10 +205,9 @@ describe("browser demo bounds and state invariants", () => {
     expect(rects[2].y).toBe(453.5);
   });
   it("enforces documented demo limits without losing windows or allowing negative sizes", () => {
-    let s = initialState(1);
+    let s = initialState();
     for (let i = 0; i < 7; i++) s = transition(s, { type: "create" });
     expect(s.workspaces[0].columns.flatMap((c) => c.windows)).toHaveLength(6);
-    expect(s.message).toContain("six windows");
     for (let i = 0; i < 100; i++) s = transition(s, { type: "resize", direction: "left" });
     expect(layout(s.workspaces[0]).every((r) => r.width > 0 && r.height > 0)).toBe(true);
   });
@@ -249,8 +224,6 @@ describe("browser demo bounds and state invariants", () => {
       { type: "send", name: "2" },
       { type: "workspace", name: "2" },
       { type: "create" },
-      { type: "monitors", count: 1 },
-      { type: "monitors", count: 2 },
       { type: "close" },
     ];
     for (const command of commands) {

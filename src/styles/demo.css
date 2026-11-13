@@ -307,23 +307,6 @@
 .skeleton-code > div:nth-child(3) .ui-skeleton {
   max-width: 74%;
 }
-.skeleton-terminal {
-  gap: 20px;
-}
-.skeleton-terminal > div:not(.ui-skeleton) {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.skeleton-terminal svg {
-  width: 13px;
-  height: 13px;
-  color: #acd2ee59;
-}
-.skeleton-terminal > .ui-skeleton {
-  width: 70%;
-  margin-left: 23px;
-}
 .keyboard-controls {
   margin-top: 24px;
   position: relative;

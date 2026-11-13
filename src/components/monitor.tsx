@@ -1,9 +1,9 @@
-import { Monitor as MonitorIcon, Globe, NotebookPen, Code2, Terminal } from "lucide-react";
+import { Monitor as MonitorIcon, Globe, NotebookPen, Code2 } from "lucide-react";
 import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import { layout, surface, windowTitles, type DemoState } from "@/demo/model";
 import { WindowContent } from "./window-content";
-const icons = { browser: Globe, notes: NotebookPen, editor: Code2, terminal: Terminal };
+const icons = { browser: Globe, notes: NotebookPen, editor: Code2 };
 export function Monitor({
   index,
   state,

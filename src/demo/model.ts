@@ -1,7 +1,7 @@
 /** Bounded port of FrameEngine's depth-two columns model. See docs/simulator.md. */
 export const workspaceNames = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"] as const;
 export type Direction = "left" | "down" | "up" | "right";
-export type WindowKind = "browser" | "notes" | "editor" | "terminal";
+export type WindowKind = "browser" | "notes" | "editor";
 export interface DemoWindow {
   id: number;
   kind: WindowKind;
@@ -21,46 +21,36 @@ export interface Workspace {
 }
 export interface DemoState {
   workspaces: Workspace[];
-  visible: string[];
+  visible: [string, string];
   workspace: string;
   focused: number | null;
   nextId: number;
   clock: number;
-  message: string;
 }
 export type Command =
   | { type: "create"; kind?: WindowKind }
   | { type: "close" }
-  | { type: "select"; id: number }
-  | { type: "monitor"; index: number }
-  | { type: "monitors"; count: 1 | 2 }
   | { type: "focus" | "move" | "resize"; direction: Direction }
   | { type: "workspace" | "send"; name: string };
-export const surface = { width: 1440, height: 900, gap: 8 };
+export const surface = { width: 1440, height: 900 };
 export const windowTitles: Record<WindowKind, string> = {
   browser: "Reading",
   notes: "Notes",
   editor: "main.swift",
-  terminal: "Terminal",
 };
-const kinds: WindowKind[] = ["browser", "notes", "editor", "terminal"];
-// This demo pins the two number banks to their corresponding displays.
-function assignedMonitor(name: string, count: number) {
-  return count === 2 && workspaceNames.findIndex((workspace) => workspace === name) >= 5 ? 1 : 0;
-}
-export function initialState(count: 1 | 2 = 2): DemoState {
+/** The scripted demo always uses two displays with fixed workspace banks. */
+export function initialState(): DemoState {
   return {
-    workspaces: workspaceNames.map((name) => ({
+    workspaces: workspaceNames.map((name, index) => ({
       name,
-      monitor: assignedMonitor(name, count),
+      monitor: index < 5 ? 0 : 1,
       columns: [],
     })),
-    visible: count === 2 ? ["1", "6"] : ["1"],
+    visible: ["1", "6"],
     workspace: "1",
     focused: null,
     nextId: 1,
     clock: 0,
-    message: "A clear desktop. Open a window to begin.",
   };
 }
 export function currentWorkspace(s: DemoState) {
@@ -124,15 +114,11 @@ export function transition(input: DemoState, command: Command): DemoState {
     w = currentWorkspace(s);
   const c = w.columns.find((c) => c.windows.some((x) => x.id === s.focused));
   const win = c?.windows.find((x) => x.id === s.focused);
-  s.message = "";
   switch (command.type) {
     case "create": {
-      if (allWindows(w).length >= 6) {
-        s.message = "This demo supports six windows per workspace. Close one to keep exploring.";
-        break;
-      }
+      if (allWindows(w).length >= 6) break;
       const target = w.columns.length === 1 ? column(s, w) : (c ?? column(s, w));
-      const kind = command.kind ?? kinds[s.workspaces.flatMap(allWindows).length % kinds.length];
+      const kind = command.kind ?? "browser";
       const added: DemoWindow = {
         id: s.nextId++,
         kind,
@@ -141,134 +127,69 @@ export function transition(input: DemoState, command: Command): DemoState {
       };
       target.windows.push(added);
       focus(s, w, added);
-      s.message = `Opened ${windowTitles[kind]}. ${w.columns.length} ${w.columns.length === 1 ? "column" : "columns"}.`;
-      break;
-    }
-    case "select": {
-      const ws = s.workspaces.find((x) => allWindows(x).some((y) => y.id === command.id));
-      const target = ws && allWindows(ws).find((x) => x.id === command.id);
-      if (ws && target) {
-        activate(s, ws, target);
-        s.message = `Focused ${windowTitles[target.kind]}. Layout unchanged.`;
-      }
-      break;
-    }
-    case "monitor": {
-      const ws = s.workspaces.find((x) => x.name === s.visible[command.index]);
-      if (ws) {
-        activate(s, ws);
-        s.message = `Focused display ${command.index + 1}, workspace ${ws.name}.`;
-      }
-      break;
-    }
-    case "monitors": {
-      if (command.count === s.visible.length) break;
-      for (const ws of s.workspaces) ws.monitor = assignedMonitor(ws.name, command.count);
-      // One display can show either bank. Restoring dual displays restores the locks,
-      // keeping the active workspace and its focused window on its assigned display.
-      s.visible = command.count === 1 ? [s.workspace] : ["1", "6"];
-      s.visible[w.monitor] = w.name;
-      s.message = `${command.count === 1 ? "Single display" : "Two displays"}. Your windows are preserved.`;
       break;
     }
     case "workspace": {
       const ws = s.workspaces.find((x) => x.name === command.name);
       if (!ws) break;
       activate(s, ws);
-      s.message = `Workspace ${ws.name}, display ${ws.monitor + 1}. ${allWindows(ws).length} windows.`;
       break;
     }
     case "send": {
       const ws = s.workspaces.find((x) => x.name === command.name);
-      if (!ws || !win || !c) {
-        s.message = "Open or focus a window first.";
-        break;
-      }
-      if (ws === w) {
-        s.message = `Already on workspace ${ws.name}.`;
-        break;
-      }
-      if (allWindows(ws).length >= 6) {
-        s.message = "The destination has reached this demo’s six-window limit.";
-        break;
-      }
+      if (!ws || !win || !c) break;
+      if (ws === w) break;
+      if (allWindows(ws).length >= 6) break;
       const target = ws.columns.at(-1) ?? column(s, ws);
       c.windows = c.windows.filter((x) => x !== win);
       win.weight = average(target.windows);
       target.windows.push(win);
       activate(s, ws, win);
-      s.message = `Moved ${windowTitles[win.kind]} to workspace ${ws.name}, display ${ws.monitor + 1}. Focus follows the window.`;
       break;
     }
     case "close": {
-      if (!c || !win) {
-        s.message = "No window to close.";
-        break;
-      }
+      if (!c || !win) break;
       c.windows = c.windows.filter((x) => x !== win);
       s.focused = null;
-      s.message = `Closed ${windowTitles[win.kind]}. Remaining windows retile.`;
       break;
     }
     case "focus": {
-      if (!c || !win) {
-        s.message = "Open a window first.";
-        break;
-      }
+      if (!c || !win) break;
       const horizontal = command.direction === "left" || command.direction === "right";
       const delta = command.direction === "left" || command.direction === "up" ? -1 : 1;
       const target = horizontal
         ? recentWindow(w.columns[w.columns.indexOf(c) + delta]?.windows ?? [])
         : c.windows[c.windows.indexOf(win) + delta];
-      if (target) {
-        focus(s, w, target);
-        s.message = `Focused ${windowTitles[target.kind]}. Layout unchanged.`;
-      } else s.message = "At the workspace edge. Focus stops here.";
+      if (target) focus(s, w, target);
       break;
     }
     case "move": {
-      if (!c || !win) {
-        s.message = "Open a window first.";
-        break;
-      }
+      if (!c || !win) break;
       const delta = command.direction === "left" || command.direction === "up" ? -1 : 1;
       if (command.direction === "up" || command.direction === "down") {
         const index = c.windows.indexOf(win),
           target = index + delta;
-        if (!c.windows[target]) {
-          s.message = "At the column edge. The window stays here.";
-          break;
-        }
+        if (!c.windows[target]) break;
         c.windows.splice(index, 1);
         c.windows.splice(target, 0, win);
       } else {
         const index = w.columns.indexOf(c),
           targetIndex = index + delta;
-        if (!w.columns[targetIndex] && w.columns.length >= 4) {
-          s.message = "This demo supports up to four columns.";
-          break;
-        }
+        if (!w.columns[targetIndex] && w.columns.length >= 4) break;
         const target = w.columns[targetIndex] ?? column(s, w, delta < 0 ? 0 : w.columns.length);
         c.windows = c.windows.filter((x) => x !== win);
         win.weight = average(target.windows);
         target.windows.push(win);
       }
       focus(s, w, win);
-      s.message = `Moved ${windowTitles[win.kind]} ${command.direction}. Focus follows the window.`;
       break;
     }
     case "resize": {
-      if (!c || !win) {
-        s.message = "Open a window first.";
-        break;
-      }
+      if (!c || !win) break;
       const horizontal = command.direction === "left" || command.direction === "right";
       const siblings: { weight: number }[] = horizontal ? w.columns : c.windows;
       const node = horizontal ? c : win;
-      if (siblings.length < 2) {
-        s.message = `Add another ${horizontal ? "column" : "window in this column"} to resize.`;
-        break;
-      }
+      if (siblings.length < 2) break;
       const sign = siblings.at(-1) === node ? -1 : 1;
       const delta = (command.direction === "left" || command.direction === "up" ? -50 : 50) * sign;
       const share = delta / (siblings.length - 1);
@@ -276,11 +197,9 @@ export function transition(input: DemoState, command: Command): DemoState {
       if (
         siblings.some((x) => x.weight + (x === node ? delta : -share) < (horizontal ? 180 : 150))
       ) {
-        s.message = "Reached this demo’s minimum window size.";
         break;
       }
       for (const x of siblings) x.weight += x === node ? delta : -share;
-      s.message = `Resized ${horizontal ? "column width" : "window height"} ${command.direction} by 50 points.`;
       break;
     }
   }
