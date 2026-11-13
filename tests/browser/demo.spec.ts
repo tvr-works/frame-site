@@ -319,7 +319,7 @@ test("Guide opens a document page and links back to the demonstration", async ({
   await start(page);
   await advance(page, 3);
   await headerGuide(page).click();
-  await expect(page).toHaveURL(/\/guide.html$/);
+  await expect(page).toHaveURL(/\/guide$/);
   await expect(page).toHaveTitle("User guide — Frame");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("User guide");
   await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -404,7 +404,7 @@ for (const viewport of [
     ).toBeInViewport();
     await noOverflow(page);
     await headerGuide(page).click();
-    await expect(page).toHaveURL(/\/guide.html$/);
+    await expect(page).toHaveURL(/\/guide$/);
     await noOverflow(page);
     if (viewport.width === 320) {
       await page.evaluate(() => {
@@ -460,7 +460,7 @@ test("structure and movements explain the model; footer Guide opens the user gui
     .getByRole("navigation", { name: "Footer navigation" })
     .getByRole("link", { name: "Guide", exact: true });
   await footerGuide.click();
-  await expect(page).toHaveURL(/\/guide.html$/);
+  await expect(page).toHaveURL(/\/guide$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("User guide");
 });
 
@@ -574,14 +574,17 @@ test("@artifact static HTML, security, indexing, identity, assets and honest 404
     "/licenses/shadcn-ui.txt",
     "/sitemap.xml",
     "/robots.txt",
-    "/guide.html",
+    "/guide",
   ])
     expect((await request.get(path)).status()).toBe(200);
-  const guide = await request.get("/guide.html");
+  const legacyGuide = await request.get("/guide.html?from=legacy", { maxRedirects: 0 });
+  expect(legacyGuide.status()).toBe(301);
+  expect(legacyGuide.headers().location).toBe("/guide?from=legacy");
+  const guide = await request.get("/guide");
   const guideHtml = await guide.text();
   expect(guideHtml).toContain("User guide");
   expect(guideHtml).toContain("frame doctor");
-  expect(guideHtml).toContain("https://frame.tvr.works/guide.html");
+  expect(guideHtml).toContain("https://frame.tvr.works/guide");
   expect(guideHtml).not.toContain('<div id="root"></div>');
   expect(guideHtml).toContain(
     info.mode === "production" ? 'content="index, follow"' : 'content="noindex, nofollow"',
@@ -621,9 +624,9 @@ test("@artifact search and social metadata describe each static page and its rea
     if (document.querySelector("parsererror")) throw new Error("Invalid sitemap XML");
     return [...document.querySelectorAll("url > loc")].map((node) => node.textContent);
   }, sitemap);
-  expect(locations).toEqual([`${origin}/`, `${origin}/guide.html`]);
+  expect(locations).toEqual([`${origin}/`, `${origin}/guide`]);
 
-  for (const path of ["/", "/guide.html"]) {
+  for (const path of ["/", "/guide"]) {
     const response = await page.goto(path);
     expect(response?.status()).toBe(200);
     expect(response?.headers()["x-robots-tag"]).toBe(
@@ -687,7 +690,7 @@ test("@artifact guide loads no client runtime and keeps native navigation", asyn
   page.on("request", (request) => {
     if (request.resourceType() === "script") scripts.push(request.url());
   });
-  await page.goto("/guide.html");
+  await page.goto("/guide");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("User guide");
   await page
     .getByRole("navigation", { name: "On this page" })
@@ -723,7 +726,7 @@ test("@artifact no-JavaScript visitors can read the guide and install", async ({
     "brew install --cask tvr-works/tap/frame",
   );
   await headerGuide(page).click();
-  await expect(page).toHaveURL(/\/guide.html$/);
+  await expect(page).toHaveURL(/\/guide$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("User guide");
   await expect(page.locator("#install-frame pre")).toContainText(
     "brew install --cask tvr-works/tap/frame",
@@ -775,7 +778,7 @@ test("Install scrolls to the fourth section, pauses the demo and keeps normal na
     .getByRole("navigation", { name: "On this page" })
     .getByRole("link", { name: "First launch", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/guide.html#first-launch$/);
+  await expect(page).toHaveURL(/\/guide#first-launch$/);
   await expect(page.getByRole("heading", { name: "First launch", exact: true })).toBeInViewport();
   await page.reload();
   await expect(page.getByRole("heading", { name: "First launch", exact: true })).toBeInViewport();

@@ -1,8 +1,8 @@
-# CI and future Cloudflare Pages publication
+# CI and Cloudflare Pages publication
 
-This repository is local-only. The workflow and gate are prepared but have not run on GitHub. No repository has been created, and no Cloudflare settings, DNS or deployment have been changed.
+The owner authorized GitHub/Cloudflare publication on 2026-11-12. The existing license-only tvanreenen/frame-site repository is transferred to tvr-works/frame-site, preserving repository ID 1194931754 and its initial commit. The existing Cloudflare Pages frame-site project and active frame.tvr.works custom domain are preserved. Hosted verification is recorded below when complete.
 
-The prepared publication identity is `tvr-works/frame-site`; confirm that identity when the owner commissions publication. Canonical domain is provisionally `https://frame.tvr.works`.
+Publication identity is `tvr-works/frame-site`; canonical origin is `https://frame.tvr.works`.
 
 ## Checks
 
@@ -14,13 +14,13 @@ The six current audit advisories are two low and four moderate transitive CLI-to
 
 ## Exact-SHA gate
 
-Future Pages build command:
+Pages build command:
 
 ```sh
 npm run ci:gate && npm run build
 ```
 
-Future output: `dist`. Production branch: `main`. Main production environment only: `SITE_DEPLOYMENT_MODE=production`; branch previews leave it unset. Use the existing GitHub App pattern, automatic main production and all repository-branch previews. No separate deployment service is needed.
+Output: `dist`. Production branch: `main`. Main production environment only: `SITE_DEPLOYMENT_MODE=production`; branch previews leave it unset. Both environments pin NODE_VERSION=26.13.0 and NPM_VERSION=11.20.0 on build image v3. Use the existing GitHub App pattern, automatic main production and all repository-branch previews. No separate deployment service is needed.
 
 `scripts/wait-for-ci.ts` is adapted from key-site's established gate with its complete contract tests. It accepts only the latest successful **push** run of `ci.yml` for both the exact `CF_PAGES_COMMIT_SHA` and `CF_PAGES_BRANCH`. A stale success, different branch, pull-request check, dispatch result or older successful attempt cannot authorize publication. Malformed responses, denied/rate-limited API access, failures and timeouts fail closed. Each request is bounded to 15 seconds; polling backs off to 60 seconds and stops after 16 minutes. This uses the public GitHub API without credentials, so the future repository must be public for this gate.
 
@@ -30,11 +30,11 @@ Before declaring hosting ready, verify a disposable failing preview is rejected 
 
 ## Static delivery
 
-Both the homepage and /guide.html are Vite HTML entries prerendered from their React components. The homepage hydrates its demo; the guide has no script tags, client bundle or JavaScript requests. Artifact tests enforce this distinction. Both remain readable without JavaScript; install and guide links use native anchors. Unknown URLs return a real 404. The public artifact excludes source, the server render bundle, native test fixtures and source maps. `build-info.json` exposes only source SHA, branch, mode and dirty status and is served with `no-store`.
+The homepage and guide.html are Vite HTML entries prerendered from their React components. The guide is served at /guide, matching Cloudflare Pages’ extensionless routing; /guide.html redirects to /guide. Development and artifact servers model the same route and preserve legacy query strings. Links, canonical/Open Graph URLs and sitemap entries use /guide. The homepage hydrates its demo; the guide has no script tags, client bundle or JavaScript requests. Artifact tests enforce this distinction. Both remain readable without JavaScript; install and guide links use native anchors. Unknown URLs return a real 404. The public artifact excludes source, the server render bundle, native test fixtures and source maps. `build-info.json` exposes only source SHA, branch, mode and dirty status and is served with `no-store`.
 
-Production permits indexing; preview HTML and response headers independently exclude it. The 404 always excludes indexing. Sitemap/canonicals point to the provisional production origin. The artifact server used by browser tests applies the generated Pages headers.
+Production permits indexing; preview HTML and response headers independently exclude it. The 404 always excludes indexing. Sitemap/canonicals point to the production origin. The artifact server used by browser tests applies the generated Pages headers.
 
-Both pages have unique titles and descriptions, matching canonical/Open Graph URLs, and explicit Open Graph and Twitter large-image metadata. The shared 1200 × 630 PNG includes a descriptive image alternative and declared MIME type/dimensions. Artifact checks read the HTML with JavaScript disabled, check unique/nonempty metadata, load the actual image and compare its decoded dimensions, parse the sitemap, and verify robots directives/response headers in both modes. Keep the origin consistent in both HTML entries and the finalizer when the production domain is confirmed; update the artifact expectations in the same change. No social account handle is claimed.
+Both pages have unique titles and descriptions, matching canonical/Open Graph URLs, and explicit Open Graph and Twitter large-image metadata. The shared 1200 × 630 PNG includes a descriptive image alternative and declared MIME type/dimensions. Artifact checks read the HTML with JavaScript disabled, check unique/nonempty metadata, load the actual image and compare its decoded dimensions, parse the sitemap, and verify robots directives/response headers in both modes. Keep the origin consistent in both HTML entries and the finalizer when the production domain changes; update the artifact expectations in the same change. No social account handle is claimed.
 
 Software rich-result markup is deferred: the site has no published review/rating data, which [Google’s software app feature requires](https://developers.google.com/search/docs/appearance/structured-data/software-app). The current work does not claim rich-result eligibility. At publication, verify the confirmed public canonicals, robots/sitemap, real crawler previews and Search Console ownership/submission. None of those hosted checks has been run locally.
 

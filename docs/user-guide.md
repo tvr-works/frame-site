@@ -1,6 +1,6 @@
 # User-guide evidence and maintenance
 
-The user guide is authored in `src/guide/page.tsx`, `src/guide/reference.tsx` and the `src/guide/*.ts` reference/example modules. Installation text and the diagram are shared with the homepage. The guide is a normal `/guide.html` document, not a dialog or a client-router view. Both HTML entries are prerendered, including the full reference content. The guide is delivered without JavaScript; it uses only native links, fragment navigation and shared CSS. Vite renders it on request during development and reloads the document for TSX edits.
+The user guide is authored in `src/guide/page.tsx`, `src/guide/reference.tsx` and the `src/guide/*.ts` reference/example modules. Installation text and the diagram are shared with the homepage. The guide is a normal `/guide` document, not a dialog or a client-router view. Both HTML entries are prerendered, including the full reference content. The guide is delivered without JavaScript; it uses only native links, fragment navigation and shared CSS. Vite renders it on request during development and reloads the document for TSX edits.
 
 ## Native source authority
 

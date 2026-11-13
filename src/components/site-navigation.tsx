@@ -9,7 +9,7 @@ export function SiteHeader({ guide = false }: { guide?: boolean }) {
         <span>Frame</span>
       </a>
       <nav aria-label="Main navigation">
-        <a href="/guide.html" aria-current={guide ? "page" : undefined}>
+        <a href="/guide" aria-current={guide ? "page" : undefined}>
           Guide
         </a>
         <a href="https://github.com/tvr-works/frame">
@@ -27,7 +27,7 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <nav aria-label="Footer navigation">
-        <a href="/guide.html">Guide</a>
+        <a href="/guide">Guide</a>
         <a href="https://github.com/tvr-works/frame">
           GitHub <ArrowUpRight />
         </a>

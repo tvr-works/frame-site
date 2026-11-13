@@ -1,6 +1,6 @@
 # Frame site
 
-A standalone local marketing site and scripted Frame demonstration. The native app stays in its own repository. No hosted repository or deployment has been created for this site.
+A standalone local marketing site and scripted Frame demonstration. The native app stays in its own repository. The owner authorized publication to tvr-works/frame-site and the existing Cloudflare Pages project at https://frame.tvr.works. See docs/ci-deployment.md for the publication contract and verification evidence.
 
 ## Run
 
@@ -28,7 +28,7 @@ SITE_DEPLOYMENT_MODE=production npm run build
 npm run test:artifact
 ```
 
-Return to `npm run build` afterward for preview indexing. Builds include an exact source identity in `build-info.json`; local dirty builds are labeled. Public canonicals use the provisional https://frame.tvr.works domain.
+Return to `npm run build` afterward for preview indexing. Builds include an exact source identity in `build-info.json`; local dirty builds are labeled. Public canonicals use https://frame.tvr.works.
 
 ## CSS and component checks
 
@@ -47,7 +47,7 @@ Run `npm run assets:social` to render the dedicated 1200 × 630 social card with
 - `src/styles.css`: stylesheet entry; `src/styles/` separates base tokens, shared site UI, demo, homepage and guide rules. Each file owns its responsive overrides.
 - `src/components/below-fold.tsx`: static workspace structure and composable movement explanations.
 - `src/components/install.tsx`: fourth homepage section and shared installation commands.
-- `src/guide/page.tsx`: standalone guide at `/guide.html`; shared header/footer and diagram keep it aligned with the homepage.
+- `src/guide/page.tsx`: standalone guide at `/guide`; shared header/footer and diagram keep it aligned with the homepage.
 - `src/guide/reference.tsx`: configuration, window rules, CLI and scripting chapters.
 - `src/guide/cli-data.ts`: all 18 native commands, flags, constraints and examples, checked against the native parser definitions.
 - `src/guide/scripting-examples.ts`: the documented workspace hook and SketchyBar example.
@@ -56,7 +56,7 @@ The current design uses the centered headline “Tiling Window Manager for macOS
 
 The script holds empty monitors for 1.2 seconds, opens three windows 1.2 seconds apart, then settles for 2.25 seconds. Option K/J/H/L demonstrate focus; Option Shift L/H/K/J moves the same focused window across columns and within a stack; Option Shift Control H/H/H/L changes column width, then K/K/J changes the lower row’s height; Option Shift 7 transfers it to the right display, then Option Shift 1 brings it back to the left, with focus following both ways. The label, full shortcut chord and layout change update together in one beat, then hold until the next action. After the transfer returns, windows close one at a time, 1.6 seconds apart, with each window’s red close dot highlighted for 650 ms beforehand and shortcut lights off. Empty monitors hold for 3 seconds before the next window opens. The full sequence repeats about every 43 seconds. Replay restarts immediately from the empty opening. Pause preserves the current scene and cue, including during closing and the empty hold; Play resumes.
 
-Background/offscreen suspension pauses playback and requires explicit Play to continue. Install is a native link to `/#install`; scrolling away pauses the demo without clearing its scene. Guide uses normal document navigation to `/guide.html`. There are no popups. Reduced motion starts empty with autoplay off and visual transitions disabled; visitors can explicitly play. The stage and keys are decorative, with a screen-reader summary and polite pause status. There is no keyboard capture or hands-on window/workspace/display control. Existing model transitions and native parity fixtures remain the source of layout behavior. The follow-focus transfer and fixed workspace banks are deliberate demo policies documented below.
+Background/offscreen suspension pauses playback and requires explicit Play to continue. Install is a native link to `/#install`; scrolling away pauses the demo without clearing its scene. Guide uses normal document navigation to `/guide`. There are no popups. Reduced motion starts empty with autoplay off and visual transitions disabled; visitors can explicitly play. The stage and keys are decorative, with a screen-reader summary and polite pause status. There is no keyboard capture or hands-on window/workspace/display control. Existing model transitions and native parity fixtures remain the source of layout behavior. The follow-focus transfer and fixed workspace banks are deliberate demo policies documented below.
 
 [Action wording and pacing](docs/demo-script.md) · [Simulator evidence and limits](docs/simulator.md) · [CI and future publication](docs/ci-deployment.md) · [Design verification](design-qa.md)
 

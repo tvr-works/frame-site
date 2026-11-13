@@ -9,6 +9,18 @@ export default defineConfig(({ isSsrBuild }) => ({
     {
       name: "static-guide-preview",
       apply: "serve",
+      configureServer(server) {
+        server.middlewares.use((request, response, next) => {
+          const url = new URL(request.url || "/", "http://localhost");
+          if (url.pathname === "/guide.html") {
+            response.writeHead(301, { Location: `/guide${url.search}` });
+            response.end();
+            return;
+          }
+          if (url.pathname === "/guide") request.url = `/guide.html${url.search}`;
+          next();
+        });
+      },
       transformIndexHtml: {
         order: "pre",
         async handler(html, context) {
@@ -22,7 +34,7 @@ export default defineConfig(({ isSsrBuild }) => ({
       },
       handleHotUpdate(context) {
         if (context.file.endsWith(".tsx"))
-          context.server.ws.send({ type: "full-reload", path: "/guide.html" });
+          context.server.ws.send({ type: "full-reload", path: "/guide" });
       },
     },
   ],

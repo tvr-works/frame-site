@@ -27,8 +27,15 @@ const common = Object.fromEntries(
 );
 createServer(async (req, res) => {
   try {
-    const path = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
-    let file = resolve(root, "." + path + (path.endsWith("/") ? "index.html" : ""));
+    const url = new URL(req.url, "http://localhost");
+    const path = decodeURIComponent(url.pathname);
+    if (path === "/guide.html") {
+      res.writeHead(301, { ...common, Location: `/guide${url.search}` });
+      res.end();
+      return;
+    }
+    const assetPath = path === "/guide" ? "/guide.html" : path;
+    let file = resolve(root, "." + assetPath + (assetPath.endsWith("/") ? "index.html" : ""));
     let status = 200;
     if (!file.startsWith(root + "/")) throw new Error("Invalid path");
     try {

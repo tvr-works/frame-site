@@ -42,7 +42,7 @@ await writeFile(
 );
 await writeFile(
   new URL("sitemap.xml", dist),
-  '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://frame.tvr.works/</loc></url><url><loc>https://frame.tvr.works/guide.html</loc></url></urlset>',
+  '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://frame.tvr.works/</loc></url><url><loc>https://frame.tvr.works/guide</loc></url></urlset>',
 );
 const commit =
   process.env.CF_PAGES_COMMIT_SHA ||
