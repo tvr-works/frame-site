@@ -1,3 +1,5 @@
 The bounded simulator adapts Frame's MIT-licensed columns model. Copyright 2023 Nikita Bobko and 2026 Tim VanReenen; the full notice is retained in LICENSE and the public artifact at licenses/frame.txt. The Frame icon is the supplied application asset. The dune wallpaper, transparent matte monitor hardware and blue stage backdrop were generated for this site. Window interiors are functional DOM skeletons requested by the owner, not rasterized app UI.
 
 Geist is self-hosted under its included SIL Open Font License (public/licenses/geist.txt). React, Base UI, Lucide, shadcn source patterns and the build tools retain their package license notices in the locked dependencies.
+
+The owned Typeset stylesheet in src/styles/typeset.css is copied from shadcn-ui/ui at commit 4233ed1caded8c38f4bc14b14afe1f93ebcaf966 (apps/v4/app/(app)/(typeset)/typeset.css), with formatting only. Copyright (c) 2023 shadcn; its full MIT license is retained in public/licenses/shadcn-ui.txt. Frame's typography preset and component opt-outs live outside that upstream stylesheet.

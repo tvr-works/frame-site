@@ -50,7 +50,7 @@ export function ConfigurationGuide() {
         second copy of the same table.
       </p>
       <h3>Configuration reference</h3>
-      <dl className="guide-settings">
+      <dl className="guide-settings" data-not-typeset>
         {configKeys.map(([key, description]) => (
           <div key={key}>
             <dt>
@@ -175,7 +175,7 @@ export function WindowRulesGuide() {
         rule requires at least one matcher and a <code>kind</code>. All matchers in one rule must
         match; the first matching rule wins.
       </p>
-      <dl className="guide-settings">
+      <dl className="guide-settings" data-not-typeset>
         <div>
           <dt>
             <code>if.app-id</code>
@@ -278,7 +278,7 @@ export function CommandLineGuide() {
         while still succeeding; use <code>--fail-if-noop</code> where offered when that distinction
         matters to a script.
       </p>
-      <nav aria-label="Command reference">
+      <nav aria-label="Command reference" data-not-typeset>
         <ul className="guide-command-index">
           {cliGroups
             .flatMap((group) => group.commands)

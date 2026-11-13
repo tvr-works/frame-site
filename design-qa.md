@@ -372,3 +372,17 @@ Captured a fresh before/after static-delivery baseline for demo, install, guide 
 Formatting, lint, TypeScript, 70 unit tests and all 48 Chromium/WebKit checks pass. Artifact tests verify that the guide issues no JavaScript requests and still follows native chapter/command anchors. Total delivered JavaScript across the site is about 85.5 KiB gzip; the guide itself requests none. Production indexing/security checks and preview restoration are completed before commit. Development guide rendering, reload behavior and reading without JavaScript are checked separately against port 4177. Manual VoiceOver, hosted CI/hosting and live native/SketchyBar integration remain outside the claimed verification.
 
 final result: passed
+
+## Review update: CSS checks and shadcn component fit
+
+Added pinned Stylelint 18.0.0 alongside Oxlint/shadcn. Source CSS now checks duplicate selectors/declarations, invalid properties/units/hex values, unknown at-rules and accidental shorthand overrides. Tailwind’s theme directive is explicitly allowed. Site/homepage/guide colors use named tokens, with unchanged values moved into the root palette. The demo’s illustrative colors and upstream Typeset defaults retain their own scope. Three policy tests prove invalid CSS fails and valid responsive/theme/palette cases pass. No lint rules or accessibility nodes were suppressed.
+
+Reviewed Button, Skeleton, Kbd, Table, Separator, Code Block and Typeset against the pinned CLI and official docs. Header/icon sizes now belong to Button variants; the release icon uses data-icon. Existing native anchors preserve navigation semantics. Static keyboard/window artwork, responsive table/dl markup, row borders and pre/code examples retain their established responsibilities rather than adding interactive wrappers. Decisions and primary sources are in docs/design-system.md.
+
+Guide prose now uses the official owned Typeset CSS, pinned to shadcn-ui/ui 4233ed1caded8c38f4bc14b14afe1f93ebcaf966, with its MIT notice included in the public artifact. A Frame preset supplies the existing fonts, 17-pixel desktop / 18-pixel narrow-screen text, 1.75 leading and consistent flow. Custom tables, reference definitions, command navigation and the workspace figure opt out. Prose links, lists and inline code inherit Typeset semantics while guide heading scale, chapter gaps and wrapped examples retain product styles. The guide continues to deliver no JavaScript.
+
+The CSS token and button-variant changes each passed 16 computed-style/pixel comparisons at 320, 390, 1047 and 1484 pixels: computed styles match exactly, with at most 1/255 raster channel rounding. Typeset intentionally updates only guide prose rhythm and inline-code presentation. Final guide captures cover first launch, shortcuts, configuration and CLI at 320/390/1047 pixels; additional geometry probes cover 761/768/1484 pixels and confirm the responsive font-size boundary and no horizontal overflow. Opened and inspected final first-launch desktop, configuration mobile and shortcut-list narrow screenshots. Evidence remains in the cleanup visualization directory.
+
+Formatting, Oxlint/shadcn, Stylelint, TypeScript, 73 unit tests and all 48 Chromium/WebKit cases pass on the final source. Production artifact checks cover indexing/security, static reading, native navigation, no guide JavaScript requests and the shipped Typeset license; preview mode is restored before commit. Manual VoiceOver and hosted CI remain unclaimed.
+
+final result: passed

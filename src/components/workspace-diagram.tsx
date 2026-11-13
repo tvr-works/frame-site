@@ -1,6 +1,6 @@
 export function WorkspaceDiagram() {
   return (
-    <figure className="structure-figure">
+    <figure className="structure-figure" data-not-typeset>
       <picture>
         <source
           media="(max-width: 600px)"

@@ -34,7 +34,7 @@ Both the homepage and /guide.html are Vite HTML entries prerendered from their R
 
 Production permits indexing; preview HTML and response headers independently exclude it. The 404 always excludes indexing. Sitemap/canonicals point to the provisional production origin. The artifact server used by browser tests applies the generated Pages headers.
 
-CSP permits same-origin scripts, styles, fonts and images, blocks objects/frames/forms, and has no blanket inline-script/eval exception. `style-src-attr 'unsafe-inline'` allows measured numeric geometry custom properties on simulated windows. Referrer, permissions, framing and MIME-sniffing headers follow the other sites. The build currently bounds total JavaScript at 150 KiB gzip and each page’s HTML at 65 KiB; current total JavaScript across both pages is about 85.5 KiB gzip.
+CSP permits same-origin scripts, styles, fonts and images, blocks objects/frames/forms, and has no blanket inline-script/eval exception. `style-src-attr 'unsafe-inline'` allows measured numeric geometry custom properties on simulated windows. Referrer, permissions, framing and MIME-sniffing headers follow the other sites. The build currently bounds total JavaScript at 150 KiB gzip and each page’s HTML at 65 KiB; current total JavaScript across both pages is about 85.6 KiB gzip.
 
 A failed gate leaves existing production unchanged. Retry a Pages build after a successful CI rerun; CI success does not itself retry Pages. Normal recovery is a source revert through the same gate. Hosting setup and real edge-header/SHA verification remain a later owner-authorized milestone.
 

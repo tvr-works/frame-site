@@ -78,7 +78,7 @@ export default function GuidePage() {
                 ))}
               </ol>
             </nav>
-            <div className="guide-article">
+            <div className="guide-article typeset typeset-docs">
               <section id="install-frame" aria-labelledby="guide-install-title">
                 <h2 id="guide-install-title">Install Frame</h2>
                 <p>
@@ -165,7 +165,7 @@ export default function GuidePage() {
                   Slash-separated direction keys are alternatives. For workspaces, choose a number
                   key from 1 through 9, or 0.
                 </p>
-                <div className="guide-table-wrap">
+                <div className="guide-table-wrap" data-not-typeset>
                   <table className="guide-table">
                     <caption className="sr-only">Default keyboard shortcuts</caption>
                     <thead>
@@ -188,7 +188,7 @@ export default function GuidePage() {
                     </tbody>
                   </table>
                 </div>
-                <dl className="guide-shortcut-list">
+                <dl className="guide-shortcut-list" data-not-typeset>
                   {shortcuts.map(([action, keys, result]) => (
                     <div key={action}>
                       <dt>

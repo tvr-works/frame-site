@@ -570,6 +570,7 @@ test("@artifact static HTML, security, indexing, identity, assets and honest 404
     "/monitor-shell.webp",
     "/monitor-backdrop.webp",
     "/social-card.png",
+    "/licenses/shadcn-ui.txt",
     "/sitemap.xml",
     "/robots.txt",
     "/guide.html",
