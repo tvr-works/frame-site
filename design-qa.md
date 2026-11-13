@@ -404,3 +404,13 @@ Revised both screens at the owner’s request so each has a tall window beside a
 Opened and inspected the 1200 × 630 output and cleanup/social-card-tiled-600.png at 600 × 315. Both column splits and row splits remain visible at thumbnail size without adding labels or controls. The PNG is 255,565 bytes. Existing pinned Playwright tooling was used; Browser plugin not available. Formatting, lint, TypeScript, 73 unit tests, 50 browser cases and eight production artifact checks pass. Preview indexing mode is restored.
 
 final result: passed
+
+## Review update: remove mirrored screen layouts
+
+Changed the social card to distinct arrangements at the owner’s request. The left screen keeps three windows: a tall column beside two rows with a 1.15:1 height ratio. The right screen has two full-height columns with a wider focused editor (1.8:1 column ratio). Different window counts, column widths and row proportions remove the earlier mirror pattern. Branding, monitor hardware, backdrop and headline retain their placement.
+
+Opened and inspected the full 1200 × 630 card and cleanup/social-card-asymmetric-600.png at 600 × 315 using the existing pinned browser workflow. Column and row tiling remain legible at half size. The PNG is 256,956 bytes. Browser plugin not available; no website UI behavior changed.
+
+Formatting, lint, TypeScript, 73 unit tests, 50 browser cases and eight production artifact checks pass. Preview indexing mode is restored.
+
+final result: passed
