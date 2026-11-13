@@ -45,3 +45,16 @@ CSP permits same-origin scripts, styles, fonts and images, blocks objects/frames
 A failed gate leaves existing production unchanged. Retry a Pages build after a successful CI rerun; CI success does not itself retry Pages. Normal recovery is a source revert through the same gate. Hosting setup and real edge-header/SHA verification remain a later owner-authorized milestone.
 
 References: [Pages build configuration](https://developers.cloudflare.com/pages/configuration/build-configuration/), [headers](https://developers.cloudflare.com/pages/configuration/headers/), [skip markers](https://developers.cloudflare.com/pages/configuration/git-integration/#skip-builds), [Playwright Docker](https://playwright.dev/docs/docker).
+
+## Hosted verification command
+
+The existing artifact browser checks also run against an explicitly supplied HTTPS origin, without starting a local server:
+
+```sh
+DEPLOYMENT_URL=https://DEPLOYMENT_ID.frame-site.pages.dev \
+DEPLOYMENT_MODE=production \
+EXPECTED_COMMIT_SHA=FULL_COMMIT_SHA \
+EXPECTED_BRANCH=main npm run verify:deployment
+```
+
+Repeat against https://frame.tvr.works with the same identity. Preview branches use DEPLOYMENT_MODE=preview and their exact branch/SHA. The remote mode requires all identity arguments and rejects stale/dirty output. Public HTML remains indexable for production builds, while immutable deployment and branch preview URLs require Cloudflare’s edge noindex. Preview builds additionally require HTML noindex/nofollow and blocked robots. Both pages’ canonicals, sitemap, image metadata/decoded PNG, security headers, true 404s, legacy guide redirect, native navigation and JavaScript-free guide reading remain checked in Chromium and WebKit.

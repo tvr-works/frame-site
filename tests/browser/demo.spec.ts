@@ -25,6 +25,12 @@ async function settleTasks(page: Page) {
       }),
   );
 }
+function checkIndexingHeader(header: string | undefined, mode: string, url: string) {
+  const directives = (header || "").split(",").map((directive) => directive.trim());
+  const immutableOrBranchPreview = new URL(url).hostname.endsWith(".frame-site.pages.dev");
+  expect(directives.includes("noindex")).toBe(mode === "preview" || immutableOrBranchPreview);
+  if (mode === "preview") expect(directives).toContain("nofollow");
+}
 async function advance(page: Page, step: number) {
   const current = Number(await scene(page).getAttribute("data-step"));
   for (let i = current; i < step; i++) {
@@ -591,9 +597,13 @@ test("@artifact static HTML, security, indexing, identity, assets and honest 404
   expect(html).toContain(
     info.mode === "production" ? 'content="index, follow"' : 'content="noindex, nofollow"',
   );
-  expect(home.headers()["x-robots-tag"]).toBe(
-    info.mode === "preview" ? "noindex, nofollow" : undefined,
-  );
+  if (process.env.DEPLOYMENT_URL) {
+    expect(info.commit).toBe(process.env.EXPECTED_COMMIT_SHA);
+    expect(info.branch).toBe(process.env.EXPECTED_BRANCH);
+    expect(info.mode).toBe(process.env.DEPLOYMENT_MODE);
+    expect(info.dirty).toBe(false);
+  }
+  checkIndexingHeader(home.headers()["x-robots-tag"], info.mode, home.url());
   for (const path of [
     "/icon.png",
     "/wallpaper.webp",
@@ -607,8 +617,10 @@ test("@artifact static HTML, security, indexing, identity, assets and honest 404
   ])
     expect((await request.get(path)).status()).toBe(200);
   const legacyGuide = await request.get("/guide.html?from=legacy", { maxRedirects: 0 });
-  expect(legacyGuide.status()).toBe(301);
-  expect(legacyGuide.headers().location).toBe("/guide?from=legacy");
+  expect([301, 308]).toContain(legacyGuide.status());
+  const guideLocation = new URL(legacyGuide.headers().location, legacyGuide.url());
+  expect(guideLocation.pathname).toBe("/guide");
+  expect(guideLocation.search).toBe("?from=legacy");
   const guide = await request.get("/guide");
   const guideHtml = await guide.text();
   expect(guideHtml).toContain("User guide");
@@ -658,9 +670,7 @@ test("@artifact search and social metadata describe each static page and its rea
   for (const path of ["/", "/guide"]) {
     const response = await page.goto(path);
     expect(response?.status()).toBe(200);
-    expect(response?.headers()["x-robots-tag"]).toBe(
-      info.mode === "preview" ? "noindex, nofollow" : undefined,
-    );
+    checkIndexingHeader(response?.headers()["x-robots-tag"], info.mode, page.url());
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     const title = await page.title();
