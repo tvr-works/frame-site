@@ -39,10 +39,10 @@ Return to `npm run build` afterward for preview indexing. Builds include an exac
 - `src/styles.css`: stylesheet entry; `src/styles/` separates base tokens, shared site UI, demo, homepage and guide rules. Each file owns its responsive overrides.
 - `src/components/below-fold.tsx`: static workspace structure and composable movement explanations.
 - `src/components/install.tsx`: fourth homepage section and shared installation commands.
-- `src/guide-page.tsx`: standalone guide at `/guide.html`; shared header/footer and diagram keep it aligned with the homepage.
-- `src/components/guide-reference.tsx`: configuration, window rules, CLI and scripting chapters.
-- `src/guide-cli-data.ts`: all 18 native commands, flags, constraints and examples, checked against the native parser definitions.
-- `src/guide-scripting-examples.ts`: the documented workspace hook and SketchyBar example.
+- `src/guide/page.tsx`: standalone guide at `/guide.html`; shared header/footer and diagram keep it aligned with the homepage.
+- `src/guide/reference.tsx`: configuration, window rules, CLI and scripting chapters.
+- `src/guide/cli-data.ts`: all 18 native commands, flags, constraints and examples, checked against the native parser definitions.
+- `src/guide/scripting-examples.ts`: the documented workspace hook and SketchyBar example.
 
 The current design uses the centered headline “Tiling Window Manager for macOS” with a quiet “Keyboard-first · Vim-inspired” eyebrow, matte monitor hardware with a blue stage glow, quiet translucent windows, workspace number keys locked 1–5 to the left display and 6–0 to the right and a modifier ladder feeding one shared H/J/K/L row. The keys are a read-only visualization. Play/Pause and Replay are the only demo controls: icon-only buttons beside the right monitor foot, aligned with the action label between the feet. They retain accessible names, hover descriptions, focus indicators and 44-pixel targets. The headline uses the same responsive type scale as the section titles, with more space above and below.
 
@@ -60,6 +60,6 @@ Five generated WebP illustrations live in `public/illustrations/`: desktop/mobil
 
 ## Guide and delivery
 
-Vite builds two HTML entries, each prerendered from its React component by `scripts/finalize-static.mjs`. Plain links and fragment anchors work in development, production and with JavaScript disabled. No client router or new dependency is needed. The guide covers installation, layout, default keys, workspace/display behavior, all configuration fields, Accessibility classification rules, all CLI commands and scripting. A SketchyBar example shows visible workspaces per display. Desktop uses a shortcut table and sticky contents navigation; mobile uses a shortcut list and normal document flow.
+Vite builds two HTML entries, each prerendered from its React component by `scripts/finalize-static.mjs`. The homepage hydrates its scripted demo; the guide ships only HTML and CSS, with no client runtime. The Vite development plugin renders the guide on request and reloads it when TSX content changes. Plain links and fragment anchors work in development, production and with JavaScript disabled. No client router or new dependency is needed. The guide covers installation, layout, default keys, workspace/display behavior, all configuration fields, Accessibility classification rules, all CLI commands and scripting. A SketchyBar example shows visible workspaces per display. Desktop uses a shortcut table and sticky contents navigation; mobile uses a shortcut list and normal document flow.
 
 [Guide source evidence and maintenance](docs/user-guide.md).

@@ -597,6 +597,26 @@ test("@artifact static HTML, security, indexing, identity, assets and honest 404
   expect(errors).toEqual([]);
 });
 
+test("@artifact guide loads no client runtime and keeps native navigation", async ({ page }) => {
+  const scripts: string[] = [];
+  page.on("request", (request) => {
+    if (request.resourceType() === "script") scripts.push(request.url());
+  });
+  await page.goto("/guide.html");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("User guide");
+  await page
+    .getByRole("navigation", { name: "On this page" })
+    .getByRole("link", { name: "Command-line API", exact: true })
+    .click();
+  await page
+    .getByRole("navigation", { name: "Command reference" })
+    .getByRole("link", { name: "resize", exact: true })
+    .click();
+  await expect(page.getByRole("heading", { name: "resize", level: 4 })).toBeInViewport();
+  await expect(page.locator("script")).toHaveCount(0);
+  expect(scripts).toEqual([]);
+});
+
 test("@artifact no-JavaScript visitors can read the guide and install", async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();

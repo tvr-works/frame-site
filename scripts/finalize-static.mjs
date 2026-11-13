@@ -15,6 +15,8 @@ for (const [file, renderPage, heading] of [
   if (mode === "production")
     html = html.replace('content="noindex, nofollow"', 'content="index, follow"');
   assert.ok(html.includes(heading));
+  if (file === "guide.html")
+    assert.ok(!/<script\b/iu.test(html), "Guide must have no client runtime");
   assert.ok(html.length < 65 * 1024, `${file} exceeds 65 KiB budget`);
   await writeFile(new URL(file, dist), html);
 }

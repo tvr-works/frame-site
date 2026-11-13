@@ -6,7 +6,7 @@ import {
   WindowRulesGuide,
   CommandLineGuide,
   ScriptingGuide,
-} from "@/components/guide-reference";
+} from "@/guide/reference";
 import { WorkspaceDiagram } from "@/components/workspace-diagram";
 
 const chapters = [

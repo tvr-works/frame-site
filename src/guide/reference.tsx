@@ -1,6 +1,6 @@
-import { cliGroups } from "@/guide-cli-data";
-import { configKeys } from "@/guide-config-data";
-import { sketchybarScript, sketchybarSetup, workspaceHook } from "@/guide-scripting-examples";
+import { cliGroups } from "@/guide/cli-data";
+import { configKeys } from "@/guide/config-data";
+import { sketchybarScript, sketchybarSetup, workspaceHook } from "@/guide/scripting-examples";
 
 export function ConfigurationGuide() {
   return (

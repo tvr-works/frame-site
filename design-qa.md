@@ -360,3 +360,15 @@ Captured before/after demo, install, guide entry and CLI views at 320, 390, 1047
 Formatting, lint, TypeScript, 65 unit tests, the static build and all 46 Chromium/WebKit cases pass. Manual VoiceOver remains untested.
 
 final result: passed
+
+## Review update: complete architecture cleanup
+
+The incremental cleanup fixes Replay during the empty opening, retires the old hands-on command paths and unread messages, retains executable guide conformance/example checks, and co-locates guide source in src/guide. The guide now uses a CSS-only HTML entry and build-time static markup, so no guide client bundle is emitted or requested. Its existing URL, fragment anchors, contents navigation, shared components, canonical and indexing policy remain intact. Vite renders the guide on request in development and reloads it after TSX edits.
+
+The reference checks cover the versioned inventory of 18 commands/all parser flags and eight configuration roots. Actual rendered shell/TOML blocks and the hook payload are syntax checked; malformed examples fail. The integration helper runs only against isolated query/status-bar functions, covering both two-display output and unavailable-app fallback. The native checkout remains read-only; CI uses the committed inventory without requiring it. Native trace/geometry invariants remain unchanged. Retired display-count tests were removed with their unsupported feature; the final unit count is 70.
+
+Captured a fresh before/after static-delivery baseline for demo, install, guide entry and CLI at 320, 390, 1047 and 1484 CSS pixels. All 16 computed-style comparisons match exactly; screenshot channel differences remain at most 1/255 from raster rounding. static-after-guide-390.png and static-after-demo-1484.png in the cleanup evidence directory were opened and inspected. No visual redesign or new navigation flow was introduced.
+
+Formatting, lint, TypeScript, 70 unit tests and all 48 Chromium/WebKit checks pass. Artifact tests verify that the guide issues no JavaScript requests and still follows native chapter/command anchors. Total delivered JavaScript across the site is about 85.5 KiB gzip; the guide itself requests none. Production indexing/security checks and preview restoration are completed before commit. Development guide rendering, reload behavior and reading without JavaScript are checked separately against port 4177. Manual VoiceOver, hosted CI/hosting and live native/SketchyBar integration remain outside the claimed verification.
+
+final result: passed

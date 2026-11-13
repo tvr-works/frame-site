@@ -3,10 +3,10 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import GuidePage from "../../src/guide-page";
-import { cliGroups } from "../../src/guide-cli-data";
-import { configKeys } from "../../src/guide-config-data";
-import { sketchybarScript } from "../../src/guide-scripting-examples";
+import GuidePage from "../../src/guide/page";
+import { cliGroups } from "../../src/guide/cli-data";
+import { configKeys } from "../../src/guide/config-data";
+import { sketchybarScript } from "../../src/guide/scripting-examples";
 import inventory from "../fixtures/native-guide-api.json";
 
 const commands = cliGroups.flatMap((group) => group.commands);
