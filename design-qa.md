@@ -396,3 +396,11 @@ The editable HTML/CSS and local-only renderer live under scripts/. npm run asset
 Opened and inspected the full-size card and cleanup/social-card-polished-600.png at 600 × 315. The brand/title remain readable at half size, with no tiny navigation or demo control text. Browser plugin not available; the existing pinned Playwright Chromium renderer produced the artwork/preview. No homepage or guide layout changed. Formatting, Oxlint/shadcn, Stylelint, TypeScript, 73 unit tests, 50 Chromium/WebKit browser cases and eight production artifact cases pass. The latter load the new image and compare its dimensions/MIME type against both pages’ metadata. Preview mode was restored. Live sharing-platform crop/cache behavior remains a publication check.
 
 final result: passed
+
+## Review update: show columns and rows in the social card
+
+Revised both screens at the owner’s request so each has a tall window beside a column of two stacked windows. The two arrangements mirror each other, and one window retains the focus outline. Compact window content fits within the shorter rows; branding, headline, monitor hardware and backdrop retain their previous positions. The image alternatives and design-system notes now describe columns and stacked windows rather than the earlier three-window scene.
+
+Opened and inspected the 1200 × 630 output and cleanup/social-card-tiled-600.png at 600 × 315. Both column splits and row splits remain visible at thumbnail size without adding labels or controls. The PNG is 255,565 bytes. Existing pinned Playwright tooling was used; Browser plugin not available. Formatting, lint, TypeScript, 73 unit tests, 50 browser cases and eight production artifact checks pass. Preview indexing mode is restored.
+
+final result: passed
