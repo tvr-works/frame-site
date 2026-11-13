@@ -27,10 +27,25 @@ Use parser definitions and implementations as authority. The checked-in generate
 
 The SketchyBar example is a generic documented integration. It queries each Frame display’s visible workspace and labels the item; it does not assume a particular monitor arrangement or cite personal configuration files.
 
-## Executed content checks
+## Repeatable content checks
 
-Compared the documented command set with native CmdKind: all 18 commands are covered. Compared each parser’s declared flag names with its reference entry: every flag is documented. Shell command examples, hook setup and status-bar script pass `/bin/sh -n`. An isolated shell harness replaces both frame and sketchybar with functions; the sample produces `label=1: 2 | 2: 7` for two simulated displays. No native window command or real SketchyBar mutation was executed.
+`npm run check` includes `tests/unit/guide-content.test.ts`. It compares the documented command set with the checked-in `tests/fixtures/native-guide-api.json` snapshot of native CmdKind: all 18 commands are covered. Compared each parser’s declared flag names with its reference entry: every flag is documented. Shell command examples, hook setup and status-bar script pass `/bin/sh -n`. An isolated shell harness replaces both frame and sketchybar with functions; the sample produces `label=1: 2 | 2: 7` for two simulated displays. No native window command or real SketchyBar mutation was executed.
 
 All eight TOML snippets extracted from the rendered guide parse with Python’s tomllib. The native schemas, required values, matching rules and command constraints were inspected independently. These checks establish syntax and source compatibility; they do not claim a live integration test against the installed apps.
 
 When native commands or configuration change, update this evidence revision and the affected guide entries. Preserve the distinction between native default send behavior and the demo’s explicit follow-focus transfer, and between Frame fullscreen overlay and macOS native fullscreen.
+
+The fixture records the native revision and SHA-256 hashes for the manifest, each parser and the root config parser. CI needs only that fixture, not a neighboring checkout or running Frame app. During a native release update, compare the current source read-only:
+
+```sh
+python3 scripts/refresh-guide-api.py /path/to/frame --check
+```
+
+If it differs, review the native changes and update the guide, then deliberately refresh and review the fixture:
+
+```sh
+python3 scripts/refresh-guide-api.py /path/to/frame
+npm run check
+```
+
+The generator requires a clean native checkout and never writes there. The rendered-example checker uses Python 3.11+ standard-library HTML parsing and tomllib; shell blocks and shell-hook payloads are parsed with `/bin/sh -n`, never executed. Explicit data-language metadata distinguishes executable examples from placeholder command syntax. Negative tests confirm malformed TOML and shell examples fail. The helper itself is executed only with frame/sketchybar functions replacing the real tools and a restricted PATH; both two-display output and an unavailable-app fallback are covered.

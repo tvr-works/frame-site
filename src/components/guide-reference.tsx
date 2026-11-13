@@ -11,7 +11,7 @@ export function ConfigurationGuide() {
         rather than merging with it. Start from the bundled defaults so shortcuts, workspace names
         and gaps stay intact.
       </p>
-      <pre className="code-block">
+      <pre className="code-block" data-language="sh">
         <code>
           cp -n /Applications/Frame.app/Contents/Resources/default-config.toml ~/.frame.toml
         </code>
@@ -40,7 +40,7 @@ export function ConfigurationGuide() {
         </code>
         . The file must exist.
       </p>
-      <pre className="code-block">
+      <pre className="code-block" data-language="sh">
         <code>{"frame doctor\nframe reload-config"}</code>
       </pre>
       <p>
@@ -61,7 +61,7 @@ export function ConfigurationGuide() {
         ))}
       </dl>
       <h3>Startup and persistent workspaces</h3>
-      <pre className="code-block">
+      <pre className="code-block" data-language="toml">
         <code>
           {
             'start-at-login = true\npersistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]'
@@ -79,7 +79,7 @@ export function ConfigurationGuide() {
         (Option), <code>shift</code>, <code>ctrl</code> (Control) and <code>cmd</code> (Command). A
         binding takes a command string or an array of Frame commands run in order.
       </p>
-      <pre className="code-block">
+      <pre className="code-block" data-language="toml">
         <code>
           {
             '[binding]\nalt-h = "focus left"\nalt-shift-2 = "move-node-to-workspace --focus-follows-window 2"\nalt-b = ["balance-sizes", "focus left"]\nctrl-alt-d = "debug-window-events"'
@@ -98,7 +98,7 @@ export function ConfigurationGuide() {
         Run the CLI from a script or launcher when you need shell logic.
       </p>
       <h3>Keyboard layout and custom notation</h3>
-      <pre className="code-block">
+      <pre className="code-block" data-language="toml">
         <code>
           {
             '[key-mapping]\npreset = "qwerty"\n\n[key-mapping.key-notation-to-key-code]\nmykey = "semicolon"'
@@ -112,7 +112,7 @@ export function ConfigurationGuide() {
         whitespace or hyphens; mapped values must be recognized key-code names.
       </p>
       <h3>Gaps, including per-display values</h3>
-      <pre className="code-block">
+      <pre className="code-block" data-language="toml">
         <code>
           {
             '[gaps]\ninner.horizontal = 8\ninner.vertical = 8\nouter.left = 8\nouter.right = 8\nouter.bottom = 8\nouter.top = [{ monitor."Built-in Retina Display" = 0 }, 32]'
@@ -130,7 +130,7 @@ export function ConfigurationGuide() {
         , a one-based order, or a case-insensitive display-name regular expression.
       </p>
       <h3>Pin workspaces to displays</h3>
-      <pre className="code-block">
+      <pre className="code-block" data-language="toml">
         <code>
           {
             '[workspace-to-monitor-force-assignment]\n1 = "main"\n2 = "secondary"\n3 = [".*Studio.*", "main"]'
@@ -215,7 +215,7 @@ export function WindowRulesGuide() {
           </dd>
         </div>
       </dl>
-      <pre className="code-block">
+      <pre className="code-block" data-language="toml">
         <code>
           {
             '[[window-classification-override]]\nif.app-id = "com.example.Player"\nif.window-title-regex-substring = "picture[- ]in[- ]picture"\nkind = "excluded"\n\n[[window-classification-override]]\nif.app-id = "com.example.Player"\nif.window-title-regex-substring = "^Library$"\nkind = "tiling"'
@@ -300,7 +300,7 @@ export function CommandLineGuide() {
                 <code>{command.name}</code>
               </h4>
               <p>{command.description}</p>
-              <pre className="code-block">
+              <pre className="code-block" data-language="text">
                 <code>{command.syntax}</code>
               </pre>
               <ul>
@@ -308,7 +308,7 @@ export function CommandLineGuide() {
                   <li key={option}>{option}</li>
                 ))}
               </ul>
-              <pre className="code-block">
+              <pre className="code-block" data-language="sh">
                 <code>{command.examples.join("\n")}</code>
               </pre>
             </div>
@@ -329,7 +329,7 @@ export function ScriptingGuide() {
         launcher.
       </p>
       <h3>Query state for a script</h3>
-      <pre className="code-block">
+      <pre className="code-block" data-language="sh">
         <code>
           {
             "frame list-workspaces --monitor focused --visible\nframe list-windows --workspace 2 --count\nframe list-windows --focused --json"
@@ -348,7 +348,7 @@ export function ScriptingGuide() {
         workspace changes. Its first array element is the executable path and the rest are
         arguments. Use a shell explicitly when you need shell expansion.
       </p>
-      <pre className="code-block">
+      <pre className="code-block" data-language="toml">
         <code>{workspaceHook}</code>
       </pre>
       <p>
@@ -364,17 +364,17 @@ export function ScriptingGuide() {
         Subscribe to Frame’s event so the label updates on workspace changes; display and wake
         events plus a periodic refresh keep it current as displays change.
       </p>
-      <pre className="code-block">
+      <pre className="code-block" data-language="sh">
         <code>{sketchybarSetup}</code>
       </pre>
       <p>
         Save this script as <code>~/.config/sketchybar/plugins/frame-workspaces.sh</code> and make
         it executable:
       </p>
-      <pre className="code-block">
+      <pre className="code-block" data-language="sh">
         <code>{sketchybarScript}</code>
       </pre>
-      <pre className="code-block">
+      <pre className="code-block" data-language="sh">
         <code>chmod +x ~/.config/sketchybar/plugins/frame-workspaces.sh</code>
       </pre>
       <p>

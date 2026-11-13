@@ -1,0 +1,125 @@
+{
+  "repository": "tvr-works/frame",
+  "revision": "88c47e8df0e074515712c08944540bc7f3f752b6",
+  "sourceSha256": {
+    "Sources/Common/cmdArgs/cmdArgsManifest.swift": "8a4a73b163c2ac1c0165f5834890d0911a1c9a25f8e41b75a817ac56b8dfd4e2",
+    "Sources/Common/cmdArgs/impl/AddColumnCmdArgs.swift": "5a267dea672407552b14bc2fe9fc8ba53f882d6b33c46d9846b815d19cf8997d",
+    "Sources/Common/cmdArgs/impl/BalanceSizesCmdArgs.swift": "fb6e83ce1d41a2f20a9c98d9322f5450c4cd9d9fa64355b8d08cf0b1f26e3fcb",
+    "Sources/Common/cmdArgs/impl/DebugWindowEventsCmdArgs.swift": "f229ee3c777f2ba1f66c8a134a50e21cf8b3f8ab3d33d080b25c383c657583e2",
+    "Sources/Common/cmdArgs/impl/DoctorCmdArgs.swift": "2481790512e5b499711d10f87886a947cfd2cd4d0483ffb6b911e65eea4f1c21",
+    "Sources/Common/cmdArgs/impl/FocusCmdArgs.swift": "5643258b2aac3b4bb90f3bfa6916ed63c1dbbb36530f369275830a228efa566b",
+    "Sources/Common/cmdArgs/impl/FocusMonitorCmdArgs.swift": "ac9d2da333d6ae1deeb1effbc4d54dc97bc7ae4528dfe387b307c8ff3cd70ca7",
+    "Sources/Common/cmdArgs/impl/FullscreenCmdArgs.swift": "7a2711868ccba60ab639eb0b604d297b9840472e656f868b3002e1a55b87eeff",
+    "Sources/Common/cmdArgs/impl/ListAppsCmdArgs.swift": "e70c25676c0393ca70b0e9246df2a46d73085e77c8fa9d0a93eead899cc5e6c0",
+    "Sources/Common/cmdArgs/impl/ListMonitorsCmdArgs.swift": "d249a793ca261efb1fe335f785be68a51a9d14c528a76c9d9f480d18b352b9b4",
+    "Sources/Common/cmdArgs/impl/ListWindowsCmdArgs.swift": "d7cd2deed5f51afde4f3e30b04ccd1944ada448a52f338cc43266e10eaa1b99c",
+    "Sources/Common/cmdArgs/impl/ListWorkspacesCmdArgs.swift": "b512210771041768b8a126df984fc249083421192c1ff4a95bba9e9ce112d042",
+    "Sources/Common/cmdArgs/impl/MoveCmdArgs.swift": "c0bb3eb70404f8135f1baefd0b475f0c08b346bba57dfe6e7e79f1b84e3a10b8",
+    "Sources/Common/cmdArgs/impl/MoveMouseCmdArgs.swift": "bd83c02459d7902afb9dfe9a157eb40893123cd07036cbceaf88f25ec395f2dc",
+    "Sources/Common/cmdArgs/impl/MoveNodeToWorkspaceCmdArgs.swift": "b84ca16bc7fd27f8da22d14a0980267e4ed17cc9b4136e6768dd44bc6a11c924",
+    "Sources/Common/cmdArgs/impl/ReloadConfigCmdArgs.swift": "9031727a3c679202d6075015bc9ba146ebca9f357ce77e32ac4b51789561810c",
+    "Sources/Common/cmdArgs/impl/RemoveColumnCmdArgs.swift": "75844f09a4135a3a7498aa5cc6b97141f9885215465e324c63b2963d380d4ce6",
+    "Sources/Common/cmdArgs/impl/ResizeCmdArgs.swift": "00a80e383dba5dd36eb6863945457042a8d594f49cfe362fe81cec73b50cc426",
+    "Sources/Common/cmdArgs/impl/WorkspaceCmdArgs.swift": "0db505090f1aef9c3a7a7300c10ae64926ecf88e1c6d362eba5858ea2b223c87",
+    "Sources/FrameMacOS/config/parseConfig.swift": "2bef2fc92c9d94eb3fe9660ac37dbe042807a34507ab53d3e33cbd08324cc4cb"
+  },
+  "commands": [
+    {
+      "name": "add-column",
+      "flags": []
+    },
+    {
+      "name": "balance-sizes",
+      "flags": ["--workspace"]
+    },
+    {
+      "name": "debug-window-events",
+      "flags": []
+    },
+    {
+      "name": "doctor",
+      "flags": []
+    },
+    {
+      "name": "focus",
+      "flags": ["--boundaries", "--boundaries-action", "--window-id", "--wrap-around"]
+    },
+    {
+      "name": "focus-monitor",
+      "flags": ["--wrap-around"]
+    },
+    {
+      "name": "fullscreen",
+      "flags": ["--fail-if-noop", "--no-outer-gaps", "--window-id"]
+    },
+    {
+      "name": "list-apps",
+      "flags": ["--count", "--json", "--macos-native-hidden"]
+    },
+    {
+      "name": "list-monitors",
+      "flags": ["--count", "--focused", "--json", "--mouse"]
+    },
+    {
+      "name": "list-windows",
+      "flags": [
+        "--app-bundle-id",
+        "--count",
+        "--focused",
+        "--json",
+        "--monitor",
+        "--pid",
+        "--workspace"
+      ]
+    },
+    {
+      "name": "list-workspaces",
+      "flags": ["--count", "--empty", "--json", "--monitor", "--visible"]
+    },
+    {
+      "name": "move",
+      "flags": ["--boundaries", "--boundaries-action", "--window-id"]
+    },
+    {
+      "name": "move-mouse",
+      "flags": ["--fail-if-noop"]
+    },
+    {
+      "name": "move-node-to-workspace",
+      "flags": [
+        "--fail-if-noop",
+        "--focus-follows-window",
+        "--no-stdin",
+        "--stdin",
+        "--window-id",
+        "--wrap-around"
+      ]
+    },
+    {
+      "name": "reload-config",
+      "flags": []
+    },
+    {
+      "name": "remove-column",
+      "flags": []
+    },
+    {
+      "name": "resize",
+      "flags": ["--window-id"]
+    },
+    {
+      "name": "workspace",
+      "flags": ["--fail-if-noop", "--no-stdin", "--stdin", "--wrap-around"]
+    }
+  ],
+  "configKeys": [
+    "binding",
+    "gaps",
+    "key-mapping",
+    "persistent-workspaces",
+    "start-at-login",
+    "window-classification-override",
+    "workspace-change-hook",
+    "workspace-to-monitor-force-assignment"
+  ]
+}

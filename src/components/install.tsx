@@ -6,7 +6,7 @@ export const releaseUrl = "https://github.com/tvr-works/frame/releases/latest";
 
 export function InstallCommand() {
   return (
-    <pre className="code-block">
+    <pre className="code-block" data-language="sh">
       <code>{installCommand}</code>
     </pre>
   );

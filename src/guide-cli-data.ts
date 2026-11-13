@@ -105,7 +105,7 @@ export const cliGroups = [
           "Move a tiled window into a neighboring column or reorder it within its column.",
         options: [
           "--window-id selects a window instead of the current target.",
-          "Boundaries accept workspace (default) or all-monitors-outer-frame. Boundary actions accept create-implicit-container (default), stop or fail.",
+          "--boundaries accepts workspace (default) or all-monitors-outer-frame. --boundaries-action accepts create-implicit-container (default), stop or fail.",
           "At a horizontal edge, create-implicit-container makes a column and requires --boundaries workspace. stop leaves the window in place; fail reports failure. These options do not turn move into a cross-display transfer.",
           "Vertical movement stops at the top or bottom of the column. Moving excluded, native-fullscreen, minimized or hidden-app windows is not supported.",
         ],

@@ -4,7 +4,7 @@ A standalone local marketing site and scripted Frame demonstration. The native a
 
 ## Run
 
-Use Node 26.13.0 and npm 11.20.0 (`.node-version` and `packageManager`).
+Use Node 26.13.0 and npm 11.20.0 (`.node-version` and `packageManager`). Guide example tests also require Python 3.11+ for the standard-library TOML parser.
 
 ```sh
 npm ci

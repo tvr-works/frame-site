@@ -38,6 +38,13 @@ jobs:
           node --input-type=module -e 'import fs from "node:fs"; import assert from "node:assert/strict"; const p = JSON.parse(fs.readFileSync("package.json", "utf8")); assert.equal(p.devDependencies["@playwright/test"], "1.64.1", "Update the Playwright image, digest, and package pin together.");'
       - run: npm ci
       - run: npm audit --audit-level=high
+      - name: Prepare guide example checks
+        run: |
+          if ! python3 -c 'import tomllib' 2>/dev/null; then
+            apt-get update
+            apt-get install --yes --no-install-recommends python3
+          fi
+          python3 -c 'import sys, tomllib; assert sys.version_info >= (3, 11)'
       - run: npm run check
       - name: Verify preview delivery and browser interactions
         run: npm run build && npm run test:browser
