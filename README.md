@@ -30,6 +30,10 @@ npm run test:artifact
 
 Return to `npm run build` afterward for preview indexing. Builds include an exact source identity in `build-info.json`; local dirty builds are labeled. Public canonicals use the provisional https://frame.tvr.works domain.
 
+## CSS and component checks
+
+`npm run lint` runs Oxlint with the shadcn plugin, then Stylelint over all source CSS. CSS checks target invalid properties/units/at-rules, duplicate selectors/declarations and accidental shorthand overrides. Tailwind’s `@theme` is explicitly recognized; formatting stays with Oxfmt. Page UI styles (`site`, `homepage`, `guide`) use named color tokens. Palette definitions live in `base.css`; the illustrative demo can use its own literal lighting and window colors. Policy tests verify both failures and these intended boundaries.
+
 ## Behavior and ownership
 
 - `src/demo/model.ts`: immutable columns, focus/MRU, weights, workspace affinity and command transitions.

@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "npm run check:runtime && tsc --noEmit && vite build && vite build --ssr src/entry-server.tsx --outDir .cache/prerender && node scripts/finalize-static.mjs",
     "preview": "node scripts/serve.mjs",
-    "lint": "oxlint --deny-warnings --report-unused-disable-directives",
+    "lint": "npm run lint:code && npm run lint:css",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:browser": "playwright test",
@@ -16,7 +16,9 @@
     "format:check": "oxfmt --check .",
     "check": "npm run check:runtime && npm run format:check && npm run lint && npm run typecheck && npm test",
     "ci:gate": "node scripts/wait-for-ci.ts",
-    "check:runtime": "node scripts/check-runtime.mjs"
+    "check:runtime": "node scripts/check-runtime.mjs",
+    "lint:code": "oxlint --deny-warnings --report-unused-disable-directives",
+    "lint:css": "stylelint \"src/**/*.css\" --max-warnings 0"
   },
   "dependencies": {
     "@base-ui/react": "1.9.0",
@@ -44,6 +46,7 @@
     "playwright-core": "1.64.1",
     "shadcn": "4.22.1",
     "sharp": "0.35.5",
+    "stylelint": "18.0.0",
     "typescript": "7.0.2",
     "vite": "8.3.5",
     "vitest": "5.0.5"

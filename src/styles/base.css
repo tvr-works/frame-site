@@ -33,6 +33,15 @@
   --accent: #b4e5ff;
   --border: #334354;
   --destructive: #f48d97;
+  --button-shadow: #0002;
+  --button-ghost-foreground: #b3c1cf;
+  --keycap-border: #3b5064;
+  --keycap-background: #0d1a28d9;
+  --keycap-edge-light: #b1dcf81a;
+  --keycap-edge-shadow: #01061066;
+  --keycap-active-border: #d2efff;
+  --keycap-active-glow: #76c7ff33;
+  --keycap-active-highlight: #fff9;
   font-family: Geist, sans-serif;
   font-synthesis: none;
   background: var(--background);
