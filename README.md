@@ -1,6 +1,6 @@
 # Frame site
 
-A standalone local marketing site and scripted Frame demonstration. The native app stays in its own repository. The owner authorized publication to tvr-works/frame-site and the existing Cloudflare Pages project at https://frame.tvr.works. See docs/ci-deployment.md for the publication contract and verification evidence.
+A standalone marketing site and scripted Frame demonstration. The native app stays in its own repository. Published at [frame.tvr.works](https://frame.tvr.works) from [tvr-works/frame-site](https://github.com/tvr-works/frame-site) through Cloudflare Pages. See docs/ci-deployment.md for the publication contract and verification evidence.
 
 ## Run
 
@@ -11,7 +11,7 @@ npm ci
 npm run dev -- --host 127.0.0.1 --port 4177 --strictPort
 ```
 
-Open http://127.0.0.1:4177. The development preview is kept running for the initial review.
+Open http://127.0.0.1:4177. The development server is local to this machine; production is served by Cloudflare Pages.
 
 ```sh
 npm run check

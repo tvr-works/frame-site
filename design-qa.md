@@ -414,3 +414,13 @@ Opened and inspected the full 1200 × 630 card and cleanup/social-card-asymmetri
 Formatting, lint, TypeScript, 73 unit tests, 50 browser cases and eight production artifact checks pass. Preview indexing mode is restored.
 
 final result: passed
+
+## Review update: hosted launch qualification
+
+Aligned the guide’s canonical and native links with Cloudflare’s extensionless /guide route, retaining the guide.html build entry and permanent legacy redirect with query strings. Development and artifact servers model the same route. Both pages remain readable without JavaScript; the guide requests no client runtime.
+
+Hosted Linux WebKit exposed virtual-clock scheduling differences. The harness now yields a browser task before advancing playback beats, and a separate real-clock test verifies that changing reduced motion pauses an already-populated scene beyond its next scheduled beat. Timing, cue synchronization, pause and reduced-motion assertions remain in place. CI passes 73 unit tests, 52 browser cases and eight production artifact checks.
+
+Both production origins and the preview passed the eight-case hosted artifact suite in Chromium/WebKit, including exact commit/branch/mode identity, canonical/social metadata, decoded PNG delivery, security/indexing headers, real 404s, permanent guide redirects, native navigation and JavaScript-free reading. The disposable negative-preview test failed its intended assertion, and Cloudflare stopped at the exact-commit CI gate before the application build. The full release evidence and operational settings are in docs/ci-deployment.md. Manual VoiceOver was deferred by the owner while the Mac was locked.
+
+final result: passed
