@@ -1258,17 +1258,14 @@ html {
 .install-section {
   max-width: 1200px;
   margin: 200px auto 0;
+  scroll-margin-top: 48px;
+}
+.install-columns {
+  margin-top: 48px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 80px;
   align-items: start;
-  scroll-margin-top: 48px;
-}
-.install-requirement {
-  margin: 24px 0 28px;
-  color: var(--muted);
-  font-size: 16px;
-  line-height: 1.6;
 }
 .install-details h3 {
   margin: 0 0 16px;
@@ -1277,14 +1274,22 @@ html {
   font-weight: 550;
   letter-spacing: -0.02em;
 }
-.install-homebrew {
-  margin-top: 36px;
-}
 .install-details p {
   margin: 16px 0 24px;
   color: var(--muted);
   font-size: 17px;
   line-height: 1.7;
+}
+.install-steps {
+  margin: 20px 0 0;
+  padding-left: 24px;
+  list-style: decimal;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.7;
+}
+.install-steps li + li {
+  margin-top: 16px;
 }
 .install-command {
   margin: 20px 0;
@@ -1460,7 +1465,7 @@ html {
   color: var(--accent);
 }
 @media (max-width: 1000px) {
-  .install-section {
+  .install-columns {
     gap: 40px;
   }
   .guide-layout {
@@ -1471,9 +1476,12 @@ html {
 @media (max-width: 760px) {
   .install-section {
     margin-top: 120px;
+    scroll-margin-top: 28px;
+  }
+  .install-columns {
+    margin-top: 32px;
     grid-template-columns: minmax(0, 1fr);
     gap: 40px;
-    scroll-margin-top: 28px;
   }
   .install-command {
     padding: 16px;

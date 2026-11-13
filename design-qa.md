@@ -340,3 +340,13 @@ The flow under test is homepage → header Install → fourth section with insta
 Formatting, lint, TypeScript, 65 unit tests, the preview build and all 44 Chromium/WebKit browser cases pass, including responsive/enlarged-text, no-JavaScript and unfiltered accessibility checks. Production artifact verification and preview restoration are completed before commit. No dependencies, guide content, native application behavior or hosting settings changed. Manual VoiceOver remains untested.
 
 final result: passed
+
+## Review update: balance installation below the title
+
+Moved Install Frame above both columns and removed the macOS requirement line at the owner’s request. Both equal-width columns now begin beneath it on the same baseline, separated from the header by 48 px on desktop / 32 px on mobile. Installation contains Homebrew plus the release download; Accessibility contains the same setup instructions as three short ordered steps. Mobile retains installation followed by permission setup with a 40-pixel gap. No new content, cards or section dividers were introduced.
+
+Browser plugin not available; verified the homepage → Install anchor → aligned installation/permission flow with the existing Playwright setup. Captures install-balanced-1484.png and install-balanced-390.png in the existing below-fold-build directory were opened and inspected. The section has clear heading hierarchy, aligned desktop column headings, visible ordered markers and no clipping or horizontal overflow. Frame page identity is correct, console/page errors are empty, and the anchor lands in the intended section without an overlay.
+
+Formatting, lint, TypeScript, 65 unit tests, the static build and all 44 Chromium/WebKit browser checks pass, including accessibility, doubled text and native navigation. Production artifact checks and preview restoration are completed before commit. Manual VoiceOver remains untested.
+
+final result: passed
