@@ -324,15 +324,24 @@ test("reduced motion disables autoplay but allows explicit playback without tran
       .first()
       .evaluate((node) => getComputedStyle(node).transitionDuration),
   ).toBe("0s");
+});
+
+test("changing reduced motion pauses live playback and preserves its scene", async ({ page }) => {
+  // Exercise native media-query delivery with real rendering/timers. A paused
+  // virtual clock can prevent Linux WebKit from delivering that browser event.
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  // WebKit delivers media-query change events during a rendering update.
-  await page.clock.runFor(50);
-  await advance(page, 4);
+  await page.goto("/");
+  await expect(scene(page)).toHaveAttribute("data-playback", "playing");
+  await expect(windows(page)).toHaveCount(3, { timeout: 6000 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.clock.runFor(50);
   await expect(scene(page)).toHaveAttribute("data-playback", "paused");
-  await page.clock.runFor(10000);
-  await expect(scene(page)).toHaveAttribute("data-step", "4");
+  const step = await scene(page).getAttribute("data-step");
+  const caption = await page.locator(".demo-action-label").textContent();
+  // Hold beyond the next real beat to verify pausing actually cancels its timer.
+  await page.waitForTimeout(story[Number(step)].delay + 100);
+  await expect(scene(page)).toHaveAttribute("data-step", step!);
+  await expect(page.locator(".demo-action-label")).toHaveText(caption!);
+  await expect(windows(page)).toHaveCount(3);
 });
 
 test("Guide opens a document page and links back to the demonstration", async ({ page }) => {
