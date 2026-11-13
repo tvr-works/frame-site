@@ -9,9 +9,26 @@ const headerGuide = (page: Page) =>
   page
     .getByRole("navigation", { name: "Main navigation" })
     .getByRole("link", { name: "Guide", exact: true });
+// React commits can schedule passive effects on a subsequent browser task.
+// Let that queue settle without advancing the virtual clock or consuming a beat.
+async function settleTasks(page: Page) {
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        const channel = new MessageChannel();
+        channel.port1.onmessage = () => {
+          channel.port1.close();
+          channel.port2.close();
+          resolve();
+        };
+        channel.port2.postMessage(null);
+      }),
+  );
+}
 async function advance(page: Page, step: number) {
   const current = Number(await scene(page).getAttribute("data-step"));
   for (let i = current; i < step; i++) {
+    await settleTasks(page);
     await page.clock.runFor(story[i].delay + 1);
     await expect(scene(page)).toHaveAttribute(
       "data-step",
@@ -308,8 +325,11 @@ test("reduced motion disables autoplay but allows explicit playback without tran
       .evaluate((node) => getComputedStyle(node).transitionDuration),
   ).toBe("0s");
   await page.emulateMedia({ reducedMotion: "no-preference" });
+  // WebKit delivers media-query change events during a rendering update.
+  await page.clock.runFor(50);
   await advance(page, 4);
   await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.clock.runFor(50);
   await expect(scene(page)).toHaveAttribute("data-playback", "paused");
   await page.clock.runFor(10000);
   await expect(scene(page)).toHaveAttribute("data-step", "4");
