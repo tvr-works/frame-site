@@ -4,11 +4,16 @@
   --workspace-bank-offset: calc(var(--workspace-key-height) + var(--workspace-bank-gap));
   min-width: 0;
 }
+.demo-cue {
+  position: relative;
+  display: flow-root;
+  margin-inline: -24px;
+}
 .demo-action-label {
   position: absolute;
   z-index: 2;
   left: 50%;
-  bottom: var(--workspace-bank-offset);
+  bottom: calc(100% + var(--workspace-bank-offset));
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -323,7 +328,8 @@
   min-width: 0;
 }
 .workspace-key,
-.direction-key {
+.direction-key,
+.active-key {
   border-color: #3b5064;
   background: #0d1a28d9;
   color: #e5eff7;
@@ -394,11 +400,13 @@
   color: #a9bacb;
   letter-spacing: -0.02em;
 }
-.modifier-chord {
+.modifier-chord,
+.active-modifiers {
   display: flex;
   gap: 8px;
 }
-.modifier-chord kbd {
+.modifier-chord kbd,
+.active-modifiers kbd {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -419,6 +427,7 @@
   color: #f1f6fb;
 }
 .modifier-chord kbd[data-lit="true"],
+.active-modifiers kbd[data-lit="true"],
 .shortcut-key[data-lit="true"] {
   color: var(--background);
   background: var(--accent);
@@ -452,7 +461,7 @@
   display: flex;
   gap: 10px;
 }
-.direction-label {
+.active-shortcut {
   display: none;
 }
 .direction-key {
@@ -541,14 +550,15 @@
 }
 @media (max-width: 760px) {
   .demo {
-    --workspace-key-height: 40px;
-    --workspace-bank-gap: 16px;
+    --workspace-bank-offset: 0px;
+  }
+  .demo-cue {
+    margin: 20px 0 0;
   }
   .demo-action-label {
-    top: 50%;
-    bottom: auto;
-    transform: translate(-50%, -50%);
-    width: calc(100% - 16px);
+    position: static;
+    transform: none;
+    width: 100%;
     min-height: 2.6em;
     font-size: 20px;
   }
@@ -560,7 +570,7 @@
   }
   .monitors {
     grid-template-columns: 1fr;
-    gap: 72px;
+    gap: 24px;
   }
   .stage-radiance {
     display: none;
@@ -591,55 +601,52 @@
     width: 6px;
     height: 6px;
   }
-  .number-bank {
-    gap: 8px;
-  }
-  .workspace-key {
-    min-width: 40px;
-    font-size: 18px;
-  }
+  .number-bank,
   .keyboard-composition {
-    flex-direction: column;
-    gap: 18px;
-    max-width: 272px;
-    margin: 24px auto 0;
-  }
-  .toggle-ladder {
-    width: 100%;
-  }
-  .toggle-ladder .shortcut-row {
-    grid-template-columns: 80px 1fr;
-    gap: 8px;
-    min-height: 40px;
-    font-size: 16px;
-  }
-  .modifier-chord kbd {
-    height: 36px;
-    min-width: 40px;
-    font-size: 22px;
-  }
-  .composition-join {
     display: none;
   }
-  .home-row {
-    display: grid;
-    grid-template-columns: 80px repeat(4, 40px);
-    align-items: center;
+  .keyboard-controls {
+    margin-top: 12px;
+  }
+  .active-shortcut {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
     gap: 8px;
-    width: 100%;
+    min-height: 64px;
   }
-  .direction-label {
-    display: block;
+  .active-modifiers kbd {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    font-size: 22px;
   }
-  .direction-key {
-    min-width: 0;
-    min-height: 56px;
-    padding: 8px 4px;
-  }
-  .direction-key kbd {
+  .active-join {
+    display: grid;
+    place-items: center;
+    width: 12px;
+    height: 40px;
+    color: var(--muted);
     font-size: 20px;
   }
-  .direction-key svg {
+  .active-target {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-height: 64px;
+    color: var(--accent);
+  }
+  .active-key {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 20px;
+    line-height: 1;
+    font-weight: 600;
+  }
+  .active-target svg {
     width: 18px;
     height: 18px;
   }

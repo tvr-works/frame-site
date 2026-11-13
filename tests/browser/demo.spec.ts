@@ -438,39 +438,42 @@ for (const viewport of [
       [1, ["6", "7", "8", "9", "0"]],
     ] as const) {
       const monitor = page.getByTestId(`monitor-${index}`);
-      await expect(monitor.locator(".number-bank kbd")).toHaveText([...names]);
+      const bank = monitor.locator(".number-bank");
+      await expect(bank.locator("kbd")).toHaveText([...names]);
       const screen = (await monitor.locator(".monitor-shell").boundingBox())!;
-      const bank = (await monitor.locator(".number-bank").boundingBox())!;
-      expect(bank.y - screen.y - screen.height).toBeCloseTo(viewport.width <= 760 ? 16 : 24, 0);
-      expect(bank.x + bank.width / 2).toBeCloseTo(screen.x + screen.width / 2, 0);
-      banks.push(bank);
       screens.push(screen);
+      if (viewport.width <= 760) {
+        await expect(bank).toBeHidden();
+      } else {
+        const bounds = (await bank.boundingBox())!;
+        expect(bounds.y - screen.y - screen.height).toBeCloseTo(24, 0);
+        expect(bounds.x + bounds.width / 2).toBeCloseTo(screen.x + screen.width / 2, 0);
+        banks.push(bounds);
+      }
     }
     const playback = (await page.locator(".utility-controls").boundingBox())!;
-    expect(playback.y + playback.height).toBeLessThanOrEqual(banks[1].y);
     if (viewport.width <= 760) {
+      await expect(page.locator(".keyboard-composition")).toBeHidden();
       const caption = (await page.locator(".demo-action-label").boundingBox())!;
-      expect(banks[0].y + banks[0].height).toBeLessThan(caption.y);
-      expect(caption.y + caption.height).toBeLessThan(screens[1].y);
-      const option = (await page
-        .locator('.shortcut-row[data-mode="resize"] kbd')
-        .first()
-        .boundingBox())!;
-      const shift = (await page
-        .locator('.shortcut-row[data-mode="resize"] kbd')
-        .nth(1)
-        .boundingBox())!;
-      const keys = page.locator(".home-row .direction-key");
-      const h = (await keys.nth(0).boundingBox())!;
-      const j = (await keys.nth(1).boundingBox())!;
-      expect(h.x).toBeCloseTo(option.x, 0);
-      expect(j.x).toBeCloseTo(shift.x, 0);
-      expect(h.width).toBe(40);
+      const chord = (await page.locator(".active-shortcut").boundingBox())!;
+      expect(screens[1].y - screens[0].y - screens[0].height).toBeCloseTo(24, 0);
+      expect(caption.y).toBeGreaterThanOrEqual(screens[1].y + screens[1].height);
+      expect(playback.y + playback.height).toBeLessThan(caption.y);
+      expect(chord.y - caption.y - caption.height).toBeCloseTo(12, 0);
+      await expect(page.locator(".active-modifiers kbd")).toHaveText(["⌥", "⇧"]);
+      await expect(page.locator(".active-key")).toHaveText("L");
+      const key = (await page.locator(".active-key").boundingBox())!;
+      const arrow = (await page.locator(".active-target svg").boundingBox())!;
+      expect(key.width).toBe(40);
+      expect(arrow.y - key.y - key.height).toBeCloseTo(6, 0);
+      expect(arrow.x + arrow.width / 2).toBeCloseTo(key.x + key.width / 2, 0);
       const directions = await page
         .locator(".movement-directions")
         .evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().left));
       expect(Math.max(...directions) - Math.min(...directions)).toBeLessThan(1);
     } else {
+      await expect(page.locator(".active-shortcut")).toBeHidden();
+      expect(playback.y + playback.height).toBeLessThanOrEqual(banks[1].y);
       expect(banks[0].y).toBeCloseTo(banks[1].y, 0);
     }
     await page
@@ -507,6 +510,37 @@ for (const viewport of [
       .scrollIntoViewIfNeeded();
     await noOverflow(page);
   });
+
+test("mobile cue composes one live chord, keeps arrows under keys and includes workspace targets", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await start(page);
+  const cue = page.locator(".active-shortcut");
+  const height = (await cue.boundingBox())!.height;
+  await expect(cue.locator("kbd")).toHaveCount(0);
+  await advance(page, 4);
+  await expect(page.locator(".demo-action-label")).toHaveText("Focus window above");
+  await expect(cue.locator(".active-modifiers kbd")).toHaveText(["⌥"]);
+  await expect(cue.locator(".active-key")).toHaveText("K");
+  await expect(cue.locator("svg")).toHaveCount(1);
+  const resize = story.findIndex((beat) => beat.command?.type === "resize");
+  await advance(page, resize + 1);
+  await expect(cue.locator(".active-modifiers kbd")).toHaveText(["⌥", "⇧", "⌃"]);
+  await expect(cue.locator(".active-key")).toHaveText("H");
+  const send = story.findIndex((beat) => beat.command?.type === "send");
+  await advance(page, send + 1);
+  await expect(page.locator(".demo-action-label")).toHaveText("Send window to workspace 7");
+  await expect(cue.locator(".active-modifiers kbd")).toHaveText(["⌥", "⇧"]);
+  await expect(cue.locator(".active-key")).toHaveText("7");
+  await expect(cue.locator("svg")).toHaveCount(0);
+  await expect(page.getByTestId("monitor-1")).toContainText("Workspace 7");
+  await expect(page.locator(".number-bank").first()).toBeHidden();
+  expect((await cue.boundingBox())!.height).toBe(height);
+  await page.getByRole("button", { name: "Replay", exact: true }).click();
+  await expect(cue.locator("kbd")).toHaveCount(0);
+  expect((await cue.boundingBox())!.height).toBe(height);
+});
 
 test("structure and movements explain the model; footer Guide opens the user guide", async ({
   page,

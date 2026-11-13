@@ -59,7 +59,6 @@ export default function App() {
                   shortcut={session.shortcut}
                 />
               </div>
-              <p className="demo-action-label">{session.caption}</p>
               <div id="demo-controls" className="utility-controls" tabIndex={-1}>
                 <Button
                   variant="ghost"
@@ -87,7 +86,10 @@ export default function App() {
                 </Button>
               </div>
             </div>
-            <KeyboardShortcuts shortcut={session.shortcut} />
+            <div className="demo-cue">
+              <p className="demo-action-label">{session.caption}</p>
+              <KeyboardShortcuts shortcut={session.shortcut} />
+            </div>
             <p className="sr-only" aria-live="polite" aria-atomic="true">
               {session.mode === "paused"
                 ? `Demo paused. ${session.caption} ${describe(state)}`

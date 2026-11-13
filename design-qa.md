@@ -436,3 +436,15 @@ The flow checked was homepage → play/pause → monitor-local workspace banks �
 Formatting, Oxlint/shadcn, Stylelint, TypeScript, 73 unit tests, 54 Chromium/WebKit cases and eight production artifact cases pass. Preview mode is restored before publication. The prior owner-requested VoiceOver deferral remains unchanged.
 
 final result: passed
+
+## Review update: a single mobile action/chord cue
+
+At the owner’s request, mobile now hides both workspace banks and the full modifier/direction ladder. Monitor headers retain the workspace context. The two displays stack with a 24-pixel gap, followed by one action caption and the current modifier/target chord. Direction keycaps contain only the letter; their arrow stays in the same column, 6 pixels underneath, with the active accent color. Transfers show the actual workspace number without a directional arrow. Both views derive from the same playback shortcut and shared modifier/direction definitions; no additional state or timing was introduced.
+
+The mobile cue reserves 64 pixels for its chord so setup, closing, workspace-number targets and Replay do not move the surrounding page. The caption remains visible without JavaScript; the static movement section still explains the complete shortcut pattern. Desktop keeps the full ladder, workspace banks and in-key arrows. Its monitor geometry, caption, playback controls and section positions exactly match the published baseline at 768 and 1488 pixels.
+
+Before/after captures cover 320, 390, 760, 768 and 1488 pixels using the existing pinned Playwright workflow (Browser plugin not available). The mobile page is 247 pixels shorter at all three mobile widths, with no overflow or page errors. Opened and inspected mobile-cue-after-demo-390.png and mobile-cue-after-workspace-390.png in the cleanup evidence directory. Reflow checks verify caption/chord proximity, hidden mobile banks, key/arrow separation and centering, and the breakpoint. A dedicated playback case covers setup, focus, resize, workspace transfer and Replay with stable cue height.
+
+Formatting, Oxlint/shadcn, Stylelint, TypeScript, 73 unit tests, 56 Chromium/WebKit browser cases and eight production artifact cases pass. Preview mode is restored before publication. The prior owner-requested VoiceOver deferral remains in effect.
+
+final result: passed

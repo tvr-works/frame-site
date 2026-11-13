@@ -38,7 +38,6 @@ export function KeyboardShortcuts({ shortcut }: { shortcut?: ShortcutCue }) {
           <ArrowRight />
         </div>
         <div className="home-row">
-          <span className="mode-label direction-label">Direction</span>
           {directions.map(({ key, Icon }) => (
             <span
               key={key}
@@ -51,6 +50,35 @@ export function KeyboardShortcuts({ shortcut }: { shortcut?: ShortcutCue }) {
           ))}
         </div>
       </div>
+      <ActiveShortcut shortcut={shortcut} />
+    </div>
+  );
+}
+
+function ActiveShortcut({ shortcut }: { shortcut?: ShortcutCue }) {
+  const mode = modes.find((item) => item.value === shortcut?.mode);
+  const direction = directions.find((item) => item.key === shortcut?.key);
+  const Icon = direction?.Icon;
+  return (
+    <div className="active-shortcut">
+      {mode && shortcut?.key ? (
+        <>
+          <span className="active-modifiers">
+            {mode.keys.map((key) => (
+              <kbd key={key} data-lit="true">
+                {key}
+              </kbd>
+            ))}
+          </span>
+          <span className="active-join">+</span>
+          <span className="active-target">
+            <kbd className="shortcut-key active-key" data-lit="true">
+              {shortcut.key}
+            </kbd>
+            {Icon ? <Icon /> : null}
+          </span>
+        </>
+      ) : null}
     </div>
   );
 }
