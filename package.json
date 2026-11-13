@@ -18,7 +18,8 @@
     "ci:gate": "node scripts/wait-for-ci.ts",
     "check:runtime": "node scripts/check-runtime.mjs",
     "lint:code": "oxlint --deny-warnings --report-unused-disable-directives",
-    "lint:css": "stylelint \"src/**/*.css\" --max-warnings 0"
+    "lint:css": "stylelint \"{src,scripts}/**/*.css\" --max-warnings 0",
+    "assets:social": "node scripts/render-social-card.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.9.0",

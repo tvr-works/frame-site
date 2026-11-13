@@ -664,7 +664,7 @@ test("@artifact search and social metadata describe each static page and its rea
     expect(imageUrl).toBe(`${origin}/social-card.png`);
     expect(await meta("name", "twitter:image")).toBe(imageUrl);
     const alt = await meta("property", "og:image:alt");
-    expect(alt).toContain("two-monitor demo");
+    expect(alt).toContain("two monitors");
     expect(await meta("name", "twitter:image:alt")).toBe(alt);
     // Fetch the deployed path locally; never probe the provisional production host.
     const image = await request.get(new URL(imageUrl).pathname);

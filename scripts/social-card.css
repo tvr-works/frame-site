@@ -1,0 +1,240 @@
+@font-face {
+  font-family: Geist;
+  src: url("/geist.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+:root {
+  color-scheme: dark;
+  background: #06101b;
+  color: #f5f7fa;
+  font-family: Geist, sans-serif;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+main {
+  position: relative;
+  width: 1200px;
+  height: 630px;
+  overflow: hidden;
+  isolation: isolate;
+}
+.glow {
+  position: absolute;
+  z-index: -1;
+  inset: 132px -60px -140px;
+  background: #06101b url("/monitor-backdrop.webp") center / 100% 100% no-repeat;
+  background-blend-mode: screen;
+  mask-image: linear-gradient(transparent, #000 22%, #000 74%, transparent);
+  opacity: 0.76;
+}
+.brand {
+  position: absolute;
+  top: 36px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 37px;
+  line-height: 44px;
+  font-weight: 680;
+  letter-spacing: -1.6px;
+}
+.brand img {
+  display: block;
+}
+h1 {
+  position: absolute;
+  inset: 100px 64px auto;
+  margin: 0;
+  text-align: center;
+  font-size: 60px;
+  line-height: 1.04;
+  font-weight: 650;
+  letter-spacing: -2.4px;
+}
+.description {
+  position: absolute;
+  inset: 241px 64px auto;
+  margin: 0;
+  text-align: center;
+  color: #a7b7c8;
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 450;
+  letter-spacing: -0.3px;
+}
+.description span {
+  padding-inline: 8px;
+  color: #71879d;
+}
+.displays {
+  position: absolute;
+  top: 291px;
+  left: 120px;
+  width: 960px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.monitor {
+  position: relative;
+}
+.hardware {
+  display: block;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+}
+.screen {
+  position: absolute;
+  left: 2.5%;
+  top: 3.541667%;
+  width: 95%;
+  height: 80.625%;
+  border-radius: 7px;
+  overflow: hidden;
+  background: #0d2338 url("/wallpaper.webp") center / cover;
+  display: grid;
+  padding: 7px;
+  gap: 5px;
+}
+.two-columns {
+  grid-template-columns: 1.12fr 1fr;
+}
+.window {
+  min-width: 0;
+  border: 1px solid #4b5a68;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #0c1a28b3;
+  backdrop-filter: blur(9px);
+}
+.focused {
+  border-color: #b4e5ff;
+  box-shadow:
+    0 0 0 1px #b4e5ff70,
+    0 0 13px #8bd3ff3a;
+}
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 8px;
+  background: #233545ad;
+}
+.titlebar i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f56f70;
+}
+.titlebar i:nth-child(2) {
+  background: #eac45d;
+}
+.titlebar i:nth-child(3) {
+  background: #61c88c;
+}
+.content {
+  padding: 18px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.content b {
+  display: block;
+  width: 57%;
+  height: 8px;
+  border-radius: 2px;
+  background: #b4cfe326;
+}
+.lines,
+.code {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lines i,
+.code i {
+  display: block;
+  height: 4px;
+  background: #9db5c718;
+  border-radius: 2px;
+}
+.lines i:last-child {
+  width: 65%;
+}
+.block {
+  height: 46px;
+  background: #a3cde70b;
+  border: 1px solid #9db5c70d;
+  border-radius: 4px;
+}
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+.notes-list i {
+  display: block;
+  height: 5px;
+  width: 83%;
+  margin-left: 14px;
+  border-radius: 2px;
+  background: #9db5c718;
+  position: relative;
+}
+.notes-list i::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: -2px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #9db5c738;
+  border-radius: 1px;
+}
+.notes-list i:nth-child(2) {
+  width: 64%;
+}
+.editor .content {
+  gap: 27px;
+  padding: 21px 24px;
+}
+.editor .content b {
+  width: 38%;
+}
+.code {
+  gap: 12px;
+}
+.code i {
+  width: 46%;
+}
+.code i:nth-child(2) {
+  width: 62%;
+  margin-left: 14px;
+}
+.code i:nth-child(3) {
+  width: 43%;
+  margin-left: 28px;
+}
+.code i:nth-child(4) {
+  width: 56%;
+  margin-left: 28px;
+}
+.code i:nth-child(5) {
+  width: 34%;
+  margin-left: 14px;
+}
+.code i:nth-child(6) {
+  width: 24%;
+}

@@ -34,6 +34,10 @@ Return to `npm run build` afterward for preview indexing. Builds include an exac
 
 `npm run lint` runs Oxlint with the shadcn plugin, then Stylelint over all source CSS. CSS checks target invalid properties/units/at-rules, duplicate selectors/declarations and accidental shorthand overrides. Tailwind’s `@theme` is explicitly recognized; formatting stays with Oxfmt. Page UI styles (`site`, `homepage`, `guide`) use named color tokens. Palette definitions live in `base.css`; the illustrative demo can use its own literal lighting and window colors. Policy tests verify both failures and these intended boundaries.
 
+## Social preview artwork
+
+Run `npm run assets:social` to render the dedicated 1200 × 630 social card with the existing pinned Chromium browser. Its HTML/CSS source lives under `scripts/`; the committed `public/social-card.png` ships with both pages. This is an explicit asset task, separate from the production build. See [design-system.md](docs/design-system.md#social-card) for composition and update notes.
+
 ## Behavior and ownership
 
 - `src/demo/model.ts`: immutable columns, focus/MRU, weights, workspace affinity and command transitions.

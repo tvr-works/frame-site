@@ -31,6 +31,14 @@ Oxlint/shadcn covers component and Tailwind usage. Stylelint 18.0.0 covers sourc
 
 The site, homepage and guide style owners use color tokens. The root palette defines those values, while demo illustration code retains its intentional lighting/window palette. Typeset's upstream defaults are kept intact. Tests verify that invalid authored CSS fails, responsive overrides work, and the palette/artwork scopes stay available.
 
+## Social card
+
+The 1200 × 630 card is a dedicated composition, rather than a homepage screenshot. It uses the existing Geist font, Frame icon, matte monitor hardware, wallpaper and blue backdrop. A larger two-line title establishes the product category, with “Keyboard-first · Vim-inspired” beneath it. Three quiet windows and one focus outline convey tiling across two monitors. Navigation, workspace numbers, playback controls, action captions and the shortcut ladder are omitted at this scale.
+
+Editable source lives in scripts/social-card.html and scripts/social-card.css. Run npm run assets:social with the pinned Chromium browser available to regenerate public/social-card.png. The renderer serves only its explicit local resource map, waits for fonts/images, rejects failed resource loads, and checks the output dimensions and size. The template and renderer are not shipped. Production builds use the committed PNG and do not need a browser. CSS lint covers the asset stylesheet as well as src styles.
+
+Inspect the full-size image and a 600 × 315 preview after editing. Keep the Open Graph/Twitter image descriptions in both HTML entries aligned with the artwork. Artifact tests verify the served PNG against its declared metadata.
+
 ## Primary references
 
 - [Typeset](https://ui.shadcn.com/docs/typeset)

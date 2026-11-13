@@ -386,3 +386,13 @@ The CSS token and button-variant changes each passed 16 computed-style/pixel com
 Formatting, Oxlint/shadcn, Stylelint, TypeScript, 73 unit tests and all 48 Chromium/WebKit cases pass on the final source. Production artifact checks cover indexing/security, static reading, native navigation, no guide JavaScript requests and the shipped Typeset license; preview mode is restored before commit. Manual VoiceOver and hosted CI remain unclaimed.
 
 final result: passed
+
+## Review update: purpose-built social preview
+
+Replaced the homepage screenshot with a dedicated 1200 × 630 composition. Frame branding and the two-line product title lead, followed by Keyboard-first / Vim-inspired and two matte monitors with three quiet windows. Navigation, playback controls, workspace numbers, action captions and the shortcut ladder were removed from the artwork. Existing icon, hardware, wallpaper, backdrop and Geist font are reused. Both pages’ image alternatives now describe the new composition.
+
+The editable HTML/CSS and local-only renderer live under scripts/. npm run assets:social explicitly regenerates the committed PNG; production builds do not run a browser. The renderer serves an explicit local resource map, waits for fonts/images, rejects failed requests, and validates 1200 × 630 dimensions and the one-MiB size limit. CSS lint now includes the artwork stylesheet. The output is 252,656 bytes, down from 325,862 bytes.
+
+Opened and inspected the full-size card and cleanup/social-card-polished-600.png at 600 × 315. The brand/title remain readable at half size, with no tiny navigation or demo control text. Browser plugin not available; the existing pinned Playwright Chromium renderer produced the artwork/preview. No homepage or guide layout changed. Formatting, Oxlint/shadcn, Stylelint, TypeScript, 73 unit tests, 50 Chromium/WebKit browser cases and eight production artifact cases pass. The latter load the new image and compare its dimensions/MIME type against both pages’ metadata. Preview mode was restored. Live sharing-platform crop/cache behavior remains a publication check.
+
+final result: passed
